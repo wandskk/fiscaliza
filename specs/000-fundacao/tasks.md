@@ -16,7 +16,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. `[~]` código escrito e ch
 | T03.1 | API NestJS: `main.ts` com prefixo `/api/v1`, Helmet, CORS, Swagger em `/api/docs`; config validada com Zod e `.env.example` | T02.2, T04.3 | | 1,0 | 0,3 | [x] |
 | T03.2 | Prisma: `schema.prisma` inicial, `PrismaService`, script de migração e de seed vazio | T03.1 | | 0,5 | 0,3 | [~] |
 | T03.3 | Logger pino + middleware de `x-correlation-id` com `AsyncLocalStorage` | T03.1 | [P] | 0,75 | 0,2 | [x] |
-| T03.4 | `DomainError` e filtro global de erro (tabela do plano), com testes de cada mapeamento | T03.3 | | 1,0 | | [ ] |
+| T03.4 | `DomainError` e filtro global de erro (tabela do plano), com testes de cada mapeamento | T03.3 | | 1,0 | 0,3 | [x] |
 | T03.5 | `/health` com terminus (200 com banco, 503 sem banco) e teste e2e com Supertest | T03.2 | | 0,5 | | [ ] |
 | T03.6 | Dockerfile multi-stage da API, `.dockerignore`, serviço `api` no compose; `docker compose up --build` sobe e o health responde | T03.5 | | 1,0 | | [ ] |
 | | **Total** | | | **9,75** | | |
