@@ -9,7 +9,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 | T06.1 | `shared/schemas/obra.schema.ts` e códigos de erro de obra, com testes dos limites | T04 | | 0,5 | 0,3 | [x] |
 | T06.2 | Migração `002_obras` (modelos, índice de busca) e seed com 3 obras, uma encerrada | T05.2 | [P] | 0,5 | 0,4 | [x] |
 | T06.3 | Entidade `Obra` e erros; testes de editar, encerrar e `RN-10: aceitaVistoria` | T06.1 | | 0,75 | 0,4 | [x] |
-| T06.4 | Porta `ObraRepository`, repositório em memória e casos de uso criar, editar, buscar, listar, definir fiscais (testes com memória, incluindo visibilidade do fiscal) | T06.3 | | 2,0 | | [ ] |
+| T06.4 | Porta `ObraRepository`, repositório em memória e casos de uso criar, editar, buscar, listar, definir fiscais (testes com memória, incluindo visibilidade do fiscal) | T06.3 | | 2,0 | 0,6 | [x] |
 | T06.5 | `PrismaObraRepository` + mapper; testes de integração contra Postgres (filtro do fiscal, busca, `P2002`) | T06.2, T06.4 | | 1,5 | | [ ] |
 | T06.6 | Porta `ObraAcesso` exportada pelo módulo, com implementação Prisma | T06.5 | | 0,25 | | [ ] |
 | T06.7 | Controller, DTOs, Swagger e `GET /usuarios?perfil=FISCAL`; e2e das permissões (403 do fiscal, 404 fora do alcance, 409, 422) | T06.5 | | 1,25 | | [ ] |
