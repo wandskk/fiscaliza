@@ -168,14 +168,14 @@ Os tempos abaixo somam apenas tarefas marcadas `[x]`, sem somar linhas de subtot
 | [000-fundacao](specs/000-fundacao/tasks.md)                                 |          16/16 |        10,25 |      3,40 |
 | [001-auth-e-perfis](specs/001-auth-e-perfis/tasks.md)                       |          12/12 |         9,75 |      4,12 |
 | [002-obras](specs/002-obras/tasks.md)                                       |          12/12 |        10,85 |      3,54 |
-| [003-vistoria-e-fotos](specs/003-vistoria-e-fotos/tasks.md)                 |          18/19 |        19,00 |      3,20 |
+| [003-vistoria-e-fotos](specs/003-vistoria-e-fotos/tasks.md)                 |          19/19 |        20,25 |      3,30 |
 | [004-relatorio-ia](specs/004-relatorio-ia/tasks.md)                         |          12/12 |        11,50 |      0,71 |
 | [005-decisao-do-gestor](specs/005-decisao-do-gestor/tasks.md)               |            5/5 |         5,00 |      0,44 |
 | [006-web-base-e-design-system](specs/006-web-base-e-design-system/tasks.md) |            7/7 |         7,25 |      0,92 |
 | [007-painel](specs/007-painel/tasks.md)                                     |            2/2 |         3,00 |      0,38 |
 | [008-servidor-mcp](specs/008-servidor-mcp/tasks.md)                         |            2/2 |         2,50 |      0,17 |
-| [009-apresentacao](specs/009-apresentacao/tasks.md)                         |            3/7 |         2,50 |      0,24 |
-| **Total**                                                                   |      **89/94** |    **81,60** | **17,12** |
+| [009-apresentacao](specs/009-apresentacao/tasks.md)                         |            8/9 |         6,75 |      1,39 |
+| **Total**                                                                   |      **95/96** |    **87,10** | **18,37** |
 
 Para refazer a tabela, execute `node scripts/time-report.mjs` na raiz e substitua a tabela pela saída. O script usa Node sem dependências. Tarefas ainda não marcadas não entram nas horas, mesmo que tenham implementação.
 
