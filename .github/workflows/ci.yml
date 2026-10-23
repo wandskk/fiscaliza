@@ -55,3 +55,6 @@ jobs:
           exit 1
 
       - run: pnpm test
+
+      - name: Build the Docker images
+        run: docker compose build api worker web
