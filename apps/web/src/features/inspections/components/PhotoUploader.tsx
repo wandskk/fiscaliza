@@ -29,6 +29,9 @@ export function PhotoUploader({ inspectionId, photos, disabled = false }: PhotoU
         files={files}
       />
       <p className="text-sm text-muted">
+        Cada foto é salva na vistoria assim que termina de enviar. Use Remover para tirar uma foto.
+      </p>
+      <p className="text-sm text-muted">
         {photos.length} de {MAX_PHOTOS} fotos
       </p>
       {removePhoto.isError && (
