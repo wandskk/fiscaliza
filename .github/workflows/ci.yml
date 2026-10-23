@@ -13,7 +13,7 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # Repository, /health and e2e tests run against a real Postgres, like the docker compose
+    # Repository, /health and e2e tests run against a real Postgres, like the docker compose; the Vitest global setup creates and migrates the fiscaliza_test database on it
     services:
       db:
         image: postgres:16
@@ -27,8 +27,6 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
-    env:
-      DATABASE_URL: postgresql://fiscaliza:dev@localhost:5432/fiscaliza
     steps:
       - uses: actions/checkout@v5
 
@@ -56,5 +54,4 @@ jobs:
           docker logs aws
           exit 1
 
-      - run: pnpm --filter @fiscaliza/api db:deploy
       - run: pnpm test

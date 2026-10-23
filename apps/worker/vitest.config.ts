@@ -9,6 +9,7 @@ export default defineConfig({
   resolve: { conditions },
   ssr: { resolve: { conditions } },
   test: {
+    globalSetup: ['../../test/global-setup.ts'],
     include: ['test/**/*.test.ts'],
   },
 });
