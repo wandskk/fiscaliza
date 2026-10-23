@@ -14,10 +14,10 @@
   --warning: #9e5e00;
   --danger: #b3261e;
   --info: #5a6577;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --font-sans: 'Instrument Sans', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --fz-radius-sm: 6px;
+  --fz-radius-md: 10px;
+  --fz-font-sans: 'Instrument Sans', system-ui, sans-serif;
+  --fz-font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 [data-theme='dark'] {
@@ -47,15 +47,15 @@
   --color-warning: var(--warning);
   --color-danger: var(--danger);
   --color-info: var(--info);
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --font-family-sans: var(--font-sans);
-  --font-family-mono: var(--font-mono);
+  --radius-sm: var(--fz-radius-sm);
+  --radius-md: var(--fz-radius-md);
+  --font-sans: var(--fz-font-sans);
+  --font-mono: var(--fz-font-mono);
 }
 
 /* ─── Base styles ─── */
 body {
-  font-family: var(--font-sans);
+  font-family: var(--fz-font-sans);
   background-color: var(--bg);
   color: var(--text);
 }

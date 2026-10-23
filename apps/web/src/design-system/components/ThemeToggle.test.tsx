@@ -17,8 +17,12 @@ describe('ThemeToggle', () => {
         <ThemeToggle />
       </ThemeProvider>,
     );
-    await user.click(screen.getByRole('button', { name: 'Ativar tema escuro' }));
+    const toggle = screen.getByRole('button', { name: 'Ativar tema escuro' });
+    expect(toggle.querySelector('svg[aria-hidden="true"]')).not.toBeNull();
+    expect(toggle.textContent).toBe('');
+    await user.click(toggle);
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
-    expect(screen.getByRole('button', { name: 'Ativar tema claro' })).toBeInTheDocument();
+    const back = screen.getByRole('button', { name: 'Ativar tema claro' });
+    expect(back.querySelector('svg[aria-hidden="true"]')).not.toBeNull();
   });
 });

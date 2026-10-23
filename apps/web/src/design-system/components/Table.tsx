@@ -61,25 +61,20 @@ export function Table({
                   key={col.key}
                   scope="col"
                   aria-sort={ariaSort}
-                  className={cn(
-                    'px-4 py-3 text-left font-medium text-muted',
-                    col.sortable && 'cursor-pointer select-none hover:text-text',
-                  )}
-                  onClick={col.sortable && onSort ? () => onSort(col.key) : undefined}
-                  onKeyDown={
-                    col.sortable && onSort
-                      ? (e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            onSort(col.key);
-                          }
-                        }
-                      : undefined
-                  }
-                  tabIndex={col.sortable ? 0 : undefined}
+                  className="px-4 py-3 text-left font-medium text-muted"
                 >
-                  {col.label}
-                  {col.sortable && <SortIndicator active={isActive} dir={sortDir} />}
+                  {col.sortable && onSort ? (
+                    <button
+                      type="button"
+                      onClick={() => onSort(col.key)}
+                      className="inline-flex cursor-pointer select-none items-center rounded-sm font-medium hover:text-text focus-visible:outline-2"
+                    >
+                      {col.label}
+                      <SortIndicator active={isActive} dir={sortDir} />
+                    </button>
+                  ) : (
+                    col.label
+                  )}
                 </th>
               );
             })}
