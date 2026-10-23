@@ -19,8 +19,8 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. `[~]` código escrito e ch
 | T03.4 | `DomainError` e filtro global de erro (tabela do plano), com testes de cada mapeamento | T03.3 | | 1,0 | 0,3 | [x] |
 | T03.5 | `/health` com terminus (200 com banco, 503 sem banco) e teste e2e com Supertest | T03.2 | | 0,5 | 0,2 | [x] |
 | T03.6 | Dockerfile multi-stage da API, `.dockerignore`, serviço `api` no compose; `docker compose up --build` sobe e o health responde | T03.5 | | 1,0 | 0,3 | [x] |
-| T03.7 | Rate limit global com `@nestjs/throttler` (seção 24): 100 requisições por minuto por IP, `/health` fora; 429 com código `TOO_MANY_REQUESTS` no formato de erro padrão e cabeçalho `Retry-After`; env `RATE_LIMIT_PER_MINUTE`; teste e2e | T03.4 | | 0,5 | | [ ] |
-| | **Total** | | | **10,25** | **3,3** | |
+| T03.7 | Rate limit global com `@nestjs/throttler` (seção 24): 100 requisições por minuto por IP, `/health` fora; 429 com código `TOO_MANY_REQUESTS` no formato de erro padrão e cabeçalho `Retry-After`; env `RATE_LIMIT_PER_MINUTE`; teste e2e | T03.4 | | 0,5 | 0,1 | [x] |
+| | **Total** | | | **10,25** | **3,4** | |
 
 ## Pronto quando
 - Todos os critérios de aceite da `spec.md` conferidos.
