@@ -4,10 +4,11 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import { ConfigModule } from './shared/config/config.module';
 import { DatabaseModule } from './shared/database/database.module';
 import { HttpErrorFilter } from './shared/errors/http-error.filter';
+import { HealthModule } from './shared/health/health.module';
 import { LoggingModule } from './shared/logging/logging.module';
 
 @Module({
-  imports: [ConfigModule, LoggingModule, DatabaseModule],
+  imports: [ConfigModule, LoggingModule, DatabaseModule, HealthModule],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },
     { provide: APP_FILTER, useClass: HttpErrorFilter },
