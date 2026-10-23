@@ -37,9 +37,9 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppShell />}>
           <Route index element={<RoleHomeRedirect />} />
-          <Route path="/obras" element={<ConstructionSitesPage />} />
+          <Route path="/construction-sites" element={<ConstructionSitesPage />} />
           <Route element={<ProtectedRoute allowedRoles={[Role.MANAGER]} />}>
-            <Route path="/painel" element={<DashboardPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
           </Route>
         </Route>
       </Route>

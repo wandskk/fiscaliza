@@ -67,13 +67,16 @@ describe('AppRoutes', () => {
   });
 
   describe('without session', () => {
-    it.each(['/', '/obras', '/painel'])('redirects %s to /sign-in', async (route) => {
-      renderApp(route);
+    it.each(['/', '/construction-sites', '/dashboard'])(
+      'redirects %s to /sign-in',
+      async (route) => {
+        renderApp(route);
 
-      await expectPath('/sign-in');
-      expect(screen.getByRole('button', { name: 'Entrar' })).toBeInTheDocument();
-      expect(fetchMock).not.toHaveBeenCalled();
-    });
+        await expectPath('/sign-in');
+        expect(screen.getByRole('button', { name: 'Entrar' })).toBeInTheDocument();
+        expect(fetchMock).not.toHaveBeenCalled();
+      },
+    );
   });
 
   describe('inspector', () => {
@@ -84,7 +87,7 @@ describe('AppRoutes', () => {
     it('lands on Obras and sees only that menu item', async () => {
       renderApp('/');
 
-      await expectPath('/obras');
+      await expectPath('/construction-sites');
       const nav = screen.getByRole('navigation', { name: 'Navegação principal' });
       expect(nav).toHaveTextContent('Obras');
       expect(nav).not.toHaveTextContent('Painel');
@@ -92,16 +95,16 @@ describe('AppRoutes', () => {
     });
 
     it('is sent back to its home when opening the manager dashboard', async () => {
-      renderApp('/painel');
+      renderApp('/dashboard');
 
-      await expectPath('/obras');
+      await expectPath('/construction-sites');
       expect(screen.getByRole('heading', { name: 'Obras' })).toBeInTheDocument();
     });
 
     it('is redirected away from /sign-in', async () => {
       renderApp('/sign-in');
 
-      await expectPath('/obras');
+      await expectPath('/construction-sites');
     });
   });
 
@@ -113,7 +116,7 @@ describe('AppRoutes', () => {
     it('lands on Painel and sees Obras and Painel in the menu', async () => {
       renderApp('/');
 
-      await expectPath('/painel');
+      await expectPath('/dashboard');
       const nav = screen.getByRole('navigation', { name: 'Navegação principal' });
       expect(nav).toHaveTextContent('Obras');
       expect(nav).toHaveTextContent('Painel');
@@ -122,11 +125,11 @@ describe('AppRoutes', () => {
 
     it('can open Obras from the menu', async () => {
       const user = userEvent.setup();
-      renderApp('/painel');
+      renderApp('/dashboard');
 
       await user.click(await screen.findByRole('link', { name: 'Obras' }));
 
-      await expectPath('/obras');
+      await expectPath('/construction-sites');
     });
   });
 
@@ -134,7 +137,7 @@ describe('AppRoutes', () => {
     it('toggles the theme and signs out back to /sign-in', async () => {
       sessionStorage.setItem('fiscaliza-local-token', 'local-manager');
       const user = userEvent.setup();
-      renderApp('/obras');
+      renderApp('/construction-sites');
 
       await user.click(await screen.findByRole('button', { name: /Ativar tema/ }));
       expect(document.documentElement.dataset.theme).toBeTruthy();
@@ -149,7 +152,7 @@ describe('AppRoutes', () => {
   describe('invalid session', () => {
     it('goes back to /sign-in when the API rejects the stored token', async () => {
       sessionStorage.setItem('fiscaliza-local-token', 'local-inspector-2');
-      renderApp('/obras');
+      renderApp('/construction-sites');
 
       await expectPath('/sign-in');
       expect(sessionStorage.getItem('fiscaliza-local-token')).toBeNull();
