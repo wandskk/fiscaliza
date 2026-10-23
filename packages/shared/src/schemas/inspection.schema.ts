@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { Compliance } from '../enums/compliance.js';
 import { InspectionStatus } from '../enums/inspection-status.js';
 import { paginatedSchema, paginationSchema } from './pagination.schema.js';
+import { reportSchema } from './report.schema.js';
 
 export const MIN_NOTES_LENGTH = 30;
 
@@ -43,7 +44,8 @@ export const inspectionDetailSchema = z.object({
       at: z.iso.datetime(),
     }),
   ),
-  report: z.null(),
+  // Report of the current submission; null while it is being generated
+  report: reportSchema.nullable(),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
 });
