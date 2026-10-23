@@ -14,7 +14,7 @@ apps/api/src/
 │  ├─ jwt.guard.ts                    global; respeita @Publico()
 │  ├─ perfil.guard.ts                 lê @Perfis(...)
 │  ├─ decorators.ts                   @Perfis, @Usuario, @Publico
-│  └─ auth.module.ts                  escolhe o adapter pela env AUTH_MODO
+│  └─ auth.module.ts                  escolhe o adapter pela env AUTH_MODE
 └─ modules/auth/
    ├─ domain/usuario.entity.ts        perfilDoGrupo(grupos): Perfil (regra: gestor vence se tiver os dois)
    ├─ application/ports/usuario.repository.ts
@@ -32,7 +32,7 @@ Decisões:
 
 Contrato no `shared`: `perfil.ts` (já existe), `UsuarioAutenticadoSchema`, `MeRespostaSchema`, códigos `NAO_AUTENTICADO` e `SEM_PERMISSAO`.
 
-Variáveis novas no `.env.example`: `AUTH_MODO`, `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID`, `COGNITO_REGIAO`.
+Variáveis novas no `.env.example`: `AUTH_MODE`, `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID`, `COGNITO_REGION`.
 
 ## Web (depende da T13, design system)
 
@@ -48,12 +48,12 @@ apps/web/src/
 └─ lib/http.ts            token do Amplify, x-correlation-id, erro no formato do shared
 ```
 
-No modo local, `use-sessao` troca o Amplify por um seletor de usuário de teste na tela de entrar (variável `VITE_AUTH_MODO=local`).
+No modo local, `use-sessao` troca o Amplify por um seletor de usuário de teste na tela de entrar (variável `VITE_AUTH_MODE=local`).
 
 ## Riscos
 | Risco | Mitigação |
 |---|---|
 | Nome do usuário não vem no access token | ID token só no `/me`, validado; se faltar, usa o e-mail como nome |
-| Guard local ligado em produção | validação da config recusa `AUTH_MODO=local` com `NODE_ENV=production` |
+| Guard local ligado em produção | validação da config recusa `AUTH_MODE=local` com `NODE_ENV=production` |
 | Testar Cognito sem rede | `aws-jwt-verify` aceita JWKS em cache: teste com chave gerada localmente e JWKS injetado |
 | Configurar o User Pool à mão | `infra/aws/cognito.md` com os passos (grupos, app client sem segredo, SRP) |

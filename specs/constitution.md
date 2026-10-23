@@ -89,5 +89,8 @@ Documentos (PROJETO.md, specs, planos, tarefas) ficam em português e usam os te
 | `NaoEncontradoError`, `SemPermissaoError` | `NotFoundError`, `ForbiddenError` |
 | Paginação `{ pagina, limite }` | `{ page, limit }` |
 | Bucket `fiscaliza-fotos`, fila `fiscaliza-vistorias` | `fiscaliza-photos`, `fiscaliza-inspections` |
+| Variáveis `BUCKET_FOTOS`, `FILA_VISTORIAS_URL` | `PHOTOS_BUCKET`, `INSPECTIONS_QUEUE_URL` |
+| Variáveis `AUTH_MODO`, `VITE_AUTH_MODO`, `COGNITO_REGIAO` | `AUTH_MODE`, `VITE_AUTH_MODE`, `COGNITO_REGION` |
+| Variáveis `AWS_ENDPOINT_PUBLICO`, `LLM_PROVEDORES` | `AWS_PUBLIC_ENDPOINT`, `LLM_PROVIDERS` |
 
 Os códigos `RN-01` a `RN-10` não mudam: são o elo entre a regra no documento e o teste (`it('RN-04: ...')`). O valor de `message` continua em português.

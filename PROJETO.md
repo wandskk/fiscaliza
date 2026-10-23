@@ -686,7 +686,7 @@ export interface LlmProvider {
 | Front | Biblioteca do Amplify (só o módulo de auth) |
 | API | `aws-jwt-verify` validando o access token (emissor, cliente, expiração, assinatura pelo JWKS) |
 | Sincronização | No primeiro acesso, `/me` cria o `Usuario` no banco a partir do token (`sub`, e-mail, grupo) |
-| Desenvolvimento | Variável `AUTH_MODO=local` libera um guard falso com usuários de teste, para rodar sem AWS |
+| Desenvolvimento | Variável `AUTH_MODE=local` libera um guard falso com usuários de teste, para rodar sem AWS |
 
 ---
 
@@ -921,13 +921,17 @@ Variáveis principais:
 
 | Variável | App | Exemplo |
 |---|---|---|
+| `NODE_ENV` | api, worker | `development`, `test` ou `production` |
+| `PORT` | api | `3000` |
+| `CORS_ORIGIN` | api | `http://localhost:5173` |
 | `DATABASE_URL` | api, worker | `postgresql://fiscaliza:dev@db:5432/fiscaliza` |
+| `AWS_REGION` | api, worker | `us-east-1` |
 | `AWS_ENDPOINT` | api, worker | `http://aws:4566` (vazio na AWS real) |
-| `BUCKET_FOTOS` | api | `fiscaliza-fotos` |
-| `FILA_VISTORIAS_URL` | api, worker | URL da fila |
+| `PHOTOS_BUCKET` | api | `fiscaliza-photos` |
+| `INSPECTIONS_QUEUE_URL` | api, worker | URL da fila |
 | `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | api, web | IDs do User Pool |
-| `AUTH_MODO` | api | `cognito` ou `local` |
-| `LLM_PROVEDORES` | worker | `gemini,reserva` |
+| `AUTH_MODE` | api | `cognito` ou `local` |
+| `LLM_PROVIDERS` | worker | `gemini,reserva` |
 | `GEMINI_API_KEY` | worker | só no `.env` local |
 
 ---

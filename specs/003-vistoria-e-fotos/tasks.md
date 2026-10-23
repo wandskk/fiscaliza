@@ -28,7 +28,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
-| T09.1 | Porta `Armazenamento` e `S3ArmazenamentoAdapter` (URL de upload com tipo e tamanho, URL de leitura, `HeadObject`, remoção); env `BUCKET_FOTOS`, `AWS_ENDPOINT_PUBLICO`; integração contra LocalStack | T08.5 | | 1,5 | | [ ] |
+| T09.1 | Porta `Armazenamento` e `S3ArmazenamentoAdapter` (URL de upload com tipo e tamanho, URL de leitura, `HeadObject`, remoção); env `PHOTOS_BUCKET`, `AWS_PUBLIC_ENDPOINT`; integração contra LocalStack | T08.5 | | 1,5 | | [ ] |
 | T09.2 | Casos de uso gerar URL (RN-05), confirmar (dono da chave, `HeadObject`, idempotente, limite na transação) e remover; testes com armazenamento falso | T09.1 | | 1,25 | | [ ] |
 | T09.3 | Endpoints de foto + URLs de leitura no detalhe; e2e com LocalStack (assinar, `PUT`, confirmar, enviar) | T09.2 | | 1,0 | | [ ] |
 | | **Subtotal T09** | | | **3,75** | | |

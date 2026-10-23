@@ -76,6 +76,6 @@ features/vistorias/
 | Risco | Mitigação |
 |---|---|
 | CORS do bucket barrando o `PUT` | CORS já criado no init (T02.2); testar no navegador cedo, na T09 |
-| URL assinada com host `aws:4566` inacessível pelo navegador | env `AWS_ENDPOINT_PUBLICO=http://localhost:4566` só para assinar URLs |
+| URL assinada com host `aws:4566` inacessível pelo navegador | env `AWS_PUBLIC_ENDPOINT=http://localhost:4566` só para assinar URLs |
 | `Content-Length` não aplicado pelo S3 | assinar com `ContentLength` e conferir de novo no `HeadObject` da confirmação |
 | Corrida no limite de 10 fotos | contagem dentro da transação da confirmação |

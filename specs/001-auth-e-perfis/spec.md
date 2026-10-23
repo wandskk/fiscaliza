@@ -4,7 +4,7 @@
 O sistema tem dois perfis com permissões diferentes (seção 3 do `PROJETO.md`). A API precisa saber quem está chamando e com qual perfil, sem confiar no front, e o desenvolvimento precisa rodar sem conta AWS.
 
 ## Usuários
-Fiscal e gestor (fazem login). Desenvolvedor e avaliador (rodam com `AUTH_MODO=local`).
+Fiscal e gestor (fazem login). Desenvolvedor e avaliador (rodam com `AUTH_MODE=local`).
 
 ## Histórias
 - Como usuário, quero entrar com e-mail e senha e cair na tela certa para o meu perfil.
@@ -20,8 +20,8 @@ Permissões da seção 3. Nenhuma RN de vistoria aqui; a regra "fiscal só vê o
 - Token válido de usuário sem grupo `fiscal` nem `gestor` recebe 403 com `SEM_PERMISSAO`.
 - Rota marcada `@Perfis('gestor')` chamada por um fiscal recebe 403.
 - `GET /api/v1/me` no primeiro acesso cria o `Usuario` (id = `sub`, e-mail, nome, perfil) e responde com ele; nos acessos seguintes só lê. Se o grupo mudou no Cognito, o perfil é atualizado.
-- Com `AUTH_MODO=local`, o header `Authorization: Bearer local-fiscal` (ou `local-gestor`, `local-fiscal-2`) autentica como o usuário de teste correspondente; qualquer outro valor recebe 401.
-- A API não sobe com `AUTH_MODO=local` quando `NODE_ENV=production`.
+- Com `AUTH_MODE=local`, o header `Authorization: Bearer local-fiscal` (ou `local-gestor`, `local-fiscal-2`) autentica como o usuário de teste correspondente; qualquer outro valor recebe 401.
+- A API não sobe com `AUTH_MODE=local` quando `NODE_ENV=production`.
 - `/health` e `/api/docs` continuam públicos.
 - Web: `/entrar` faz login pelo Amplify; rota protegida sem sessão redireciona para `/entrar`; o menu mostra só os itens do perfil; "Sair" encerra a sessão.
 
