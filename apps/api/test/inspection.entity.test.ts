@@ -10,7 +10,7 @@ import {
   PhotoRejectedError,
   ApprovedInspectionError,
 } from '../src/modules/inspections/domain/inspection.errors';
-import type { Clock } from '../src/modules/inspections/domain/clock';
+import type { Clock } from '../src/shared/time/clock';
 import { ForbiddenError } from '../src/shared/errors/domain-error';
 
 const at = new Date('2026-10-23T12:00:00.000Z');

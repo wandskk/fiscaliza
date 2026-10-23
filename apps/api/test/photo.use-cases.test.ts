@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ConfirmPhotoUseCase } from '../src/modules/inspections/application/confirm-photo.use-case';
 import { RemovePhotoUseCase } from '../src/modules/inspections/application/remove-photo.use-case';
 import { RequestUploadUrlUseCase } from '../src/modules/inspections/application/request-upload-url.use-case';
-import type { Clock } from '../src/modules/inspections/domain/clock';
+import type { Clock } from '../src/shared/time/clock';
 import { Inspection } from '../src/modules/inspections/domain/inspection.entity';
 import type { UnitOfWork } from '../src/shared/database/unit-of-work';
 import { InMemoryInspectionRepository } from './support/in-memory-inspection.repository';
