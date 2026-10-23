@@ -15,3 +15,14 @@ describe('tokens.css contains all token values from tokens.ts', () => {
     }
   }
 });
+
+describe('tokens.css @theme mappings', () => {
+  it('maps radius and font variables to base tokens without self reference', () => {
+    expect(cssContent).toContain('--radius-sm: var(--fz-radius-sm)');
+    expect(cssContent).toContain('--radius-md: var(--fz-radius-md)');
+    expect(cssContent).toContain('--font-sans: var(--fz-font-sans)');
+    expect(cssContent).toContain('--font-mono: var(--fz-font-mono)');
+    expect(cssContent).not.toContain('--radius-sm: var(--radius-sm)');
+    expect(cssContent).not.toContain('--font-family-');
+  });
+});
