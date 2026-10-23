@@ -6,10 +6,10 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
-| T07.1 | `shared`: `vistoria.schema.ts`, `upload.schema.ts`, constantes e códigos `FOTO_INVALIDA`, `VISTORIA_NAO_ENCONTRADA` | T04 | | 0,5 | | [ ] |
-| T07.2 | `status-vistoria.ts` com mapa de transições; testes `RN-02` e `RN-03` (todas as transições válidas e inválidas) | T07.1 | | 0,5 | | [ ] |
-| T07.3 | `Foto` value object; testes `RN-05` (tipo e tamanho) | T07.1 | [P] | 0,25 | | [ ] |
-| T07.4 | Entidade `Vistoria` (criar, editar, fotos, enviar, garantirDono, mudanças), porta `Relogio`; testes `RN-01`, `RN-04`, `RN-05` (limite de 10), `RN-07`, `RN-09` | T07.2, T07.3 | | 1,5 | | [ ] |
+| T07.1 | `shared`: `vistoria.schema.ts`, `upload.schema.ts`, constantes e códigos `FOTO_INVALIDA`, `VISTORIA_NAO_ENCONTRADA` | T04 | | 0,5 | 0,05 (23/10/2026 09:00) | [x] |
+| T07.2 | `status-vistoria.ts` com mapa de transições; testes `RN-02` e `RN-03` (todas as transições válidas e inválidas) | T07.1 | | 0,5 | 0,01 (23/10/2026 09:00) | [x] |
+| T07.3 | `Foto` value object; testes `RN-05` (tipo e tamanho) | T07.1 | [P] | 0,25 | 0,01 (23/10/2026 09:01) | [x] |
+| T07.4 | Entidade `Vistoria` (criar, editar, fotos, enviar, garantirDono, mudanças), porta `Relogio`; testes `RN-01`, `RN-04`, `RN-05` (limite de 10), `RN-07`, `RN-09` | T07.2, T07.3 | | 1,5 | 0,02 (23/10/2026 09:03) | [x] |
 | | **Subtotal T07** | | | **2,75** | | |
 
 ## Casos de uso, repositório e endpoints (T08)

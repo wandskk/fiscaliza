@@ -18,6 +18,8 @@ export const ErrorCode = {
   CONSTRUCTION_SITE_CLOSED: 'CONSTRUCTION_SITE_CLOSED',
   INVALID_INSPECTOR: 'INVALID_INSPECTOR',
   CONSTRUCTION_SITE_NOT_FOUND: 'CONSTRUCTION_SITE_NOT_FOUND',
+  INVALID_PHOTO: 'INVALID_PHOTO',
+  INSPECTION_NOT_FOUND: 'INSPECTION_NOT_FOUND',
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
@@ -44,4 +46,6 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   CONSTRUCTION_SITE_CLOSED: 'Obra encerrada não pode ser alterada nem reaberta.',
   INVALID_INSPECTOR: 'Algum dos usuários escolhidos não existe ou não é fiscal.',
   CONSTRUCTION_SITE_NOT_FOUND: 'Obra não encontrada.',
+  INVALID_PHOTO: 'A foto informada é inválida.',
+  INSPECTION_NOT_FOUND: 'Vistoria não encontrada.',
 };

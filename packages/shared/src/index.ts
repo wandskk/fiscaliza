@@ -7,3 +7,5 @@ export * from './schemas/auth.schema.js';
 export * from './schemas/construction-site.schema.js';
 export * from './schemas/error-response.schema.js';
 export * from './schemas/pagination.schema.js';
+export * from './schemas/inspection.schema.js';
+export * from './schemas/upload.schema.js';
