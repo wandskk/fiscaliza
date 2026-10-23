@@ -17,6 +17,7 @@ import {
   uploadUrlRequestSchema,
   photoFileSchema,
   confirmPhotoSchema,
+  uploadUrlResponseSchema,
 } from '../src/index.js';
 
 const SITE_ID = '10000000-0000-4000-8000-000000000001';
@@ -132,5 +133,17 @@ describe('inspection shared contracts', () => {
     expect(confirmPhotoSchema.parse({ key: 'key' })).toEqual({ key: 'key' });
     expect(ErrorCode.INVALID_PHOTO).toBe('INVALID_PHOTO');
     expect(ERROR_MESSAGES[ErrorCode.INSPECTION_NOT_FOUND]).toMatch(/vistoria/i);
+  });
+});
+
+describe('uploadUrlResponseSchema', () => {
+  it('describes the signed upload returned to the browser', () => {
+    const upload = {
+      url: 'http://localhost:4566/fiscaliza-photos/inspections/a/b.jpg?X-Amz-Signature=x',
+      key: 'inspections/a/b.jpg',
+      expiresAt: '2026-10-23T12:05:00.000Z',
+    };
+
+    expect(uploadUrlResponseSchema.parse(upload)).toEqual(upload);
   });
 });

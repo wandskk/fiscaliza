@@ -11,6 +11,13 @@ export class PhotoRejectedError extends DomainError {
 
 export class PhotoNotFoundError extends NotFoundError {}
 
+// The confirmed key is not of this inspection, is not in the bucket, or breaks RN-05 there
+export class InvalidPhotoError extends DomainError {
+  constructor() {
+    super(ErrorCode.INVALID_PHOTO);
+  }
+}
+
 export class InspectionNotFoundError extends NotFoundError {
   constructor() {
     super(ErrorCode.INSPECTION_NOT_FOUND);

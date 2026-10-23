@@ -16,6 +16,10 @@ export class InMemoryInspectionRepository implements InspectionRepository {
     return Promise.resolve(inspection ? Inspection.restore(inspection.toProps()) : null);
   }
 
+  findByIdForUpdate(id: string): Promise<Inspection | null> {
+    return this.findById(id);
+  }
+
   async history(id: string): Promise<InspectionHistoryItem[]> {
     const inspection = await this.findById(id);
     return (

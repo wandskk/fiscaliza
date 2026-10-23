@@ -45,6 +45,7 @@ services:
       NODE_ENV: development
       DATABASE_URL: postgresql://fiscaliza:dev@db:5432/fiscaliza
       AWS_ENDPOINT: http://aws:4566
+      AWS_PUBLIC_ENDPOINT: http://localhost:4566
       INSPECTIONS_QUEUE_URL: http://aws:4566/000000000000/fiscaliza-inspections
     ports: ['3000:3000']
     depends_on:

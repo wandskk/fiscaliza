@@ -31,6 +31,8 @@ export const inspectionDetailSchema = z.object({
       key: z.string(),
       contentType: z.string(),
       size: z.number().int().positive(),
+      // Presigned read URL, valid for 5 minutes
+      url: z.string(),
     }),
   ),
   history: z.array(

@@ -127,7 +127,8 @@ describe('/api/v1/inspections', () => {
     ]);
     expect(submitted.history[1]?.user.name).toBe(LOCAL_USERS['local-inspector'].name);
     expect(submitted.photos).toHaveLength(1);
-    expect(submitted.photos[0]).not.toHaveProperty('url');
+    // T09.3: every photo carries a presigned read URL
+    expect(submitted.photos[0]?.url).toContain(submitted.photos[0]?.key);
     const editSent = await http()
       .patch(`/api/v1/inspections/${draft.id}`)
       .set('Authorization', INSPECTOR)
