@@ -123,6 +123,12 @@ describe('AppRoutes', () => {
       expect(screen.getByRole('heading', { name: 'Painel' })).toBeInTheDocument();
     });
 
+    it('is sent back to its home when opening the new inspection page', async () => {
+      renderApp('/inspections/new?site=94e06449-b4b4-4b08-a2f6-a66c04fd7576');
+
+      await expectPath('/dashboard');
+    });
+
     it('can open Obras from the menu', async () => {
       const user = userEvent.setup();
       renderApp('/dashboard');
