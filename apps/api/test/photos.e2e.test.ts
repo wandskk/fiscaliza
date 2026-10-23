@@ -13,6 +13,7 @@ import { LOCAL_USERS } from '../src/shared/auth/local-users';
 import { ConfigService } from '../src/shared/config/config.service';
 import { PrismaService } from '../src/shared/database/prisma.service';
 import { createTestApp } from './support/create-test-app';
+import { deleteOutboxEventsOfSites } from './support/delete-outbox-events';
 
 const INSPECTOR = 'Bearer local-inspector';
 const JPEG = Buffer.from('fake jpeg bytes for the upload test');
@@ -85,6 +86,7 @@ describe('/api/v1/inspections/:id/photos', () => {
       where: { inspection: { constructionSiteId: siteId } },
     });
     for (const photo of photos) await storage.remove(photo.key);
+    await deleteOutboxEventsOfSites(prisma, [siteId]);
     await prisma.inspection.deleteMany({ where: { constructionSiteId: siteId } });
     await prisma.constructionSite.deleteMany({ where: { id: siteId } });
     await app.close();

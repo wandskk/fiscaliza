@@ -10,6 +10,7 @@ import { DatabaseModule } from './shared/database/database.module';
 import { HttpErrorFilter } from './shared/errors/http-error.filter';
 import { HealthModule } from './shared/health/health.module';
 import { LoggingModule } from './shared/logging/logging.module';
+import { OutboxModule } from './shared/outbox/outbox.module';
 import { TimeModule } from './shared/time/time.module';
 
 @Module({
@@ -18,6 +19,7 @@ import { TimeModule } from './shared/time/time.module';
     LoggingModule,
     DatabaseModule,
     TimeModule,
+    OutboxModule,
     AuthModule,
     HealthModule,
     UsersModule,

@@ -18,6 +18,7 @@ import { PrismaUnitOfWork } from '../src/shared/database/prisma-unit-of-work';
 import { requestContext } from '../src/shared/logging/request-context';
 import type { EventOutbox } from '../src/shared/outbox/event-outbox.port';
 import { PrismaEventOutbox } from '../src/shared/outbox/prisma-event-outbox';
+import { deleteOutboxEventsOfSites } from './support/delete-outbox-events';
 import { TEST_ENV } from './support/test-env';
 
 // Against the compose Postgres, with ids of this run
@@ -79,6 +80,7 @@ describe('PrismaEventOutbox', () => {
 
   afterAll(async () => {
     await prisma.outboxEvent.deleteMany({ where: { id: { in: eventIds } } });
+    await deleteOutboxEventsOfSites(prisma, [siteId]);
     await prisma.inspection.deleteMany({ where: { constructionSiteId: siteId } });
     await prisma.constructionSite.delete({ where: { id: siteId } });
     await prisma.user.delete({ where: { id: inspectorId } });

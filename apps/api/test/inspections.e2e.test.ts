@@ -11,6 +11,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { LOCAL_USERS } from '../src/shared/auth/local-users';
 import { PrismaService } from '../src/shared/database/prisma.service';
 import { createTestApp } from './support/create-test-app';
+import { deleteOutboxEventsOfSites } from './support/delete-outbox-events';
 
 const INSPECTOR = 'Bearer local-inspector';
 const OTHER = 'Bearer local-inspector-2';
@@ -54,6 +55,7 @@ describe('/api/v1/inspections', () => {
 
   afterAll(async () => {
     if (prisma) {
+      await deleteOutboxEventsOfSites(prisma, [siteId, closedSiteId]);
       await prisma.inspection.deleteMany({
         where: { constructionSiteId: { in: [siteId, closedSiteId] } },
       });
