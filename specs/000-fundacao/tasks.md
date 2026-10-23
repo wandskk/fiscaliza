@@ -12,7 +12,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. `[~]` código escrito e ch
 | T02.2 | `infra/localstack/init.sh`: bucket com CORS, fila e DLQ com redrive; conferir com `awslocal` | T02.1 | | 0,5 | 0,1 | [~] |
 | T04.1 | `packages/shared`: enums `InspectionStatus`, `Role`, `Compliance`, `Severity` | T01.2 | [P] | 0,5 | 0,1 | [x] |
 | T04.2 | `shared/errors/error-codes.ts`: RN-01 a RN-10 e códigos técnicos, com mensagem em português; schemas de paginação e de erro | T04.1 | | 0,5 | 0,1 | [x] |
-| T04.3 | Build com `tsup`, `exports` e testes dos schemas (paginação padrão e limite máximo) | T04.2 | | 0,5 | | [ ] |
+| T04.3 | Build com `tsup`, `exports` e testes dos schemas (paginação padrão e limite máximo) | T04.2 | | 0,5 | 0,1 | [x] |
 | T03.1 | API NestJS: `main.ts` com prefixo `/api/v1`, Helmet, CORS, Swagger em `/api/docs`; config validada com Zod e `.env.example` | T02.2, T04.3 | | 1,0 | | [ ] |
 | T03.2 | Prisma: `schema.prisma` inicial, `PrismaService`, script de migração e de seed vazio | T03.1 | | 0,5 | | [ ] |
 | T03.3 | Logger pino + middleware de `x-correlation-id` com `AsyncLocalStorage` | T03.1 | [P] | 0,75 | | [ ] |
