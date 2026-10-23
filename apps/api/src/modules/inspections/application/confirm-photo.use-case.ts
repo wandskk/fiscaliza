@@ -2,7 +2,7 @@ import { photoFileSchema, type AuthenticatedUser, type ConfirmPhoto } from '@fis
 import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { UNIT_OF_WORK, type UnitOfWork } from '../../../shared/database/unit-of-work';
-import { CLOCK, type Clock } from '../domain/clock';
+import { CLOCK, type Clock } from '../../../shared/time/clock';
 import type { Inspection } from '../domain/inspection.entity';
 import { InspectionNotFoundError, InvalidPhotoError } from '../domain/inspection.errors';
 import { Photo } from '../domain/photo.value-object';

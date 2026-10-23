@@ -83,6 +83,7 @@ model Inspection {
   inspector          User                      @relation(fields: [inspectorId], references: [id])
   photos             Photo[]
   history            InspectionStatusHistory[]
+  report             Report?
 
   @@index([constructionSiteId, status])
   @@index([inspectorId])
@@ -115,4 +116,45 @@ model InspectionStatusHistory {
 
   @@index([inspectionId, at])
   @@map("inspection_status_history")
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+// Written by the worker (spec 004); the API only reads it. One row per inspection,
+// replaced when a returned inspection is submitted again
+model Report {
+  id              String     @id @default(uuid())
+  inspectionId    String     @unique
+  summary         String
+  // [{ item, description, severity }], validated by aiReportSchema before it is stored
+  nonConformities Json
+  severity        Severity
+  // LLM that produced it, e.g. gemini-2.5-flash or stub
+  model           String
+  // Id of the event that generated it: a redelivered message finds it and does nothing
+  eventId         String     @unique
+  generatedAt     DateTime
+  inspection      Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  @@map("reports")
+}
+
+// Transactional outbox: written with the status change, published to the queue afterwards
+model OutboxEvent {
+  // Same as the envelope id
+  id          String    @id @default(uuid())
+  type        String
+  // The whole envelope, as it goes to the queue
+  payload     Json
+  createdAt   DateTime  @default(now())
+  publishedAt DateTime?
+  attempts    Int       @default(0)
+
+  // The publisher reads the pending ones in creation order
+  @@index([publishedAt, createdAt])
+  @@map("outbox_events")
 }

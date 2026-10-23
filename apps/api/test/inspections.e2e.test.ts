@@ -11,6 +11,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { LOCAL_USERS } from '../src/shared/auth/local-users';
 import { PrismaService } from '../src/shared/database/prisma.service';
 import { createTestApp } from './support/create-test-app';
+import { deleteOutboxEventsOfSites } from './support/delete-outbox-events';
 
 const INSPECTOR = 'Bearer local-inspector';
 const OTHER = 'Bearer local-inspector-2';
@@ -54,6 +55,7 @@ describe('/api/v1/inspections', () => {
 
   afterAll(async () => {
     if (prisma) {
+      await deleteOutboxEventsOfSites(prisma, [siteId, closedSiteId]);
       await prisma.inspection.deleteMany({
         where: { constructionSiteId: { in: [siteId, closedSiteId] } },
       });
@@ -140,6 +142,87 @@ describe('/api/v1/inspections', () => {
       .set('Authorization', MANAGER)
       .expect(200);
     expect(inspectionDetailSchema.parse(managerDetail.body).id).toBe(draft.id);
+  });
+
+  it('shows the report of the current submission, and null again after a resubmission', async () => {
+    const created = await http()
+      .post('/api/v1/inspections')
+      .set('Authorization', INSPECTOR)
+      .send(body)
+      .expect(201);
+    const id = created.body.id as string;
+    const detail = async () =>
+      inspectionDetailSchema.parse(
+        (await http().get(`/api/v1/inspections/${id}`).set('Authorization', MANAGER).expect(200))
+          .body,
+      );
+    const submit = () =>
+      http().post(`/api/v1/inspections/${id}/submit`).set('Authorization', INSPECTOR).expect(200);
+    await prisma.photo.create({
+      data: {
+        id: randomUUID(),
+        inspectionId: id,
+        key: `e2e/${randomUUID()}.jpg`,
+        contentType: 'image/jpeg',
+        size: 100,
+      },
+    });
+    expect((await detail()).report).toBeNull();
+
+    await submit();
+    const firstSubmission = new Date(
+      (await detail()).history.findLast((change) => change.to === InspectionStatus.SUBMITTED)!.at,
+    );
+    // What the worker does: writes the report straight to the table
+    const generatedAt = new Date(firstSubmission.getTime() + 1);
+    await prisma.report.create({
+      data: {
+        inspectionId: id,
+        summary: 'Armação do pilar fora do espaçamento previsto em projeto.',
+        nonConformities: [
+          { item: 'Armação', description: 'Estribos muito espaçados.', severity: 'HIGH' },
+        ],
+        severity: 'HIGH',
+        model: 'stub',
+        eventId: randomUUID(),
+        generatedAt,
+      },
+    });
+    expect((await detail()).report).toEqual({
+      summary: 'Armação do pilar fora do espaçamento previsto em projeto.',
+      nonConformities: [
+        { item: 'Armação', description: 'Estribos muito espaçados.', severity: 'HIGH' },
+      ],
+      severity: 'HIGH',
+      model: 'stub',
+      generatedAt: generatedAt.toISOString(),
+    });
+
+    // The decision belongs to spec 005, so the return is done straight in the database
+    await prisma.inspection.update({
+      where: { id },
+      data: {
+        status: InspectionStatus.RETURNED,
+        returnReason: 'Refazer as fotos.',
+        history: {
+          create: {
+            from: InspectionStatus.SUBMITTED,
+            to: InspectionStatus.RETURNED,
+            userId: LOCAL_USERS['local-manager'].id,
+          },
+        },
+      },
+    });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    await submit();
+    // The old report belongs to the first submission: the new one is still being generated
+    expect((await detail()).report).toBeNull();
+
+    await prisma.report.update({
+      where: { inspectionId: id },
+      data: { generatedAt: new Date(Date.now() + 1000) },
+    });
+    expect((await detail()).report?.summary).toContain('Armação');
   });
 
   it("RN-01: hides another inspector's detail and scopes the site list", async () => {

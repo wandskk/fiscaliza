@@ -5,7 +5,7 @@ import {
   MIN_NOTES_LENGTH,
   photoFileSchema,
 } from '@fiscaliza/shared';
-import type { Clock } from './clock';
+import type { Clock } from '../../../shared/time/clock';
 import {
   ApprovedInspectionError,
   IncompleteInspectionError,

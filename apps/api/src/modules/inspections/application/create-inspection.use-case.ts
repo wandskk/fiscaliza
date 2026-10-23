@@ -7,7 +7,7 @@ import {
 } from '../../construction-sites/application/ports/construction-site-access';
 import { ForbiddenError } from '../../../shared/errors/domain-error';
 import { UNIT_OF_WORK, type UnitOfWork } from '../../../shared/database/unit-of-work';
-import { CLOCK, type Clock } from '../domain/clock';
+import { CLOCK, type Clock } from '../../../shared/time/clock';
 import { Inspection } from '../domain/inspection.entity';
 import { ClosedSiteInspectionError, InspectionOwnerError } from '../domain/inspection.errors';
 import { INSPECTION_REPOSITORY, type InspectionRepository } from './ports/inspection.repository';

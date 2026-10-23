@@ -3,7 +3,7 @@ import { z } from 'zod';
 export type AuthConfig =
   { mode: 'local' } | { mode: 'cognito'; userPoolId: string; clientId: string };
 
-// Each spec adds the variables it starts to use (auth in 001, storage in 003)
+// Each spec adds the variables it starts to use (auth in 001, storage in 003, queue in 004)
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(3000),
@@ -14,6 +14,9 @@ const envSchema = z.object({
   AWS_ENDPOINT: z.url().optional(),
   AWS_PUBLIC_ENDPOINT: z.url().optional(),
   PHOTOS_BUCKET: z.string().min(1).default('fiscaliza-photos'),
+  INSPECTIONS_QUEUE_URL: z.url(),
+  // Off in tests that must not publish as a side effect; on by default
+  OUTBOX_PUBLISHER_ENABLED: z.stringbool().default(true),
   // Local is safe as a default because production refuses it below
   AUTH_MODE: z.enum(['cognito', 'local']).default('local'),
   // The region is the prefix of the id (us-east-1_xxx), so it needs no variable of its own

@@ -1,4 +1,4 @@
-import { Role, type AuthenticatedUser } from '@fiscaliza/shared';
+import { InspectionStatus, Role, type AuthenticatedUser } from '@fiscaliza/shared';
 import { Inject, Injectable } from '@nestjs/common';
 import { InspectionNotFoundError } from '../domain/inspection.errors';
 import type { Inspection } from '../domain/inspection.entity';
@@ -7,6 +7,7 @@ import {
   type InspectionHistoryItem,
   type InspectionRepository,
 } from './ports/inspection.repository';
+import { REPORT_READER, type ReportReader, type StoredReport } from './ports/report-reader';
 import { STORAGE, type Storage } from './ports/storage.port';
 
 export interface InspectionView {
@@ -14,6 +15,8 @@ export interface InspectionView {
   history: InspectionHistoryItem[];
   // Read URL of each photo by id; the bucket stays private and the URL expires in 5 min
   photoUrls: Record<string, string>;
+  // Report of the current submission; null while it is being generated
+  report: StoredReport | null;
 }
 
 @Injectable()
@@ -21,6 +24,7 @@ export class GetInspectionUseCase {
   constructor(
     @Inject(INSPECTION_REPOSITORY) private readonly inspections: InspectionRepository,
     @Inject(STORAGE) private readonly storage: Storage,
+    @Inject(REPORT_READER) private readonly reports: ReportReader,
   ) {}
 
   async execute(id: string, viewer: AuthenticatedUser): Promise<InspectionView> {
@@ -33,10 +37,24 @@ export class GetInspectionUseCase {
         await this.storage.createReadUrl(photo.key),
       ]),
     );
+    const history = await this.inspections.history(id);
     return {
       inspection,
-      history: await this.inspections.history(id),
+      history,
       photoUrls: Object.fromEntries(urls),
+      report: await this.currentReport(id, history),
     };
+  }
+
+  // A report older than the last submission belongs to an earlier round (the inspection was
+  // returned and sent again), so it is hidden until the worker writes the new one
+  private async currentReport(
+    id: string,
+    history: InspectionHistoryItem[],
+  ): Promise<StoredReport | null> {
+    const submittedAt = history.findLast((change) => change.to === InspectionStatus.SUBMITTED)?.at;
+    if (!submittedAt) return null;
+    const report = await this.reports.findByInspectionId(id);
+    return report && report.generatedAt > submittedAt ? report : null;
   }
 }

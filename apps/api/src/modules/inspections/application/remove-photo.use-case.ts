@@ -1,7 +1,7 @@
 import type { AuthenticatedUser } from '@fiscaliza/shared';
 import { Inject, Injectable } from '@nestjs/common';
 import { UNIT_OF_WORK, type UnitOfWork } from '../../../shared/database/unit-of-work';
-import { CLOCK, type Clock } from '../domain/clock';
+import { CLOCK, type Clock } from '../../../shared/time/clock';
 import { InspectionNotFoundError } from '../domain/inspection.errors';
 import { INSPECTION_REPOSITORY, type InspectionRepository } from './ports/inspection.repository';
 import { STORAGE, type Storage } from './ports/storage.port';
