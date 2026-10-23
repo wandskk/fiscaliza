@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Compliance, InspectionStatus, Role, Severity } from '../src';
+import { Compliance, InspectionStatus, Role, Severity } from '../src/index.js';
 
 describe('shared enums (contract between web, api and worker)', () => {
   it('RN-02: an inspection has exactly the statuses DRAFT, SUBMITTED, APPROVED and RETURNED', () => {

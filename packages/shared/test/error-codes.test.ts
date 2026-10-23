@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ERROR_MESSAGES, ErrorCode } from '../src';
+import { ERROR_MESSAGES, ErrorCode } from '../src/index.js';
 
 describe('error codes', () => {
   it('declares the business rules RN-01 to RN-10', () => {

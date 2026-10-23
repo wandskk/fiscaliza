@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { errorResponseSchema, MAX_PAGE_LIMIT, paginationSchema } from '../src';
+import { errorResponseSchema, MAX_PAGE_LIMIT, paginationSchema } from '../src/index.js';
 
 describe('paginationSchema', () => {
   it('defaults to page 1 and limit 20', () => {

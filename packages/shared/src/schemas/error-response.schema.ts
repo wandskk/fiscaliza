@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ErrorCode } from '../errors/error-codes';
+import { ErrorCode } from '../errors/error-codes.js';
 
 export const errorDetailSchema = z.object({
   field: z.string(),

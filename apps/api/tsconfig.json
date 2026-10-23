@@ -1,0 +1,14 @@
+{
+  "extends": "@fiscaliza/config/tsconfig.base.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    // Reads @fiscaliza/shared from its src, so typecheck and tests need no build
+    "customConditions": ["source"],
+    "types": ["node"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noEmit": true
+  },
+  "include": ["src", "test", "vitest.config.mts"]
+}
