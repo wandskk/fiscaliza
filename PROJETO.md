@@ -4,6 +4,8 @@ Sistema de vistoria de obras para portfólio. O fiscal registra a vistoria com f
 
 Este arquivo é a fonte única do projeto: escopo, regras, arquitetura, padrões, design system e plano de execução. Qualquer agente de IA que trabalhar no repositório lê este arquivo primeiro.
 
+> Nota sobre nomes: os documentos (este arquivo, specs, planos e tarefas) usam os termos do domínio em português, como Vistoria, Obra e Fiscal. No código, os nomes seguem o glossário da seção 10 de `specs/constitution.md` (`Inspection`, `ConstructionSite`, `Role.INSPECTOR`). Nas seções 5, 11 a 14, 16.4 e 21 a 26 os identificadores já aparecem como estão no código; os exemplos de código da seção 9 e os nomes de pastas das seções 9, 16 e 18 ainda estão em português e devem ser lidos pelo glossário.
+
 ---
 
 ## Sumário
@@ -121,26 +123,29 @@ sequenceDiagram
   participant W as Web (React)
   participant A as API (NestJS)
   participant S3
+  participant DB as PostgreSQL
   participant Q as SQS
   participant K as Worker
   participant L as LLM
 
   F->>W: Preenche observação e situação
-  W->>A: POST /vistorias (rascunho)
+  W->>A: POST /inspections (rascunho)
   F->>W: Escolhe fotos
-  W->>A: POST /vistorias/:id/fotos/upload-url
+  W->>A: POST /inspections/:id/photos/upload-url
   A-->>W: URL pré-assinada + key
   W->>S3: PUT foto
-  W->>A: POST /vistorias/:id/fotos { key }
+  W->>A: POST /inspections/:id/photos { key }
   F->>W: Envia
-  W->>A: POST /vistorias/:id/enviar
-  A->>A: Valida RN-04, muda status, grava evento na outbox
-  A-->>W: 200
-  A->>Q: Publica VistoriaEnviada (via outbox)
+  W->>A: POST /inspections/:id/submit
+  A->>DB: Valida RN-04, muda status e grava o evento na outbox (mesma transação)
+  A-->>W: 200 com o detalhe
+  A->>Q: Publicador da outbox envia InspectionSubmitted (a cada 2 s)
   Q->>K: Mensagem
   K->>L: Gera relatório (JSON com schema)
-  K->>A: Grava relatório no banco
+  K->>DB: Grava o relatório direto na tabela reports
 ```
+
+O worker não chama a API: ele grava no banco pelo cliente Prisma gerado do schema da API (o `schema.prisma` tem um segundo gerador, `worker`). Assim os dois nunca divergem. A API lê o relatório da mesma tabela quando o fiscal ou o gestor abre a vistoria.
 
 ### 5.2 Aprovar ou devolver
 
@@ -149,16 +154,24 @@ sequenceDiagram
   actor G as Gestor
   participant W as Web
   participant A as API
+  participant DB as PostgreSQL
   participant Q as SQS
-  participant N as Notificações
+  participant K as Worker
+  participant SES
+  actor F as Fiscal
 
   G->>W: Abre vistoria com o relatório da IA
   G->>W: Aprova ou devolve com motivo
-  W->>A: POST /vistorias/:id/decisao
-  A->>A: Valida RN-03 e RN-06, grava histórico e outbox
-  A->>Q: VistoriaDecidida
-  Q->>N: Notifica o fiscal (e-mail ou aviso no sistema)
+  W->>A: POST /inspections/:id/decision { decision, reason }
+  A->>DB: Valida RN-03, RN-06 e RN-07, grava histórico e outbox (mesma transação)
+  A->>Q: Publicador da outbox envia InspectionDecided
+  Q->>K: Mensagem
+  K->>SES: NotifyInspectorUseCase envia o e-mail ao fiscal
+  K->>DB: Grava em notifications
+  SES-->>F: E-mail
 ```
+
+A notificação é só por e-mail. Não existe aviso dentro do sistema. O "consumidor de notificações" é o próprio worker, no caso de uso `NotifyInspectorUseCase`, e o envio usa a API v1 do SES (`@aws-sdk/client-ses`) porque o LocalStack da comunidade não implementa a v2.
 
 ---
 
@@ -176,7 +189,7 @@ sequenceDiagram
 | Fila | AWS SQS (LocalStack no dev) | Desacoplar a geração do relatório |
 | Worker | AWS Lambda (no dev, processo Node consumindo a fila) | Processamento sob demanda |
 | Auth | AWS Cognito (User Pool com grupos) | Pedido da vaga |
-| Notificação | AWS SES ou aviso no sistema | Pedido da vaga |
+| Notificação | AWS SES (e-mail, API v1) | Pedido da vaga |
 | LLM | Gemini (principal) + reserva configurável | Cota gratuita e fallback |
 | Containers | Docker + docker-compose | Ambiente igual em qualquer máquina |
 | Monorepo | pnpm workspaces | Pacote compartilhado sem publicar |
@@ -440,96 +453,189 @@ Só os que resolvem algo aqui. Cada um vira assunto na entrevista.
 
 ## 11. Modelo de dados
 
+Este é o `apps/api/prisma/schema.prisma` como está hoje, sem os blocos `generator` e `datasource`. Os nomes são em inglês (glossário da seção 10 da constitution) e cada modelo vira uma tabela em `snake_case` pelo `@@map`. O diagrama está em `docs/diagramas/modelo-de-dados.md`.
+
 ```prisma
-model Obra {
-  id         String     @id @default(uuid())
-  nome       String
-  contrato   String     @unique
-  endereco   String
-  encerrada  Boolean    @default(false)
-  fiscais    ObraFiscal[]
-  vistorias  Vistoria[]
-  criadaEm   DateTime   @default(now())
+enum Role {
+  INSPECTOR
+  MANAGER
 }
 
-model Usuario {
-  id      String  @id              // sub do Cognito
-  nome    String
-  email   String  @unique
-  perfil  Perfil
-  obras   ObraFiscal[]
+model User {
+  // Cognito sub
+  id    String @id
+  name  String
+  email String @unique
+  role  Role
+
+  assignments   SiteAssignment[]
+  inspections   Inspection[]
+  statusChanges InspectionStatusHistory[]
+  notifications Notification[]
+
+  @@map("users")
 }
 
-model ObraFiscal {
-  obraId    String
-  fiscalId  String
-  obra      Obra    @relation(fields: [obraId], references: [id])
-  fiscal    Usuario @relation(fields: [fiscalId], references: [id])
-  @@id([obraId, fiscalId])
+model ConstructionSite {
+  id          String           @id @default(uuid())
+  name        String
+  contract    String           @unique
+  address     String
+  closed      Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  assignments SiteAssignment[]
+  inspections Inspection[]
+
+  // Trigram indexes serve the "contains" search (ILIKE '%x%'), which a btree cannot
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@index([contract(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@map("construction_sites")
 }
 
-model Vistoria {
-  id           String          @id @default(uuid())
-  obraId       String
-  fiscalId     String
-  observacao   String
-  situacao     Situacao
-  status       StatusVistoria  @default(RASCUNHO)
-  motivoDevolucao String?
-  obra         Obra            @relation(fields: [obraId], references: [id])
-  fotos        Foto[]
-  relatorio    Relatorio?
-  historico    HistoricoStatus[]
-  criadaEm     DateTime        @default(now())
-  atualizadaEm DateTime        @updatedAt
-  @@index([obraId, status])
+model SiteAssignment {
+  constructionSiteId String
+  inspectorId        String
+  constructionSite   ConstructionSite @relation(fields: [constructionSiteId], references: [id], onDelete: Cascade)
+  inspector          User             @relation(fields: [inspectorId], references: [id])
+
+  @@id([constructionSiteId, inspectorId])
+  @@index([inspectorId])
+  @@map("site_assignments")
 }
 
-model Foto {
-  id          String   @id @default(uuid())
-  vistoriaId  String
-  chave       String   @unique   // key no S3
-  tipo        String
-  tamanho     Int
-  vistoria    Vistoria @relation(fields: [vistoriaId], references: [id])
+enum Compliance {
+  COMPLIANT
+  NON_COMPLIANT
 }
 
-model Relatorio {
-  id               String   @id @default(uuid())
-  vistoriaId       String   @unique
-  resumo           String
-  naoConformidades Json     // lista validada por schema
-  gravidade        Gravidade
-  modelo           String   // qual LLM gerou
-  geradoEm         DateTime @default(now())
-  vistoria         Vistoria @relation(fields: [vistoriaId], references: [id])
+enum InspectionStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  RETURNED
 }
 
-model HistoricoStatus {
-  id          String         @id @default(uuid())
-  vistoriaId  String
-  de          StatusVistoria?
-  para        StatusVistoria
-  usuarioId   String
-  em          DateTime       @default(now())
-  vistoria    Vistoria       @relation(fields: [vistoriaId], references: [id])
+model Inspection {
+  id                 String                    @id @default(uuid())
+  constructionSiteId String
+  inspectorId        String
+  notes              String
+  compliance         Compliance
+  status             InspectionStatus          @default(DRAFT)
+  returnReason       String?
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+  constructionSite   ConstructionSite          @relation(fields: [constructionSiteId], references: [id])
+  inspector          User                      @relation(fields: [inspectorId], references: [id])
+  photos             Photo[]
+  history            InspectionStatusHistory[]
+  report             Report?
+  notifications      Notification[]
+
+  @@index([constructionSiteId, status])
+  @@index([inspectorId])
+  @@map("inspections")
 }
 
-model OutboxEvento {
+model Photo {
+  id           String     @id @default(uuid())
+  inspectionId String
+  // S3 object key
+  key          String     @unique
+  contentType  String
+  size         Int
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  @@index([inspectionId])
+  @@map("photos")
+}
+
+model InspectionStatusHistory {
+  id           String            @id @default(uuid())
+  inspectionId String
+  from         InspectionStatus?
+  to           InspectionStatus
+  userId       String
+  at           DateTime          @default(now())
+  // Why it was returned (RN-06); null in every other change
+  reason       String?
+  inspection   Inspection        @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+  // The timeline shows who changed the status by name
+  user         User              @relation(fields: [userId], references: [id])
+
+  @@index([inspectionId, at])
+  @@map("inspection_status_history")
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+// Written by the worker (spec 004); the API only reads it. One row per inspection,
+// replaced when a returned inspection is submitted again
+model Report {
+  id              String     @id @default(uuid())
+  inspectionId    String     @unique
+  summary         String
+  // [{ item, description, severity }], validated by aiReportSchema before it is stored
+  nonConformities Json
+  severity        Severity
+  // LLM that produced it, e.g. gemini-2.5-flash or stub
+  model           String
+  // Id of the event that generated it: a redelivered message finds it and does nothing
+  eventId         String     @unique
+  generatedAt     DateTime
+  inspection      Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  @@map("reports")
+}
+
+// Transactional outbox: written with the status change, published to the queue afterwards
+model OutboxEvent {
+  // Same as the envelope id
   id          String    @id @default(uuid())
-  tipo        String
+  type        String
+  // The whole envelope, as it goes to the queue
   payload     Json
-  criadoEm    DateTime  @default(now())
-  publicadoEm DateTime?
-  tentativas  Int       @default(0)
-  @@index([publicadoEm])
+  createdAt   DateTime  @default(now())
+  publishedAt DateTime?
+  attempts    Int       @default(0)
+
+  // The publisher reads the pending ones in creation order
+  @@index([publishedAt, createdAt])
+  @@map("outbox_events")
 }
 
-enum Perfil         { FISCAL GESTOR }
-enum Situacao       { CONFORME NAO_CONFORME }
-enum StatusVistoria { RASCUNHO ENVIADA APROVADA DEVOLVIDA }
-enum Gravidade      { BAIXA MEDIA ALTA }
+// Written by the worker (spec 005): one row per e-mail sent, unique by the event that caused
+// it, so a redelivered message finds it and sends nothing
+model Notification {
+  id           String     @id @default(uuid())
+  eventId      String     @unique
+  // The inspector who is told
+  userId       String
+  inspectionId String
+  // EMAIL for now
+  channel      String
+  subject      String
+  sentAt       DateTime
+  user         User       @relation(fields: [userId], references: [id])
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
+}
 ```
+
+Pontos que importam:
+
+- `Report.eventId` é único: guarda o id do evento que gerou o relatório, e é assim que o worker reconhece uma mensagem repetida (seção 13.3). Há uma linha por vistoria; um reenvio depois de devolvida a substitui.
+- `InspectionStatusHistory.reason` guarda o motivo da devolução (RN-06) e fica nulo nas outras mudanças.
+- `OutboxEvent.payload` guarda o envelope inteiro, como vai para a fila (seção 13.1), e o índice `(publishedAt, createdAt)` serve ao publicador.
+- `Notification.eventId` é único pelo mesmo motivo do relatório: uma mensagem repetida não manda o e-mail duas vezes.
+- `ConstructionSite` tem índices trigram (`gin_trgm_ops`) em `name` e `contract` para a busca por trecho.
+- `Photo`, `InspectionStatusHistory`, `Report` e `Notification` apagam em cascata com a vistoria, e `SiteAssignment` com a obra.
 
 ---
 
@@ -537,33 +643,33 @@ enum Gravidade      { BAIXA MEDIA ALTA }
 
 ### 12.1 Endpoints
 
-Prefixo `/api/v1`. Todos exigem JWT do Cognito.
+Prefixo `/api/v1`. Todos exigem JWT (Cognito, ou o token fixo do modo local), menos `/health`.
 
 | Método | Rota | Perfil | Descrição |
 |---|---|---|---|
-| GET | `/me` | todos | Usuário logado e perfil |
-| GET | `/obras` | todos | Lista (fiscal vê só as atribuídas) |
-| GET | `/obras/:id` | todos | Detalhe com os ids dos fiscais (fiscal só vê as atribuídas; as outras dão 404) |
-| POST | `/obras` | gestor | Cria obra |
-| PATCH | `/obras/:id` | gestor | Edita ou encerra |
-| PUT | `/obras/:id/fiscais` | gestor | Define os fiscais da obra |
-| GET | `/usuarios?perfil=FISCAL` | gestor | Fiscais para o seletor da obra |
-| GET | `/obras/:id/vistorias` | todos | Vistorias da obra, paginadas |
-| POST | `/vistorias` | fiscal | Cria rascunho |
-| GET | `/vistorias/:id` | todos | Detalhe com fotos, relatório e histórico |
-| PATCH | `/vistorias/:id` | fiscal | Edita rascunho ou devolvida |
-| POST | `/vistorias/:id/fotos/upload-url` | fiscal | Gera URL pré-assinada (valida RN-05) |
-| POST | `/vistorias/:id/fotos` | fiscal | Confirma a foto enviada |
-| DELETE | `/vistorias/:id/fotos/:fotoId` | fiscal | Remove foto |
-| POST | `/vistorias/:id/enviar` | fiscal | Envia (RN-04) |
-| POST | `/vistorias/:id/decisao` | gestor | `{ decisao: "APROVAR" \| "DEVOLVER", motivo? }` |
-| GET | `/painel` | gestor | Totais por status e por obra |
-| GET | `/health` | público | Saúde da API e do banco |
+| GET | `/me` | todos | Usuário logado e perfil (cria o registro no primeiro acesso) |
+| GET | `/construction-sites` | todos | Lista paginada, com `?search=` e `?closed=` (fiscal vê só as atribuídas) |
+| GET | `/construction-sites/:id` | todos | Detalhe com os ids dos fiscais (fiscal só vê as atribuídas; as outras dão 404) |
+| POST | `/construction-sites` | gestor | Cria obra |
+| PATCH | `/construction-sites/:id` | gestor | Edita ou encerra |
+| PUT | `/construction-sites/:id/inspectors` | gestor | Define os fiscais da obra |
+| GET | `/users?role=INSPECTOR` | gestor | Fiscais para o seletor da obra |
+| GET | `/construction-sites/:id/inspections` | todos | Vistorias da obra, paginadas, com `?status=` |
+| POST | `/inspections` | fiscal | Cria rascunho (201) |
+| GET | `/inspections/:id` | todos | Detalhe com fotos, relatório e histórico |
+| PATCH | `/inspections/:id` | fiscal | Edita rascunho ou devolvida |
+| POST | `/inspections/:id/photos/upload-url` | fiscal | Gera URL pré-assinada (valida RN-05) |
+| POST | `/inspections/:id/photos` | fiscal | Confirma a foto enviada (`{ key }`) e devolve o detalhe |
+| DELETE | `/inspections/:id/photos/:photoId` | fiscal | Remove foto (204) |
+| POST | `/inspections/:id/submit` | fiscal | Envia (RN-04) e devolve o detalhe |
+| POST | `/inspections/:id/decision` | gestor | `{ decision: "APPROVE" \| "RETURN", reason? }`; `reason` é obrigatório ao devolver (RN-06). Devolve o detalhe |
+| GET | `/dashboard` | gestor | Totais por status (`totals`), resumo por obra (`sites`) e vistorias aguardando decisão (`awaitingDecision`) |
+| GET | `/health` | público | Saúde da API e do banco (Terminus) |
 
 ### 12.2 Convenções
 
-- Paginação: `?pagina=1&limite=20`, resposta `{ itens, total, pagina, limite }`.
-- Filtros por query: `?status=ENVIADA`.
+- Paginação: `?page=1&limit=20` (máximo 100), resposta `{ items, total, page, limit }`.
+- Filtros por query: `?status=SUBMITTED`.
 - Datas em ISO 8601 UTC.
 - IDs em UUID.
 - Swagger em `/api/docs`.
@@ -572,12 +678,14 @@ Prefixo `/api/v1`. Todos exigem JWT do Cognito.
 
 ```json
 {
-  "codigo": "RN-04",
-  "mensagem": "A vistoria precisa de observação com 30 caracteres e pelo menos 1 foto para ser enviada.",
-  "detalhes": [{ "campo": "fotos", "problema": "mínimo 1" }],
+  "code": "RN-04",
+  "message": "A vistoria precisa de observação com 30 caracteres e pelo menos 1 foto para ser enviada.",
+  "details": [{ "field": "photos", "problem": "mínimo 1" }],
   "correlationId": "c1a2..."
 }
 ```
+
+Além de `RN-01` a `RN-10`, o código pode ser `VALIDATION_ERROR`, `NOT_FOUND`, `UNAUTHORIZED`, `FORBIDDEN`, `INTERNAL_ERROR` ou um código específico de módulo (`DUPLICATE_CONTRACT`, `CONSTRUCTION_SITE_CLOSED`, `INVALID_INSPECTOR`, `INVALID_PHOTO`). A lista fica em `packages/shared/src/errors/error-codes.ts`.
 
 ---
 
@@ -587,21 +695,26 @@ Prefixo `/api/v1`. Todos exigem JWT do Cognito.
 
 | Evento | Quando | Consumidor |
 |---|---|---|
-| `VistoriaEnviada` | Fiscal envia | Worker: gera relatório com IA |
-| `VistoriaDecidida` | Gestor aprova ou devolve | Notificações: avisa o fiscal |
+| `InspectionSubmitted` | Fiscal envia | Worker: `GenerateReportUseCase` gera o relatório com IA |
+| `InspectionDecided` | Gestor aprova ou devolve | Worker: `NotifyInspectorUseCase` avisa o fiscal por e-mail |
 
-Formato padrão da mensagem:
+Formato padrão da mensagem (`eventEnvelopeSchema`, em `packages/shared`):
 
 ```json
-{ "id": "uuid", "tipo": "VistoriaEnviada", "versao": 1, "ocorridoEm": "2026-10-23T12:00:00Z",
-  "correlationId": "c1a2...", "dados": { "vistoriaId": "uuid" } }
+{ "id": "uuid", "type": "InspectionSubmitted", "version": 1, "occurredAt": "2026-10-23T12:00:00Z",
+  "correlationId": "c1a2...", "data": { "inspectionId": "uuid" } }
 ```
+
+Em `InspectionDecided`, `data` traz `inspectionId`, `decision` (`APPROVE` ou `RETURN`), `reason` (nulo ao aprovar) e `decidedBy`.
 
 ### 13.2 Outbox
 
-1. O caso de uso grava a mudança e o evento na tabela `OutboxEvento`, na mesma transação.
-2. Um publicador (tarefa agendada a cada 2 s na API) lê os eventos não publicados, envia ao SQS e marca `publicadoEm`.
-3. Se o envio falhar, soma `tentativas` e tenta de novo depois.
+1. O caso de uso grava a mudança e o evento na tabela `outbox_events` (`OutboxEvent`), na mesma transação (`UnitOfWork`).
+2. O `OutboxPublisher`, uma tarefa dentro da API, roda a cada 2 s. Em cada ciclo abre uma transação e lê até 20 eventos pendentes (`publishedAt IS NULL` e menos de 10 tentativas) com `FOR UPDATE SKIP LOCKED`, então duas instâncias da API não pegam a mesma linha. Envia cada um ao SQS e marca `publishedAt`.
+3. Se o envio falhar, soma `attempts` e tenta de novo no ciclo seguinte. Depois de 10 tentativas o evento fica parado na tabela, sem alarme nesta versão.
+4. A variável `OUTBOX_PUBLISHER_ENABLED=false` desliga o publicador (os testes fazem isso).
+
+A entrega é pelo menos uma vez, por isso os consumidores são idempotentes (ADR 0005).
 
 ### 13.3 Fila e worker
 
@@ -609,24 +722,34 @@ Formato padrão da mensagem:
 |---|---|
 | Tipo da fila | Standard |
 | Visibility timeout | 120 s (maior que o tempo máximo de geração) |
-| Long polling | 20 s |
-| DLQ | Após 3 tentativas (`maxReceiveCount = 3`) |
-| Lote na Lambda | 5 mensagens, com `ReportBatchItemFailures` |
+| Long polling | 20 s (no poller local) |
+| DLQ | Após 3 recebimentos (`maxReceiveCount = 3`) |
+| Lote | Poller local: até 5 mensagens por ciclo. Lambda: o `handler` processa os registros do evento um a um e devolve `batchItemFailures` (`ReportBatchItemFailures`), então só os que falharam voltam para a fila |
 
-O worker é **idempotente**: se o relatório da vistoria já existe, ele ignora a mensagem.
+O worker é **idempotente**: se já existe relatório com aquele `eventId`, ele ignora a mensagem (o mesmo vale para `notifications`). Mensagem malformada lança erro e vai para a DLQ; evento de tipo desconhecido é registrado e descartado.
+
+O `handler` da Lambda e o `local-poller` (que roda no compose e no desenvolvimento) fazem a mesma coisa: transformam a mensagem em texto e chamam `dispatchEvent`. O repositório traz o handler e os testes dele, mas não traz o deploy da Lambda.
 
 Estrutura do worker (mesmas camadas):
 
 ```
-apps/worker/src/
-├─ handler.ts                  entrada da Lambda (e loop local no dev)
-├─ application/gerar-relatorio.use-case.ts
-├─ infrastructure/
-│  ├─ llm/gemini.provider.ts
-│  ├─ llm/reserva.provider.ts
-│  ├─ llm/llm-com-fallback.ts
-│  └─ prisma-relatorio.repository.ts
-└─ domain/relatorio.ts
+apps/worker/
+├─ prompts/report.v1.md           prompt versionado
+└─ src/
+   ├─ handler.ts                  entrada da Lambda
+   ├─ local-poller.ts             laço de consumo local (compose e dev)
+   ├─ dispatch-event.ts           escolhe o caso de uso pelo tipo do evento
+   ├─ container.ts, config.ts     montagem e variáveis validadas
+   ├─ application/
+   │  ├─ generate-report.use-case.ts
+   │  ├─ notify-inspector.use-case.ts
+   │  ├─ build-report-prompt.ts
+   │  └─ ports/                   inspection.reader, llm.provider, notifier, report.repository, notification.repository
+   ├─ domain/                     report.ts, clock.ts
+   └─ infrastructure/
+      ├─ llm/                     gemini.provider, fallback.provider, stub.provider, llm-with-fallback
+      ├─ notify/ses-notifier.ts
+      └─ database/                prisma-*.repository, prisma-inspection.reader e o cliente gerado
 ```
 
 ---
@@ -636,17 +759,17 @@ apps/worker/src/
 ### 14.1 Contrato
 
 Entrada: observação do fiscal, situação marcada, nome da obra e quantidade de fotos.
-Saída validada por schema Zod (do pacote `shared`):
+Saída validada por schema Zod (do pacote `shared`, `packages/shared/src/schemas/report.schema.ts`):
 
 ```ts
-export const RelatorioIaSchema = z.object({
-  resumo: z.string().min(20).max(600),
-  naoConformidades: z.array(z.object({
+export const aiReportSchema = z.object({
+  summary: z.string().min(20).max(600),
+  nonConformities: z.array(z.object({
     item: z.string().max(120),
-    descricao: z.string().max(300),
-    gravidade: z.enum(['BAIXA', 'MEDIA', 'ALTA']),
+    description: z.string().max(300),
+    severity: z.enum(Severity),   // LOW, MEDIUM ou HIGH
   })).max(10),
-  gravidade: z.enum(['BAIXA', 'MEDIA', 'ALTA']),
+  severity: z.enum(Severity),
 });
 ```
 
@@ -654,12 +777,18 @@ export const RelatorioIaSchema = z.object({
 
 ```ts
 export interface LlmProvider {
-  readonly nome: string;
-  gerarJson<T>(prompt: string, schema: z.ZodType<T>): Promise<T>;
+  readonly name: string;
+  generateJson<T>(prompt: string, schema: z.ZodType<T>): Promise<T>;
 }
 ```
 
-`LlmComFallback` recebe a lista de provedores em ordem e tenta o próximo quando o atual falha por cota, timeout ou JSON inválido depois de 1 nova tentativa. O nome do modelo usado vai para `Relatorio.modelo`.
+Três adapters implementam a porta, escolhidos e ordenados por `LLM_PROVIDERS` (por exemplo `gemini,fallback`):
+
+- `GeminiProvider`: API REST do Gemini (modelo em `GEMINI_MODEL`), com saída JSON pedida pelo schema.
+- `FallbackProvider`: qualquer API compatível com OpenAI (Groq, OpenRouter, Ollama), configurada por `FALLBACK_LLM_BASE_URL`, `FALLBACK_LLM_API_KEY` e `FALLBACK_LLM_MODEL`.
+- `StubProvider`: relatório determinístico, sem rede nem chave. É o padrão local e a configuração o recusa com `NODE_ENV=production`.
+
+`LlmWithFallback` recebe a lista de provedores em ordem. Resposta inválida (não é JSON ou fora do schema) ganha 1 nova tentativa no mesmo provedor; cota (429), timeout (30 s), erro de rede ou 5xx passam direto para o próximo. Se todos falham, lança erro e a mensagem volta para a fila. O nome do modelo que respondeu vai para `Report.model`.
 
 ### 14.3 Regras do prompt
 
@@ -667,13 +796,13 @@ export interface LlmProvider {
 - Usar só o que está na observação. Não inventar medida, norma ou valor.
 - Se a observação não tiver não conformidade, devolver lista vazia.
 - Responder só JSON no formato pedido.
-- O prompt fica em arquivo versionado (`prompts/relatorio.v1.md`), nunca espalhado no código.
+- O prompt fica em arquivo versionado (`apps/worker/prompts/report.v1.md`), nunca espalhado no código.
 
 ### 14.4 Proteções
 
 - Validação do schema em código. Se falhar, tenta de novo uma vez e depois troca de provedor.
-- Limite de tamanho da observação antes de enviar.
-- Texto do fiscal tratado como dado: delimitado no prompt e nunca seguido como instrução.
+- Limite de tamanho da observação antes de enviar: 2000 caracteres (`MAX_NOTES_FOR_PROMPT`).
+- Texto do fiscal tratado como dado: delimitado por `<observation>` no prompt, sem as tags que ele digitar, e nunca seguido como instrução.
 - Na tela, o relatório aparece com o selo "Sugestão da IA" (RN-08).
 
 ---
@@ -748,14 +877,16 @@ apps/web/src/
 
 ### 16.4 Telas
 
-| Rota | Perfil | Conteúdo |
-|---|---|---|
-| `/entrar` | público | Login |
-| `/obras` | todos | Lista em cards com busca |
-| `/obras/:id` | todos | Dados da obra e vistorias com filtro por status |
-| `/vistorias/nova?obra=:id` | fiscal | Formulário e upload de fotos |
-| `/vistorias/:id` | todos | Detalhe, galeria, relatório da IA, histórico e ações |
-| `/painel` | gestor | Totais por status, vistorias aguardando decisão |
+| Rota | Perfil | Conteúdo | Situação |
+|---|---|---|---|
+| `/sign-in` | público | Login (usuário de teste no modo local, e-mail e senha no Cognito) | pronta |
+| `/` | todos | Redireciona cada perfil para a sua tela inicial | pronta |
+| `/construction-sites` | todos | Lista em cards com busca | pronta |
+| `/construction-sites/:id` | todos | Dados da obra e fiscais atribuídos; a lista de vistorias com filtro por status vem na spec 003 (T15.6) | parcial |
+| `/dashboard` | gestor | Totais por status, resumo por obra e vistorias aguardando decisão | pronta |
+| `/design-system` | só em build de desenvolvimento | Vitrine dos componentes base | pronta |
+| `/inspections/new?site=:id` | fiscal | Formulário e upload de fotos | prevista (spec 003, T15.4) |
+| `/inspections/:id` | todos | Detalhe, galeria, relatório da IA, histórico e ações | prevista (specs 003 a 005, T15.5 a T15.8) |
 
 ---
 
@@ -887,37 +1018,32 @@ Meta: toda regra RN-xx tem pelo menos um teste com o código no nome (`it('RN-04
 
 ## 21. Ambiente local e Docker
 
+O `docker-compose.yml` da raiz tem cinco serviços (resumo; as variáveis completas estão no arquivo):
+
 ```yaml
 services:
-  db:
-    image: postgres:16
-    environment: { POSTGRES_USER: fiscaliza, POSTGRES_PASSWORD: dev, POSTGRES_DB: fiscaliza }
+  db:      # postgres:16, healthcheck com pg_isready
     ports: ["5432:5432"]
-    volumes: [pgdata:/var/lib/postgresql/data]
-  aws:
-    image: localstack/localstack
-    environment: { SERVICES: "s3,sqs" }
+  aws:     # localstack/localstack:3.8 (versão fixa), SERVICES: s3,sqs,ses
     ports: ["4566:4566"]
     volumes: ["./infra/localstack:/etc/localstack/init/ready.d"]
-  api:
-    build: { context: ., dockerfile: apps/api/Dockerfile }
-    env_file: apps/api/.env
+  api:     # apps/api/Dockerfile, NODE_ENV=development, AUTH_MODE=local
     ports: ["3000:3000"]
-    depends_on: [db, aws]
-  worker:
-    build: { context: ., dockerfile: apps/worker/Dockerfile }
-    env_file: apps/worker/.env
-    depends_on: [db, aws]
-  web:
-    build: { context: ., dockerfile: apps/web/Dockerfile }
-    ports: ["5173:80"]
+    depends_on: { db: service_healthy, aws: service_healthy }
+  worker:  # apps/worker/Dockerfile, roda o local-poller; LLM_PROVIDERS=stub por padrão
+    depends_on: { db: service_healthy, aws: service_healthy }
+  web:     # apps/web/Dockerfile: build do Vite servido por nginx (porta 8080 no container)
+    ports: ["5173:8080"]
+    depends_on: { api: service_healthy }
 volumes: { pgdata: {} }
 ```
 
-- `infra/localstack/init.sh` cria o bucket, a fila e a DLQ.
+- `infra/localstack/init.sh` cria o bucket `fiscaliza-photos` (com CORS para o web), a fila `fiscaliza-inspections` com a DLQ (`maxReceiveCount = 3`, visibility timeout de 120 s) e verifica no SES o remetente `no-reply@fiscaliza.local`.
 - Dockerfiles multi-stage, usuário não root, `.dockerignore`.
 - Um comando sobe tudo: `docker compose up --build`.
-- `.env.example` em cada app, com todas as variáveis e nenhum segredo real.
+- `.env.example` em cada app, com todas as variáveis e nenhum segredo real. No compose os valores de rede (`db`, `aws`) já vêm no próprio `docker-compose.yml`, então o `.env` é opcional.
+- As variáveis `VITE_*` do web são de build: o bundle as embute, então mudar uma exige `docker compose build web`.
+- Os testes usam o banco `fiscaliza_test`, criado pelo `test/global-setup.ts` no mesmo Postgres (ADR 0007).
 
 Variáveis principais:
 
@@ -930,31 +1056,41 @@ Variáveis principais:
 | `DATABASE_URL` | api, worker | `postgresql://fiscaliza:dev@db:5432/fiscaliza` |
 | `AWS_REGION` | api, worker | `us-east-1` |
 | `AWS_ENDPOINT` | api, worker | `http://aws:4566` (vazio na AWS real) |
+| `AWS_PUBLIC_ENDPOINT` | api | `http://localhost:4566` (host das URLs assinadas que o navegador abre) |
 | `PHOTOS_BUCKET` | api | `fiscaliza-photos` |
 | `INSPECTIONS_QUEUE_URL` | api, worker | URL da fila |
-| `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | api, web | IDs do User Pool |
+| `OUTBOX_PUBLISHER_ENABLED` | api | `true` (`false` nos testes) |
+| `RATE_LIMIT_PER_MINUTE` | api | `100` (previsto na spec 000, T03.7; ainda não está no código) |
+| `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | api | IDs do User Pool (obrigatórios com `AUTH_MODE=cognito`) |
 | `AUTH_MODE` | api | `cognito` ou `local` |
-| `LLM_PROVIDERS` | worker | `gemini,fallback` |
-| `GEMINI_API_KEY` | worker | só no `.env` local |
+| `NOTIFICATION_SENDER` | worker | `no-reply@fiscaliza.local` (na AWS real, identidade verificada no SES) |
+| `LLM_PROVIDERS` | worker | `stub` (padrão) ou `gemini,fallback` |
+| `GEMINI_API_KEY`, `GEMINI_MODEL` | worker | chave só no `.env` local; modelo `gemini-2.5-flash` |
+| `FALLBACK_LLM_BASE_URL`, `FALLBACK_LLM_API_KEY`, `FALLBACK_LLM_MODEL` | worker | API compatível com OpenAI; chave só no `.env` local |
+| `VITE_API_URL` | web (build) | `http://localhost:3000/api/v1` |
+| `VITE_AUTH_MODE` | web (build) | `local` ou `cognito` |
+| `VITE_COGNITO_USER_POOL_ID`, `VITE_COGNITO_CLIENT_ID` | web (build) | só com `VITE_AUTH_MODE=cognito` |
 
 ---
 
 ## 22. CI/CD e deploy
 
-GitHub Actions em todo push e PR:
+GitHub Actions em todo push na `main` e em todo PR (`.github/workflows/ci.yml`):
 
-1. Instalar com cache do pnpm.
-2. Lint e checagem de tipos.
-3. Testes unitários e de integração (Postgres como service).
-4. Build das imagens Docker.
+1. Instalar com cache do pnpm (`--frozen-lockfile`).
+2. `format:check`, lint e checagem de tipos.
+3. Subir o LocalStack 3.8 com `SERVICES=s3,sqs,ses` e o mesmo `init.sh` do compose.
+4. Testes unitários, de integração e e2e, contra um Postgres 16 em service container. O `global-setup` do Vitest cria o banco `fiscaliza_test` nele e aplica as migrações.
+
+O build das imagens Docker ainda não está no workflow.
 
 Deploy da demonstração (opcional):
 
 | Parte | Onde |
 |---|---|
-| Web | Vercel |
+| Web | Vercel, ou a imagem nginx do `apps/web` (a mesma do compose) em qualquer serviço de container |
 | API | Serviço de container com plano gratuito, ou só local com vídeo |
-| Worker | Lambda na conta AWS (empacotado do `apps/worker`) |
+| Worker | Lambda na conta AWS (empacotado do `apps/worker`; o `handler.ts` já existe, o deploy não está no repositório) |
 | Banco | Postgres gerenciado com plano gratuito |
 
 Se o deploy completo der trabalho demais, um vídeo de 2 minutos rodando local cumpre o papel.
@@ -1001,9 +1137,14 @@ specs/
 ├─ 002-obras/
 ├─ 003-vistoria-e-fotos/
 ├─ 004-relatorio-ia/
-├─ 005-decisao-e-notificacao/
-└─ 006-painel/
+├─ 005-decisao-do-gestor/
+├─ 006-web-base-e-design-system/
+├─ 007-painel/
+├─ 008-servidor-mcp/
+└─ 009-apresentacao/
 ```
+
+Além dessas, `000-fundacao/` cobre a base do monorepo. O número da spec não é o da tarefa: por exemplo, a spec 007 traz a T16 e a 008 traz a T17.
 
 ### 25.2 constitution.md (conteúdo)
 
@@ -1086,13 +1227,13 @@ Anotar tempo estimado e real de cada tarefa no próprio `tasks.md`.
 
 ## 26. Servidor MCP
 
-`apps/mcp`: servidor MCP em TypeScript (transporte stdio) que consulta a API com um token de leitura.
+`apps/mcp`: servidor MCP em TypeScript (transporte stdio) que consulta a API com um token de gestor, lido das variáveis `FISCALIZA_API_URL` e `FISCALIZA_API_TOKEN`. Está especificado em `specs/008-servidor-mcp`; nesta versão `apps/mcp` ainda tem só o `package.json`.
 
 | Tool | Entrada | Retorno |
 |---|---|---|
-| `listar_obras` | filtro opcional | Obras com totais de vistorias |
-| `vistorias_pendentes` | `obraId` opcional | Vistorias aguardando decisão |
-| `detalhe_vistoria` | `vistoriaId` | Observação, relatório da IA e histórico |
+| `list_construction_sites` | `search` opcional | Obras com totais de vistorias |
+| `pending_inspections` | `constructionSiteId` opcional | Vistorias aguardando decisão |
+| `inspection_detail` | `inspectionId` | Observação, relatório da IA e histórico |
 
 Só leitura. Mostra o requisito "criação de servidores MCP" na prática e serve para consultar o sistema pelo Claude Code.
 
