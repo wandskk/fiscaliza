@@ -2,7 +2,7 @@ import { ERROR_MESSAGES, ErrorCode, type ErrorDetail, type ErrorResponse } from 
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ZodValidationException } from 'nestjs-zod';
 import { ZodError } from 'zod';
-import { DomainError, ForbiddenError, NotFoundError } from './domain-error';
+import { ConflictError, DomainError, ForbiddenError, NotFoundError } from './domain-error';
 
 export interface HttpError {
   status: number;
@@ -24,13 +24,18 @@ export function toHttpError(exception: unknown): HttpError {
 }
 
 function fromDomainError(error: DomainError): HttpError {
-  const status =
-    error instanceof NotFoundError
-      ? HttpStatus.NOT_FOUND
-      : error instanceof ForbiddenError
-        ? HttpStatus.FORBIDDEN
-        : HttpStatus.UNPROCESSABLE_ENTITY;
-  return { status, body: { code: error.code, message: error.message, details: error.details } };
+  return {
+    status: statusOf(error),
+    body: { code: error.code, message: error.message, details: error.details },
+  };
+}
+
+// Any other DomainError is a broken business rule
+function statusOf(error: DomainError): number {
+  if (error instanceof NotFoundError) return HttpStatus.NOT_FOUND;
+  if (error instanceof ForbiddenError) return HttpStatus.FORBIDDEN;
+  if (error instanceof ConflictError) return HttpStatus.CONFLICT;
+  return HttpStatus.UNPROCESSABLE_ENTITY;
 }
 
 function withCode(status: number, code: ErrorCode, details: ErrorDetail[] = []): HttpError {

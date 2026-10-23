@@ -11,11 +11,14 @@ export class DomainError extends Error {
   }
 }
 
+// Subclasses pick the HTTP status; the code can be a specific one (e.g. CONSTRUCTION_SITE_NOT_FOUND)
 export class NotFoundError extends DomainError {
-  constructor(details: ErrorDetail[] = []) {
-    super(ErrorCode.NOT_FOUND, details);
+  constructor(code: ErrorCode = ErrorCode.NOT_FOUND, details: ErrorDetail[] = []) {
+    super(code, details);
   }
 }
+
+export class ConflictError extends DomainError {}
 
 export class ForbiddenError extends DomainError {
   constructor(details: ErrorDetail[] = []) {

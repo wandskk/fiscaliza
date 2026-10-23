@@ -14,7 +14,12 @@ import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { Public } from '../src/shared/auth/decorators';
-import { DomainError, ForbiddenError, NotFoundError } from '../src/shared/errors/domain-error';
+import {
+  ConflictError,
+  DomainError,
+  ForbiddenError,
+  NotFoundError,
+} from '../src/shared/errors/domain-error';
 import { createTestApp } from './support/create-test-app';
 
 const probeSchema = z.object({ name: z.string().min(3) });
@@ -26,6 +31,16 @@ class ProbeController {
   @Get('not-found')
   notFound(): never {
     throw new NotFoundError();
+  }
+
+  @Get('site-not-found')
+  siteNotFound(): never {
+    throw new NotFoundError(ErrorCode.CONSTRUCTION_SITE_NOT_FOUND);
+  }
+
+  @Get('conflict')
+  conflict(): never {
+    throw new ConflictError(ErrorCode.DUPLICATE_CONTRACT);
   }
 
   @Get('forbidden')
@@ -92,6 +107,23 @@ describe('HttpErrorFilter', () => {
 
     expect(response.status).toBe(404);
     expect(response.body).toMatchObject({ code: 'NOT_FOUND', message: ERROR_MESSAGES.NOT_FOUND });
+  });
+
+  it('keeps the specific code of a NotFoundError', async () => {
+    const response = await errorFor('get', 'site-not-found');
+
+    expect(response.status).toBe(404);
+    expect(response.body.code).toBe('CONSTRUCTION_SITE_NOT_FOUND');
+  });
+
+  it('maps ConflictError to 409', async () => {
+    const response = await errorFor('get', 'conflict');
+
+    expect(response.status).toBe(409);
+    expect(response.body).toMatchObject({
+      code: 'DUPLICATE_CONTRACT',
+      message: ERROR_MESSAGES.DUPLICATE_CONTRACT,
+    });
   });
 
   it('maps ForbiddenError to 403', async () => {
