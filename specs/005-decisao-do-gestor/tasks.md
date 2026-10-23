@@ -9,8 +9,8 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 | T12.1 | `shared`: `decisionSchema`, `inspectionDecidedSchema`, `reason` no histórico do detalhe, `MIN_RETURN_REASON_LENGTH`; testes dos schemas | T10.1 | | 0,25 | 0,03 | [x] |
 | T12.2 | `Inspection.approve` e `returnToInspector`, `submit` limpa `returnReason`, `StatusChange.reason`, `MissingReturnReasonError`; testes `RN-03`, `RN-06`, `RN-07`, `RN-08` (quem decidiu no histórico), `RN-09` | T12.1 | | 0,75 | 0,05 | [x] |
 | T12.3 | Migração `decision_and_notifications`; mapper com `reason`; `DecideInspectionUseCase` com `InspectionDecided` na outbox; `POST /inspections/:id/decision` com Swagger; e2e de permissão, RN-03, RN-06, RN-07 e do fluxo principal (criar → enviar → devolver → editar → reenviar → aprovar) | T12.2, T10.3 | | 1,5 | 0,12 | [x] |
-| T12.4 | Worker: `Notifier`, `SesNotifier`, `NotificationRepository` Prisma, `NotifyInspectorUseCase` (idempotente por `eventId`), despacho de `InspectionDecided`; SES no LocalStack (compose, CI, `init.sh`), env `NOTIFICATION_SENDER`; testes do caso de uso com fakes e integração do adapter | T12.3, T11.6 | | 1,5 | | [ ] |
-| | **Subtotal T12** | | | **4,0** | | |
+| T12.4 | Worker: `Notifier`, `SesNotifier`, `NotificationRepository` Prisma, `NotifyInspectorUseCase` (idempotente por `eventId`), despacho de `InspectionDecided`; SES no LocalStack (compose, CI, `init.sh`), env `NOTIFICATION_SENDER`; testes do caso de uso com fakes e integração do adapter | T12.3, T11.6 | | 1,5 | 0,18 | [x] |
+| | **Subtotal T12** | | | **4,0** | **0,38** | |
 
 ## Web (T15, parte da decisão)
 
