@@ -1,7 +1,9 @@
 import type { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import { Logger } from 'nestjs-pino';
 import { ConfigService } from './shared/config/config.service';
+import { correlationIdMiddleware } from './shared/logging/correlation-id.middleware';
 
 export const API_PREFIX = 'api/v1';
 export const DOCS_PATH = 'api/docs';
@@ -10,7 +12,10 @@ export const DOCS_PATH = 'api/docs';
 export function configureApp(app: INestApplication): void {
   const config = app.get(ConfigService);
 
+  app.useLogger(app.get(Logger));
   app.setGlobalPrefix(API_PREFIX);
+  // First middleware, so even a request rejected early gets an id
+  app.use(correlationIdMiddleware);
   app.use(helmet());
   app.enableCors({ origin: config.get('CORS_ORIGIN') });
   setupSwagger(app);

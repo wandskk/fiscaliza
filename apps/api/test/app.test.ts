@@ -1,25 +1,14 @@
 import type { INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { AppModule } from '../src/app.module';
-import { configureApp } from '../src/app.setup';
-import { loadConfig } from '../src/shared/config/config.schema';
-import { ConfigService } from '../src/shared/config/config.service';
 import { PrismaService } from '../src/shared/database/prisma.service';
-import { TEST_ENV } from './support/test-env';
+import { createTestApp } from './support/create-test-app';
 
 describe('App', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
-      .overrideProvider(ConfigService)
-      .useValue(new ConfigService(loadConfig(TEST_ENV)))
-      .compile();
-    app = moduleRef.createNestApplication();
-    configureApp(app);
-    await app.init();
+    ({ app } = await createTestApp());
   });
 
   afterAll(async () => {

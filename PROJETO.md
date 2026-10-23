@@ -924,6 +924,7 @@ Variáveis principais:
 | `NODE_ENV` | api, worker | `development`, `test` ou `production` |
 | `PORT` | api | `3000` |
 | `CORS_ORIGIN` | api | `http://localhost:5173` |
+| `LOG_LEVEL` | api, worker | `info` |
 | `DATABASE_URL` | api, worker | `postgresql://fiscaliza:dev@db:5432/fiscaliza` |
 | `AWS_REGION` | api, worker | `us-east-1` |
 | `AWS_ENDPOINT` | api, worker | `http://aws:4566` (vazio na AWS real) |
