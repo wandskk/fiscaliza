@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Compliance } from '../enums/compliance.js';
 import { InspectionStatus } from '../enums/inspection-status.js';
-import { paginationSchema } from './pagination.schema.js';
+import { paginatedSchema, paginationSchema } from './pagination.schema.js';
 
 export const MIN_NOTES_LENGTH = 30;
 
@@ -33,11 +33,11 @@ export const inspectionDetailSchema = z.object({
       size: z.number().int().positive(),
     }),
   ),
-  statusChanges: z.array(
+  history: z.array(
     z.object({
       from: z.enum(InspectionStatus).nullable(),
       to: z.enum(InspectionStatus),
-      userId: z.string(),
+      user: z.object({ id: z.string(), name: z.string() }),
       at: z.iso.datetime(),
     }),
   ),
@@ -50,7 +50,21 @@ export const inspectionFilterSchema = paginationSchema.extend({
   status: z.enum(InspectionStatus).optional(),
 });
 
+export const inspectionSummarySchema = z.object({
+  id: z.uuid(),
+  status: z.enum(InspectionStatus),
+  compliance: z.enum(Compliance),
+  inspectorId: z.string(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
+  photoCount: z.number().int().min(0),
+});
+
+export const inspectionPageSchema = paginatedSchema(inspectionSummarySchema);
+
 export type CreateInspection = z.infer<typeof createInspectionSchema>;
 export type UpdateInspection = z.infer<typeof updateInspectionSchema>;
 export type InspectionDetail = z.infer<typeof inspectionDetailSchema>;
 export type InspectionFilter = z.infer<typeof inspectionFilterSchema>;
+export type InspectionSummary = z.infer<typeof inspectionSummarySchema>;
+export type InspectionPageResponse = z.infer<typeof inspectionPageSchema>;
