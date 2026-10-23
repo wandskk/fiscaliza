@@ -28,6 +28,8 @@ export interface InspectionPage {
 
 export interface InspectionRepository {
   findById(id: string): Promise<Inspection | null>;
+  // Inside a UnitOfWork: holds the row until commit, so two confirmations cannot pass the limit together
+  findByIdForUpdate(id: string): Promise<Inspection | null>;
   history(id: string): Promise<InspectionHistoryItem[]>;
   listByConstructionSite(
     constructionSiteId: string,

@@ -22,6 +22,11 @@ export class PrismaInspectionRepository implements InspectionRepository {
     return row ? toDomain(row) : null;
   }
 
+  async findByIdForUpdate(id: string): Promise<Inspection | null> {
+    await this.work.client.$queryRaw`SELECT id FROM inspections WHERE id = ${id} FOR UPDATE`;
+    return this.findById(id);
+  }
+
   async history(id: string): Promise<InspectionHistoryItem[]> {
     const rows = await this.work.client.inspectionStatusHistory.findMany({
       where: { inspectionId: id },

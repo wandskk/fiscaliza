@@ -1,4 +1,10 @@
-import { Compliance, InspectionStatus, MAX_PHOTOS, MIN_NOTES_LENGTH } from '@fiscaliza/shared';
+import {
+  Compliance,
+  InspectionStatus,
+  MAX_PHOTOS,
+  MIN_NOTES_LENGTH,
+  photoFileSchema,
+} from '@fiscaliza/shared';
 import type { Clock } from './clock';
 import {
   ApprovedInspectionError,
@@ -109,6 +115,14 @@ export class Inspection {
     if (data.notes !== undefined) this.props.notes = data.notes;
     if (data.compliance !== undefined) this.props.compliance = data.compliance;
     this.props.updatedAt = clock.now();
+  }
+
+  // RN-05 before a URL is signed, so the browser never uploads a file that would be refused
+  ensurePhotoAccepted(file: { contentType: string; size: number }, userId: string): void {
+    this.ensureOwner(userId);
+    this.ensureEditable();
+    if (!photoFileSchema.safeParse(file).success) throw new PhotoRejectedError();
+    if (this.props.photos.length >= MAX_PHOTOS) throw new PhotoRejectedError();
   }
 
   addPhoto(photo: Photo, userId: string, clock: Clock): void {

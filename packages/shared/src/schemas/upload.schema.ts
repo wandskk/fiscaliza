@@ -16,7 +16,14 @@ export const photoFileSchema = uploadUrlRequestSchema.refine(
   { message: ERROR_MESSAGES['RN-05'] },
 );
 
+export const uploadUrlResponseSchema = z.object({
+  url: z.url(),
+  key: z.string(),
+  expiresAt: z.iso.datetime(),
+});
+
 export const confirmPhotoSchema = z.object({ key: z.string().min(1) });
 
 export type UploadUrlRequest = z.infer<typeof uploadUrlRequestSchema>;
+export type UploadUrlResponse = z.infer<typeof uploadUrlResponseSchema>;
 export type ConfirmPhoto = z.infer<typeof confirmPhotoSchema>;
