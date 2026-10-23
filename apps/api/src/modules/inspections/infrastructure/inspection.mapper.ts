@@ -20,12 +20,12 @@ export function toDomain(row: InspectionRowWithRelations): Inspection {
     status: row.status,
     returnReason: row.returnReason,
     photos: row.photos.map(({ id, key, contentType, size }) => ({ id, key, contentType, size })),
-    statusChanges: row.history.map(({ from, to, userId, at }) => ({
+    statusChanges: row.history.map(({ from, to, userId, at, reason }) => ({
       from,
       to,
       userId,
       at,
-      reason: null,
+      reason,
     })),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,

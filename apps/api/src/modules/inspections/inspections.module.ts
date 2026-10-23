@@ -3,6 +3,7 @@ import { OutboxModule } from '../../shared/outbox/outbox.module';
 import { ConstructionSitesModule } from '../construction-sites/construction-sites.module';
 import { ConfirmPhotoUseCase } from './application/confirm-photo.use-case';
 import { CreateInspectionUseCase } from './application/create-inspection.use-case';
+import { DecideInspectionUseCase } from './application/decide-inspection.use-case';
 import { GetInspectionUseCase } from './application/get-inspection.use-case';
 import { ListInspectionsUseCase } from './application/list-inspections.use-case';
 import { INSPECTION_REPOSITORY } from './application/ports/inspection.repository';
@@ -27,6 +28,7 @@ import { InspectionsController } from './presentation/inspections.controller';
     GetInspectionUseCase,
     ListInspectionsUseCase,
     SubmitInspectionUseCase,
+    DecideInspectionUseCase,
     RequestUploadUrlUseCase,
     ConfirmPhotoUseCase,
     RemovePhotoUseCase,

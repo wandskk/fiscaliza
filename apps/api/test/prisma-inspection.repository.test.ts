@@ -101,6 +101,33 @@ describe('PrismaInspectionRepository', () => {
     expect(await repository.history(inspection.id)).toHaveLength(2);
   });
 
+  it('RN-06 and RN-09: saves and reloads the return reason in the field and in the history', async () => {
+    const inspection = make();
+    inspection.addPhoto(
+      Photo.create({
+        id: randomUUID(),
+        key: `test/${randomUUID()}.jpg`,
+        contentType: 'image/jpeg',
+        size: 100,
+      }),
+      inspectorId,
+      clock,
+    );
+    inspection.submit(inspectorId, clock);
+    inspection.returnToInspector(managerId, 'Fotos sem foco e sem a armação.', laterClock);
+    await work.run(() => repository.save(inspection));
+    const restored = await repository.findById(inspection.id);
+    expect(restored?.returnReason).toBe('Fotos sem foco e sem a armação.');
+    expect(restored?.statusChanges).toEqual(inspection.statusChanges);
+    const history = await repository.history(inspection.id);
+    expect(history.map((change) => change.reason)).toEqual([
+      null,
+      null,
+      'Fotos sem foco e sem a armação.',
+    ]);
+    expect(history.at(-1)?.user).toEqual({ id: managerId, name: 'Gestor' });
+  });
+
   it('replaces removed photos without rewriting history', async () => {
     const inspection = make();
     const photo = Photo.create({

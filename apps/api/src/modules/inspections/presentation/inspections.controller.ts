@@ -25,6 +25,7 @@ import {
 import { CurrentUser, Roles } from '../../../shared/auth/decorators';
 import { ConfirmPhotoUseCase } from '../application/confirm-photo.use-case';
 import { CreateInspectionUseCase } from '../application/create-inspection.use-case';
+import { DecideInspectionUseCase } from '../application/decide-inspection.use-case';
 import { GetInspectionUseCase } from '../application/get-inspection.use-case';
 import { RemovePhotoUseCase } from '../application/remove-photo.use-case';
 import { RequestUploadUrlUseCase } from '../application/request-upload-url.use-case';
@@ -33,6 +34,7 @@ import { UpdateInspectionUseCase } from '../application/update-inspection.use-ca
 import {
   ConfirmPhotoDto,
   CreateInspectionDto,
+  DecisionDto,
   InspectionDetailDto,
   UpdateInspectionDto,
   UploadUrlRequestDto,
@@ -49,6 +51,7 @@ export class InspectionsController {
     private readonly updateInspection: UpdateInspectionUseCase,
     private readonly getInspection: GetInspectionUseCase,
     private readonly submitInspection: SubmitInspectionUseCase,
+    private readonly decideInspection: DecideInspectionUseCase,
     private readonly requestUploadUrl: RequestUploadUrlUseCase,
     private readonly confirmPhoto: ConfirmPhotoUseCase,
     private readonly removePhoto: RemovePhotoUseCase,
@@ -98,6 +101,21 @@ export class InspectionsController {
     @CurrentUser() viewer: AuthenticatedUser,
   ): Promise<InspectionDetail> {
     await this.submitInspection.execute(id, viewer);
+    const detail = await this.getInspection.execute(id, viewer);
+    return toDetail(detail);
+  }
+
+  // RN-08: the manager decides with or without the report
+  @Post(':id/decision')
+  @HttpCode(200)
+  @Roles(Role.MANAGER)
+  @ApiOkResponse({ type: InspectionDetailDto })
+  async decide(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: DecisionDto,
+    @CurrentUser() viewer: AuthenticatedUser,
+  ): Promise<InspectionDetail> {
+    await this.decideInspection.execute(id, body, viewer);
     const detail = await this.getInspection.execute(id, viewer);
     return toDetail(detail);
   }

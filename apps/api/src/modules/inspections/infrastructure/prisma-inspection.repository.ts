@@ -33,7 +33,7 @@ export class PrismaInspectionRepository implements InspectionRepository {
       include: { user: { select: { id: true, name: true } } },
       orderBy: [{ at: 'asc' }, { id: 'asc' }],
     });
-    return rows.map(({ from, to, user, at }) => ({ from, to, user, at, reason: null }));
+    return rows.map(({ from, to, user, at, reason }) => ({ from, to, user, at, reason }));
   }
 
   async listByConstructionSite(
@@ -85,10 +85,11 @@ export class PrismaInspectionRepository implements InspectionRepository {
       contentType,
       size,
     }));
-    const changes = props.statusChanges.map(({ from, to, userId, at }) => ({
+    const changes = props.statusChanges.map(({ from, to, userId, at, reason }) => ({
       from,
       to,
       at,
+      reason,
       user: { connect: { id: userId } },
     }));
 

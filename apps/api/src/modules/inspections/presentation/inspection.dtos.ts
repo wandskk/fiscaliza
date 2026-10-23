@@ -1,6 +1,7 @@
 import {
   confirmPhotoSchema,
   createInspectionSchema,
+  decisionSchema,
   inspectionDetailSchema,
   inspectionFilterSchema,
   inspectionPageSchema,
@@ -11,6 +12,7 @@ import {
 import { createZodDto } from 'nestjs-zod';
 
 export class CreateInspectionDto extends createZodDto(createInspectionSchema) {}
+export class DecisionDto extends createZodDto(decisionSchema) {}
 export class UpdateInspectionDto extends createZodDto(updateInspectionSchema) {}
 export class InspectionFilterDto extends createZodDto(inspectionFilterSchema) {}
 export class InspectionDetailDto extends createZodDto(inspectionDetailSchema) {}

@@ -24,12 +24,12 @@ export function toDetail({
       size,
       url: photoUrls[id] ?? '',
     })),
-    history: history.map(({ from, to, user, at }) => ({
+    history: history.map(({ from, to, user, at, reason }) => ({
       from,
       to,
       user,
       at: at.toISOString(),
-      reason: null,
+      reason,
     })),
     report: report && { ...report, generatedAt: report.generatedAt.toISOString() },
     createdAt: props.createdAt.toISOString(),
