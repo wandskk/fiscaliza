@@ -19,13 +19,13 @@ Nenhuma RN implementada aqui. O pacote `shared` só declara os códigos RN-01 a 
 - `pnpm install` na raiz instala todos os workspaces sem erro; `pnpm lint`, `pnpm typecheck` e `pnpm test` rodam em todos os pacotes.
 - O ESLint falha quando um arquivo em `domain/` importa de `infrastructure/`, `@nestjs/*`, `@prisma/client` ou `@aws-sdk/*` (regra de dependência, seção 9.1).
 - O CI (GitHub Actions) roda instalação com cache, lint, typecheck e testes em todo push e PR.
-- `docker compose up` sobe `db` e `aws`; o script de init cria o bucket `fiscaliza-fotos`, a fila `fiscaliza-vistorias` e a DLQ com `maxReceiveCount = 3`.
+- `docker compose up` sobe `db` e `aws`; o script de init cria o bucket `fiscaliza-photos`, a fila `fiscaliza-inspections` e a DLQ com `maxReceiveCount = 3`.
 - `GET /api/v1/health` responde 200 com o estado da API e do banco; com o banco parado, responde 503.
 - A API não sobe se faltar variável obrigatória, e a mensagem diz qual.
-- Um `DomainError` com código `RN-04` lançado numa rota vira 422 no formato `{ codigo, mensagem, detalhes, correlationId }`; erro inesperado vira 500 sem stack trace.
+- Um `DomainError` com código `RN-04` lançado numa rota vira 422 no formato `{ code, message, details, correlationId }`; erro inesperado vira 500 sem stack trace.
 - Toda resposta traz o header `x-correlation-id` (reaproveitado se veio na requisição) e todo log JSON tem o mesmo `correlationId`.
 - `/api/docs` mostra o Swagger.
-- `packages/shared` exporta `StatusVistoria`, `Perfil`, `Situacao`, `Gravidade`, os códigos RN-01 a RN-10 e é importável pela API com `@fiscaliza/shared`.
+- `packages/shared` exporta `InspectionStatus`, `Role`, `Compliance`, `Severity`, os códigos RN-01 a RN-10 e é importável pela API com `@fiscaliza/shared`.
 - Nenhum segredo versionado; `.env.example` existe na API com todas as variáveis da seção 21.
 
 ## Fora do escopo

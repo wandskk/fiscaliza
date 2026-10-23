@@ -7,7 +7,7 @@ Leia `PROJETO.md` antes de qualquer tarefa. Ele é a fonte única de escopo, reg
 1. Toda tarefa vem de um `specs/<nnn>-<nome>/tasks.md`. Não implemente nada fora da spec.
 2. Se a tarefa pedir algo que a spec não cobre, pare e pergunte: atualizar a spec ou recusar.
 3. Uma tarefa por vez. Ao terminar: lint, typecheck e testes verdes, depois marque a tarefa como feita no `tasks.md` com o tempo real.
-4. Commit no formato `tipo(escopo): Tnn descrição`, por exemplo `feat(vistorias): T07 caso de uso EnviarVistoria`.
+4. Commit em inglês no formato `type(scope): Tnn description`, por exemplo `feat(inspections): T07 SubmitInspection use case`. Código em inglês pelo glossário da seção 10 da constitution.
 5. Siga `specs/constitution.md` em qualquer conflito.
 
 ## Arquitetura (não negociável)

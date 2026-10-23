@@ -10,8 +10,8 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 | T01.4 | CI no GitHub Actions: pnpm com cache, lint, typecheck, test | T01.2 | [P] | 0,5 | | [ ] |
 | T02.1 | `docker-compose.yml` com `db` (healthcheck) e `aws` (LocalStack fixado) | T01.1 | | 0,5 | | [ ] |
 | T02.2 | `infra/localstack/init.sh`: bucket com CORS, fila e DLQ com redrive; conferir com `awslocal` | T02.1 | | 0,5 | | [ ] |
-| T04.1 | `packages/shared`: enums `StatusVistoria`, `Perfil`, `Situacao`, `Gravidade` | T01.2 | [P] | 0,5 | | [ ] |
-| T04.2 | `shared/erros/codigos.ts`: RN-01 a RN-10 e códigos técnicos, com mensagem em português; schemas de paginação e de erro | T04.1 | | 0,5 | | [ ] |
+| T04.1 | `packages/shared`: enums `InspectionStatus`, `Role`, `Compliance`, `Severity` | T01.2 | [P] | 0,5 | | [ ] |
+| T04.2 | `shared/errors/error-codes.ts`: RN-01 a RN-10 e códigos técnicos, com mensagem em português; schemas de paginação e de erro | T04.1 | | 0,5 | | [ ] |
 | T04.3 | Build com `tsup`, `exports` e testes dos schemas (paginação padrão e limite máximo) | T04.2 | | 0,5 | | [ ] |
 | T03.1 | API NestJS: `main.ts` com prefixo `/api/v1`, Helmet, CORS, Swagger em `/api/docs`; config validada com Zod e `.env.example` | T02.2, T04.3 | | 1,0 | | [ ] |
 | T03.2 | Prisma: `schema.prisma` inicial, `PrismaService`, script de migração e de seed vazio | T03.1 | | 0,5 | | [ ] |

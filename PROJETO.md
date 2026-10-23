@@ -855,7 +855,7 @@ A API transforma os schemas em DTOs (`nestjs-zod` ou pipe próprio) e o Swagger 
 
 | Assunto | Regra |
 |---|---|
-| Idioma | Código de domínio em português (Vistoria, enviar); termos técnicos em inglês quando consagrados (repository, use-case, controller) |
+| Idioma | Todo o código em inglês (`Inspection`, `submit`), pelo glossário da seção 10 de `specs/constitution.md`; texto que o usuário lê em português |
 | Arquivos | `kebab-case` com sufixo do papel: `enviar-vistoria.use-case.ts`, `vistoria.entity.ts` |
 | Classes e tipos | `PascalCase`; funções e variáveis `camelCase`; constantes `UPPER_SNAKE` |
 | Funções | Fazem uma coisa; até ~20 linhas; no máximo 3 parâmetros (senão, objeto) |
@@ -864,7 +864,7 @@ A API transforma os schemas em DTOs (`nestjs-zod` ou pipe próprio) e o Swagger 
 | Tipos | `strict` ligado, sem `any`; `unknown` + validação na borda |
 | Erros | Nunca engolir. Erro de domínio com código; erro técnico com log e contexto |
 | Imports | Aliases (`@shared/...`, `@modules/...`); domínio nunca importa de infraestrutura (regra no ESLint com `import/no-restricted-paths`) |
-| Commits | Conventional Commits com a tarefa: `feat(vistorias): T07 caso de uso EnviarVistoria` |
+| Commits | Conventional Commits em inglês com a tarefa: `feat(inspections): T07 SubmitInspection use case` |
 | Branches | `main` protegida; uma branch por tarefa ou grupo pequeno |
 
 ---

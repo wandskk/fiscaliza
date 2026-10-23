@@ -27,7 +27,7 @@ Princípios que valem para todas as specs, planos e tarefas do Fiscaliza. Em con
 ## 4. Qualidade de código
 
 - TypeScript strict, sem `any`, sem erro de tipo no build.
-- Funções curtas, nomes do negócio em português, termos técnicos consagrados em inglês.
+- Funções curtas. Todo o código em inglês (identificadores, arquivos, pastas, enums, códigos de erro, recursos de infra), seguindo o glossário da seção 10. Texto que o usuário final lê (mensagens de erro, telas) fica em português do Brasil.
 - Comentário só para explicar o porquê.
 - Lint e formatação automáticos; o CI bloqueia o merge se falharem.
 
@@ -62,5 +62,32 @@ Princípios que valem para todas as specs, planos e tarefas do Fiscaliza. Em con
 
 - Fluxo: spec → plan → tasks → implementação, uma tarefa por vez.
 - Cada tarefa registra tempo estimado e real no `tasks.md`.
-- Commits no formato `tipo(escopo): Tnn descrição`, sem linhas de coautoria de IA.
+- Commits em inglês no formato `type(scope): Tnn description` (ex.: `feat(inspections): T07 SubmitInspection use case`), sem linhas de coautoria de IA.
 - Decisões de arquitetura relevantes viram ADR em `docs/adr/`.
+
+## 10. Idioma e glossário
+
+Documentos (PROJETO.md, specs, planos, tarefas) ficam em português e usam os termos do domínio em português. No código, cada termo vira o equivalente em inglês desta tabela. Termo novo entra aqui antes de ir para o código.
+
+| Domínio (docs) | Código |
+|---|---|
+| Vistoria | `Inspection` |
+| Obra | `ConstructionSite` (rota `/construction-sites`) |
+| ObraFiscal (atribuição) | `SiteAssignment` |
+| Usuario | `User` |
+| Foto | `Photo` |
+| Relatorio | `Report` |
+| HistoricoStatus | `InspectionStatusHistory` |
+| OutboxEvento | `OutboxEvent` |
+| `StatusVistoria { RASCUNHO, ENVIADA, APROVADA, DEVOLVIDA }` | `InspectionStatus { DRAFT, SUBMITTED, APPROVED, RETURNED }` |
+| `Perfil { FISCAL, GESTOR }` | `Role { INSPECTOR, MANAGER }` |
+| `Situacao { CONFORME, NAO_CONFORME }` | `Compliance { COMPLIANT, NON_COMPLIANT }` |
+| `Gravidade { BAIXA, MEDIA, ALTA }` | `Severity { LOW, MEDIUM, HIGH }` |
+| Evento `VistoriaEnviada` | `InspectionSubmitted` |
+| Erro `{ codigo, mensagem, detalhes, correlationId }` | `{ code, message, details, correlationId }` |
+| `ERRO_VALIDACAO`, `NAO_ENCONTRADO`, `SEM_PERMISSAO`, `ERRO_INTERNO` | `VALIDATION_ERROR`, `NOT_FOUND`, `FORBIDDEN`, `INTERNAL_ERROR` |
+| `NaoEncontradoError`, `SemPermissaoError` | `NotFoundError`, `ForbiddenError` |
+| Paginação `{ pagina, limite }` | `{ page, limit }` |
+| Bucket `fiscaliza-fotos`, fila `fiscaliza-vistorias` | `fiscaliza-photos`, `fiscaliza-inspections` |
+
+Os códigos `RN-01` a `RN-10` não mudam: são o elo entre a regra no documento e o teste (`it('RN-04: ...')`). O valor de `message` continua em português.

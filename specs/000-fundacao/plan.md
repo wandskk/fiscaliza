@@ -37,8 +37,8 @@ apps/api/src/
 └─ shared/
    ├─ config/              config.schema.ts (Zod) + ConfigService tipado
    ├─ database/            PrismaService (onModuleInit/Destroy)
-   ├─ errors/              domain-error.ts, erro-http.filter.ts
-   ├─ logging/             correlation-id.middleware.ts, contexto (AsyncLocalStorage)
+   ├─ errors/              domain-error.ts, http-error.filter.ts
+   ├─ logging/             correlation-id.middleware.ts, context (AsyncLocalStorage)
    └─ health/              health.controller.ts (@nestjs/terminus + Prisma)
 ```
 
@@ -46,8 +46,8 @@ Mapeamento do filtro de erro (seção 9.5):
 
 | Origem | HTTP |
 |---|---|
-| `NaoEncontradoError` | 404 |
-| `SemPermissaoError` | 403 |
+| `NotFoundError` | 404 |
+| `ForbiddenError` | 403 |
 | `DomainError` (regra violada) | 422 |
 | `ZodError` / validação | 400 com `detalhes` por campo |
 | `HttpException` do Nest | o próprio status |
@@ -59,19 +59,19 @@ Mapeamento do filtro de erro (seção 9.5):
 
 ```
 packages/shared/src/
-├─ enums/        status-vistoria.ts, perfil.ts, situacao.ts, gravidade.ts
-├─ erros/        codigos.ts (RN-01..RN-10 + ERRO_VALIDACAO, NAO_ENCONTRADO, SEM_PERMISSAO, ERRO_INTERNO)
-├─ schemas/      paginacao.schema.ts, erro-resposta.schema.ts
+├─ enums/        inspection-status.ts, role.ts, compliance.ts, severity.ts
+├─ errors/       error-codes.ts (RN-01..RN-10 + VALIDATION_ERROR, NOT_FOUND, FORBIDDEN, INTERNAL_ERROR)
+├─ schemas/      pagination.schema.ts, error-response.schema.ts
 └─ index.ts
 ```
 
-Os schemas de obra, vistoria, upload e relatório entram nas specs 002, 003 e 004. Aqui fica só o que todos usam: paginação (`{ pagina, limite }` com padrão 1 e 20, máximo 100) e a resposta de erro. Build com `tsup` gerando ESM + tipos; no dev, a API importa pelo `exports` apontando para o `src` via TypeScript project references.
+Os schemas de obra, vistoria, upload e relatório entram nas specs 002, 003 e 004. Aqui fica só o que todos usam: paginação (`{ page, limit }` com padrão 1 e 20, máximo 100) e a resposta de erro. Build com `tsup` gerando ESM + tipos; no dev, a API importa pelo `exports` apontando para o `src` via TypeScript project references.
 
 ## docker-compose (T02)
 
 - `db`: `postgres:16`, volume `pgdata`, healthcheck com `pg_isready`.
 - `aws`: `localstack/localstack:3.8`, `SERVICES=s3,sqs`, init em `infra/localstack/init.sh`.
-- `init.sh`: cria `fiscaliza-fotos` (com CORS liberando `PUT` da origem `http://localhost:5173`, necessário para o upload direto da spec 003), `fiscaliza-vistorias-dlq` e `fiscaliza-vistorias` com `RedrivePolicy` (`maxReceiveCount = 3`) e `VisibilityTimeout = 120`.
+- `init.sh`: cria `fiscaliza-photos` (com CORS liberando `PUT` da origem `http://localhost:5173`, necessário para o upload direto da spec 003), `fiscaliza-inspections-dlq` e `fiscaliza-inspections` com `RedrivePolicy` (`maxReceiveCount = 3`) e `VisibilityTimeout = 120`.
 - Serviço `api` entra na T03 com Dockerfile multi-stage, usuário não root e `.dockerignore`.
 
 ## Riscos
