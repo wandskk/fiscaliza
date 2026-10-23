@@ -123,5 +123,24 @@ Documentos (PROJETO.md, specs, planos, tarefas) ficam em português e usam os te
 | Variáveis `BUCKET_FOTOS`, `FILA_VISTORIAS_URL` | `PHOTOS_BUCKET`, `INSPECTIONS_QUEUE_URL` |
 | Variáveis `AUTH_MODO`, `VITE_AUTH_MODO`, `COGNITO_REGIAO` | `AUTH_MODE`, `VITE_AUTH_MODE`, `COGNITO_REGION` |
 | Variáveis `AWS_ENDPOINT_PUBLICO`, `LLM_PROVEDORES` | `AWS_PUBLIC_ENDPOINT`, `LLM_PROVIDERS` |
+| Evento `VistoriaDecidida` | `InspectionDecided` |
+| Envelope do evento `{ id, tipo, versao, ocorridoEm, correlationId, dados }`, `EventoSchema` | `{ id, type, version, occurredAt, correlationId, data }`, `eventEnvelopeSchema` |
+| Porta `Outbox.adicionar`, `PrismaOutbox`, publicador da outbox | `EventOutbox.add`, `PrismaEventOutbox`, `OutboxPublisher` |
+| Campos da outbox `tipo`, `criadoEm`, `publicadoEm`, `tentativas` | `type`, `createdAt`, `publishedAt`, `attempts` |
+| Porta da fila `Fila.publicar`, adapter SQS | `MessageQueue.publish`, `SqsMessageQueue` |
+| Campos do relatório `resumo`, `naoConformidades { item, descricao, gravidade }`, `gravidade`, `modelo`, `geradoEm`, evento de origem | `summary`, `nonConformities { item, description, severity }`, `severity`, `model`, `generatedAt`, `eventId` |
+| `RelatorioIaSchema`, `RelatorioSchema` (no detalhe) | `aiReportSchema`, `reportSchema` |
+| `GerarRelatorioUseCase`, `RelatorioRepository`, porta `LeitorDeVistoria` (dados para o prompt) | `GenerateReportUseCase`, `ReportRepository`, `InspectionReader` |
+| Porta de leitura do relatório na API (detalhe da vistoria) | `ReportReader` |
+| `LlmProvider.gerarJson`, `LlmComFallback`, provedores Gemini, reserva e simulado | `LlmProvider.generateJson`, `LlmWithFallback`, `GeminiProvider`, `FallbackProvider`, `StubProvider` |
+| Erros do LLM: cota, tempo esgotado, resposta inválida | `LlmQuotaError`, `LlmTimeoutError`, `LlmInvalidResponseError` |
+| Prompt `prompts/relatorio.v1.md`, montador do prompt | `prompts/report.v1.md`, `buildReportPrompt` |
+| Variáveis do LLM `GEMINI_API_KEY`, `GEMINI_MODELO`, `RESERVA_LLM_URL`, `RESERVA_LLM_CHAVE`, `RESERVA_LLM_MODELO` | `GEMINI_API_KEY`, `GEMINI_MODEL`, `FALLBACK_LLM_BASE_URL`, `FALLBACK_LLM_API_KEY`, `FALLBACK_LLM_MODEL` |
+| Entrada da Lambda, laço local de leitura da fila, despacho por tipo | `handler`, `localPoller`, `dispatchEvent` |
+| Decisão `{ decisao: APROVAR \| DEVOLVER, motivo }`, `DecisaoSchema`, rota `/decisao` | `{ decision: APPROVE \| RETURN, reason }`, `decisionSchema`, `/decision` |
+| Entidade `Vistoria`: `aprovar`, `devolver`; `DecidirVistoriaUseCase` | `Inspection`: `approve`, `returnToInspector`, `DecideInspectionUseCase` |
+| `MotivoObrigatorioError` (RN-06), motivo no histórico | `MissingReturnReasonError`, `StatusChange.reason` |
+| Notificação, `NotificarFiscalUseCase`, porta `Notificador`, adapter SES, remetente | `Notification`, `NotifyInspectorUseCase`, `Notifier`, `SesNotifier`, `NOTIFICATION_SENDER` |
+| Tabelas `Relatorio`, `OutboxEvento`, `Notificacao` | `reports`, `outbox_events`, `notifications` |
 
 Os códigos `RN-01` a `RN-10` não mudam: são o elo entre a regra no documento e o teste (`it('RN-04: ...')`). O valor de `message` continua em português.
