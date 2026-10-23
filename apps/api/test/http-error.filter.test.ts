@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  UnauthorizedException,
   type INestApplication,
 } from '@nestjs/common';
 import { createZodDto } from 'nestjs-zod';
@@ -48,6 +49,11 @@ class ProbeController {
   @Get('http')
   http(): never {
     throw new HttpException('Too many requests', HttpStatus.TOO_MANY_REQUESTS);
+  }
+
+  @Get('unauthorized')
+  unauthorized(): never {
+    throw new UnauthorizedException();
   }
 
   @Get('crash')
@@ -129,6 +135,16 @@ describe('HttpErrorFilter', () => {
     const response = await errorFor('get', 'http');
 
     expect(response.status).toBe(429);
+  });
+
+  it('maps an UnauthorizedException to 401 UNAUTHORIZED', async () => {
+    const response = await errorFor('get', 'unauthorized');
+
+    expect(response.status).toBe(401);
+    expect(response.body).toMatchObject({
+      code: 'UNAUTHORIZED',
+      message: ERROR_MESSAGES.UNAUTHORIZED,
+    });
   });
 
   it('answers 404 for an unknown route in the same format', async () => {

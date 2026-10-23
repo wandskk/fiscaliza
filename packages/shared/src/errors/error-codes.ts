@@ -11,6 +11,7 @@ export const ErrorCode = {
   RN_10: 'RN-10',
   VALIDATION_ERROR: 'VALIDATION_ERROR',
   NOT_FOUND: 'NOT_FOUND',
+  UNAUTHORIZED: 'UNAUTHORIZED',
   FORBIDDEN: 'FORBIDDEN',
   INTERNAL_ERROR: 'INTERNAL_ERROR',
 } as const;
@@ -32,6 +33,7 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   'RN-10': 'Obra encerrada não recebe vistoria nova.',
   VALIDATION_ERROR: 'Os dados enviados são inválidos.',
   NOT_FOUND: 'Registro não encontrado.',
+  UNAUTHORIZED: 'Sessão inválida ou expirada. Entre novamente.',
   FORBIDDEN: 'Você não tem permissão para esta ação.',
   INTERNAL_ERROR: 'Erro interno. Tente novamente em instantes.',
 };

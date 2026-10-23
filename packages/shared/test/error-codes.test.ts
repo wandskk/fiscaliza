@@ -18,6 +18,11 @@ describe('error codes', () => {
     ]);
   });
 
+  it('declares UNAUTHORIZED for 401 and FORBIDDEN for 403', () => {
+    expect(ErrorCode.UNAUTHORIZED).toBe('UNAUTHORIZED');
+    expect(ErrorCode.FORBIDDEN).toBe('FORBIDDEN');
+  });
+
   it('has a Portuguese message for every code', () => {
     for (const code of Object.values(ErrorCode)) {
       expect(ERROR_MESSAGES[code].length).toBeGreaterThan(0);

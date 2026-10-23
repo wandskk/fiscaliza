@@ -50,9 +50,10 @@ function toDetails(error: ZodError): ErrorDetail[] {
   return error.issues.map((issue) => ({ field: issue.path.join('.'), problem: issue.message }));
 }
 
-// 401 and 429 fall into VALIDATION_ERROR until spec 001 adds the authentication code
+// 429 has no code of its own in the contract, so it falls into VALIDATION_ERROR
 function codeForStatus(status: number): ErrorCode {
   if (status >= 500) return ErrorCode.INTERNAL_ERROR;
+  if (status === 401) return ErrorCode.UNAUTHORIZED;
   if (status === 403) return ErrorCode.FORBIDDEN;
   if (status === 404) return ErrorCode.NOT_FOUND;
   return ErrorCode.VALIDATION_ERROR;

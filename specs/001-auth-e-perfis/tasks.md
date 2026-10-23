@@ -6,7 +6,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
-| T05.1 | `shared`: `UsuarioAutenticadoSchema`, `MeRespostaSchema`, códigos `NAO_AUTENTICADO` e `SEM_PERMISSAO` | T04 | | 0,25 | | [ ] |
+| T05.1 | `shared`: `UsuarioAutenticadoSchema`, `MeRespostaSchema`, códigos `NAO_AUTENTICADO` e `SEM_PERMISSAO` | T04 | | 0,25 | 0,2 | [x] |
 | T05.2 | Migração `001_usuario` e seed dos 3 usuários de teste | T03 | [P] | 0,25 | | [ ] |
 | T05.3 | Porta `VerificadorToken` + adapter local + suíte de contrato | T05.1 | | 0,75 | | [ ] |
 | T05.4 | Adapter Cognito com `aws-jwt-verify` (access e ID token), testado com JWKS gerado no teste | T05.3 | | 1,25 | | [ ] |
