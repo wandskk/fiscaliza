@@ -96,6 +96,9 @@ Documentos (PROJETO.md, specs, planos, tarefas) ficam em português e usam os te
 | Tokens locais `local-fiscal`, `local-fiscal-2`, `local-gestor` | `local-inspector`, `local-inspector-2`, `local-manager` |
 | Migração `001_usuario` | `user` |
 | Web: `EntrarPage`, rota `/entrar`, `RotaProtegida`, `use-sessao` | `SignInPage`, `/sign-in`, `ProtectedRoute`, `use-session` |
+| Web: rotas `/obras`, `/obras/:id`, `/painel` | `/construction-sites`, `/construction-sites/:id`, `/dashboard` |
+| Web obras: `features/obras`, `obras.api.ts`, `use-obras`, `use-obra`, `use-salvar-obra`, `use-definir-fiscais`, `use-fiscais` | `features/construction-sites`, `construction-sites.api.ts`, `use-construction-sites`, `use-construction-site`, `use-save-construction-site`, `use-assign-inspectors`, `use-inspectors` |
+| Web obras: `ObraCard`, `ObraForm`, `FiscaisSelect`, `EncerrarObraDialog`, `ObrasPage`, `ObraDetalhePage` | `ConstructionSiteCard`, `ConstructionSiteForm`, `InspectorsSelect`, `CloseConstructionSiteDialog`, `ConstructionSitesPage`, `ConstructionSiteDetailPage` |
 | Módulos `vistorias`, `obras` | `inspections`, `construction-sites` |
 | Campos da obra `nome`, `contrato`, `endereco`, `encerrada`, `criadaEm`, quantidade de fiscais | `name`, `contract`, `address`, `closed`, `createdAt`, `inspectorCount` |
 | Resposta paginada `{ itens, total, pagina, limite }`, filtro `busca` | `{ items, total, page, limit }`, `search` |
