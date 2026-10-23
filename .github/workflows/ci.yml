@@ -13,6 +13,22 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Repository, /health and e2e tests run against a real Postgres, like the docker compose
+    services:
+      db:
+        image: postgres:16
+        env:
+          POSTGRES_USER: fiscaliza
+          POSTGRES_PASSWORD: dev
+          POSTGRES_DB: fiscaliza
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U fiscaliza -d fiscaliza"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://fiscaliza:dev@localhost:5432/fiscaliza
     steps:
       - uses: actions/checkout@v5
 
@@ -28,4 +44,5 @@ jobs:
       - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck
+      - run: pnpm --filter @fiscaliza/api db:deploy
       - run: pnpm test
