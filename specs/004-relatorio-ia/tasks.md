@@ -29,7 +29,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
-| T15.7 | `ReportCard` com selo "Sugestão da IA" e estados (presente, em geração, oculto); testes | T15.5, T10.1 | | 0,75 | | [ ] |
+| T15.7 | `ReportCard` com selo "Sugestão da IA" e estados (presente, em geração, oculto); testes | T15.5, T10.1 | | 0,75 | 0,05 | [x] |
 | | **Total** | | | **11,5** | | |
 
 ## Pronto quando

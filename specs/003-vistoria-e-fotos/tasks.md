@@ -38,11 +38,11 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
 | T15.1 | `vistorias.api.ts`, hooks e `utils/pode-editar`, `pode-enviar` com testes | T14.7, T09 | | 1,0 | 0,15 | [x] |
-| T15.2 | `StatusBadge` (cor + texto) e `HistoricoTimeline`, com testes | T15.1 | [P] | 0,75 | | [ ] |
+| T15.2 | `StatusBadge` (cor + texto) e `HistoricoTimeline`, com testes | T15.1 | [P] | 0,75 | 0,07 | [x] |
 | T15.3 | `use-upload-foto` com progresso e `FotoUploader` (FileDrop, validação RN-05 no front, remover) | T15.1 | | 2,0 | | [ ] |
 | T15.4 | `VistoriaForm` e `NovaVistoriaPage` (criar rascunho, anexar, enviar); testes do formulário | T15.3 | | 1,5 | | [ ] |
 | T15.5 | `VistoriaDetalhePage` (galeria, histórico, editar e enviar quando permitido, espaço do relatório) | T15.2, T15.4 | | 1,25 | | [ ] |
-| T15.6 | Lista de vistorias com filtro por status na `ObraDetalhePage` (carregando, vazio, erro) | T15.2 | [P] | 0,75 | | [ ] |
+| T15.6 | Lista de vistorias com filtro por status na `ObraDetalhePage` (carregando, vazio, erro) | T15.2 | [P] | 0,75 | 0,08 | [x] |
 | | **Subtotal web** | | | **7,25** | | |
 | | **Total** | | | **20,25** | | |
 
