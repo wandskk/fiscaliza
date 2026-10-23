@@ -18,6 +18,8 @@ export interface TestApp {
   logs: Record<string, unknown>[];
 }
 
+// nestjs-pino keeps its root logger in module state, so a second app in the same
+// file writes to the first app's logs: create one app per test file
 export async function createTestApp(options: TestAppOptions = {}): Promise<TestApp> {
   const logs: Record<string, unknown>[] = [];
   const moduleRef = await Test.createTestingModule({
