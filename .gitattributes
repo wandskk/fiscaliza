@@ -1,2 +1,11 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Scripts rodam em containers Linux: CRLF quebra o shell
+*.sh text eol=lf
+
+# Binários: o git não deve tentar normalizar nem mostrar diff de texto
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary

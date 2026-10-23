@@ -1,0 +1,25 @@
+# dependências
+node_modules/
+
+# saída de build e testes
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# segredos: só o .env.example é versionado
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# sistema e editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
