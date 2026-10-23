@@ -1,3 +1,4 @@
+import { type ReactNode } from 'react';
 import { cn } from '@/design-system/cn';
 import { EmptyState } from './EmptyState';
 
@@ -5,6 +6,8 @@ export interface TableColumn {
   key: string;
   label: string;
   sortable?: boolean;
+  // Custom cell content (links, badges); without it the cell shows the raw value
+  render?: (row: Readonly<Record<string, unknown>>) => ReactNode;
 }
 
 interface TableProps {
@@ -94,7 +97,7 @@ export function Table({
               <tr key={i} className="border-b border-border last:border-0 hover:bg-bg/50">
                 {columns.map((col) => (
                   <td key={col.key} className="px-4 py-3">
-                    {String(row[col.key] ?? '')}
+                    {col.render ? col.render(row) : String(row[col.key] ?? '')}
                   </td>
                 ))}
               </tr>

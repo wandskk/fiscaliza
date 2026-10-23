@@ -53,6 +53,14 @@ describe('Table', () => {
     expect(th).toHaveAttribute('aria-sort', 'descending');
   });
 
+  it('uses the column render function for custom cell content', () => {
+    const custom: TableColumn[] = [
+      { key: 'name', label: 'Nome', render: (row) => <a href="/x">{String(row.name)}!</a> },
+    ];
+    render(<Table columns={custom} data={[{ name: 'Ana' }]} />);
+    expect(screen.getByRole('link', { name: 'Ana!' })).toBeInTheDocument();
+  });
+
   it('does not set aria-sort on non-active sortable column', () => {
     render(<Table columns={columns} data={data} sortKey="id" sortDir="asc" />);
     const th = screen.getByRole('columnheader', { name: /Nome/ });
