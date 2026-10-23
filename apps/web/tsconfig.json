@@ -11,6 +11,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+    // Reads @fiscaliza/shared from its src, so dev, typecheck and tests need no build
+    "customConditions": ["source"],
     "noEmit": true
   },
   "include": ["src", "vitest.config.ts", "vite.config.ts"]
