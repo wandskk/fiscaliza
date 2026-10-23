@@ -10,7 +10,8 @@ const variantClasses: Record<ButtonVariant, string> = {
   secondary:
     'bg-surface text-text border border-border hover:bg-bg focus-visible:ring-2 focus-visible:ring-primary',
   ghost: 'text-text hover:bg-surface focus-visible:ring-2 focus-visible:ring-primary',
-  danger: 'bg-danger text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-danger',
+  danger:
+    'bg-danger text-primary-fg hover:opacity-90 focus-visible:ring-2 focus-visible:ring-danger',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

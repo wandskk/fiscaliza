@@ -73,6 +73,11 @@ describe('contrast ratios — light theme', () => {
     expect(contrastRatio(t.danger, t.surface)).toBeGreaterThanOrEqual(AA_NORMAL);
   });
 
+  // The danger button reuses primary-fg as its text color
+  it('primary-fg over danger meets AA normal (4.5:1)', () => {
+    expect(contrastRatio(t.primaryFg, t.danger)).toBeGreaterThanOrEqual(AA_NORMAL);
+  });
+
   it('info over surface meets AA normal (4.5:1)', () => {
     expect(contrastRatio(t.info, t.surface)).toBeGreaterThanOrEqual(AA_NORMAL);
   });
@@ -116,6 +121,11 @@ describe('contrast ratios — dark theme', () => {
 
   it('danger over surface meets AA normal (4.5:1)', () => {
     expect(contrastRatio(t.danger, t.surface)).toBeGreaterThanOrEqual(AA_NORMAL);
+  });
+
+  // The danger button reuses primary-fg as its text color
+  it('primary-fg over danger meets AA normal (4.5:1)', () => {
+    expect(contrastRatio(t.primaryFg, t.danger)).toBeGreaterThanOrEqual(AA_NORMAL);
   });
 
   it('info over surface meets AA normal (4.5:1)', () => {
