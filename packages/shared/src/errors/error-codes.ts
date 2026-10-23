@@ -14,6 +14,8 @@ export const ErrorCode = {
   UNAUTHORIZED: 'UNAUTHORIZED',
   FORBIDDEN: 'FORBIDDEN',
   INTERNAL_ERROR: 'INTERNAL_ERROR',
+  INVALID_PHOTO: 'INVALID_PHOTO',
+  INSPECTION_NOT_FOUND: 'INSPECTION_NOT_FOUND',
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
@@ -36,4 +38,6 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   UNAUTHORIZED: 'Sessão inválida ou expirada. Entre novamente.',
   FORBIDDEN: 'Você não tem permissão para esta ação.',
   INTERNAL_ERROR: 'Erro interno. Tente novamente em instantes.',
+  INVALID_PHOTO: 'A foto informada é inválida.',
+  INSPECTION_NOT_FOUND: 'Vistoria não encontrada.',
 };
