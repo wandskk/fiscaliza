@@ -20,10 +20,10 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
-| T14.4 | `obras.api.ts` e hooks (listar com busca, detalhe, salvar, definir fiscais, fiscais) | T14.3, T06 | | 0,75 | | [ ] |
-| T14.5 | `ObrasPage` com cards, busca com debounce, Skeleton, EmptyState e erro | T14.4 | | 1,0 | | [ ] |
-| T14.6 | `ObraForm` (criar e editar) em Dialog, `EncerrarObraDialog`, `FiscaisSelect`; testes do formulário | T14.4 | [P] | 1,5 | | [ ] |
-| T14.7 | `ObraDetalhePage` (dados, fiscais, ações do gestor) | T14.6 | | 0,75 | | [ ] |
+| T14.4 | `obras.api.ts` e hooks (listar com busca, detalhe, salvar, definir fiscais, fiscais) | T14.3, T06 | | 0,75 | 0,13 | [x] |
+| T14.5 | `ObrasPage` com cards, busca com debounce, Skeleton, EmptyState e erro | T14.4 | | 1,0 | 0,06 | [x] |
+| T14.6 | `ObraForm` (criar e editar) em Dialog, `EncerrarObraDialog`, `FiscaisSelect`; testes do formulário | T14.4 | [P] | 1,5 | 0,07 | [x] |
+| T14.7 | `ObraDetalhePage` (dados, fiscais, ações do gestor) | T14.6 | | 0,75 | 0,03 | [x] |
 | | **Subtotal web** | | | **4,0** | | |
 | | **Total** | | | **10,85** | | |
 
