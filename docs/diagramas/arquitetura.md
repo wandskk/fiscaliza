@@ -4,7 +4,7 @@
 flowchart LR
   subgraph Cliente
     Web["Web React servido por nginx<br/>porta 5173 no compose"]
-    MCP["Servidor MCP stdio<br/>planejado na spec 008"]
+    MCP["Servidor MCP stdio<br/>só leitura, spec 008"]
   end
 
   subgraph AWS["AWS ou LocalStack"]
@@ -57,7 +57,7 @@ API e worker são dois processos que só se falam pela mensagem no SQS e pelas t
 ## Notas de conferência com o código
 
 - O handler Lambda existe e é testado, mas o repositório não traz o deploy dele. No compose roda o `local-poller`, com o mesmo `dispatchEvent`.
-- O servidor MCP está só especificado (`specs/008-servidor-mcp`). `apps/mcp` ainda tem apenas o `package.json`.
+- O servidor MCP (`apps/mcp`, spec 008) roda por stdio no cliente MCP, fora do compose, e só lê a API com um token de gestor.
 - No ambiente local não há Cognito (`AUTH_MODE=local`, tokens de teste fixos) e o worker usa o provedor `stub` por padrão.
 - O web do compose é uma imagem nginx com o build do Vite. O `PROJETO.md` (seção 22) cita a Vercel para o deploy opcional.
 - O envio de e-mail usa SES v1 (`@aws-sdk/client-ses`) porque o LocalStack da comunidade não implementa o v2.

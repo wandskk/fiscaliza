@@ -19,7 +19,7 @@ Nenhuma RN. Constituição seção 9: decisões relevantes viram ADR em `docs/ad
 - `docs/diagramas/` com diagramas Mermaid conferidos contra o código atual: arquitetura (seção 7), envio da vistoria (5.1), decisão (5.2) e modelo de dados (do `schema.prisma` real, não da seção 11).
 - `README.md` na raiz na ordem da seção 30, em português: frase e vídeo, diagrama, como rodar (`docker compose up --build`, usuários de teste do modo local, modo Cognito opcional, MCP), decisões com link para os ADRs, como foi construído (SDD, link para `specs/`, tabela de estimado x real somada dos `tasks.md`), próximos passos.
 - Checklist da seção 31 conferido e marcado no `PROJETO.md`, com o que ficou de fora explicado.
-- Vídeo de até 2 minutos com o fluxo completo (gravado pelo Wanderson; o roteiro fica em `docs/roteiro-video.md`).
+- Vídeo de até 3 minutos com o fluxo completo (gravado pelo Wanderson; o roteiro fica em `docs/roteiro-video.md`).
 
 ## Fora do escopo
 - Deploy em nuvem (opcional pela seção 22).

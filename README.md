@@ -10,7 +10,7 @@ Vídeo: em breve
 flowchart LR
   subgraph Cliente
     Web["Web React servido por nginx<br/>porta 5173 no compose"]
-    MCP["Servidor MCP stdio<br/>planejado na spec 008"]
+    MCP["Servidor MCP stdio<br/>só leitura, spec 008"]
   end
 
   subgraph AWS["AWS ou LocalStack"]
@@ -56,7 +56,7 @@ flowchart LR
   MCP -. "Bearer de gestor, só leitura" .-> API
 ```
 
-Diagrama copiado de [arquitetura](docs/diagramas/arquitetura.md). O MCP já está implementado; a indicação de planejado no diagrama é anterior à implementação.
+Diagrama copiado de [arquitetura](docs/diagramas/arquitetura.md).
 
 Outros diagramas: [envio da vistoria](docs/diagramas/envio-da-vistoria.md), [decisão do gestor](docs/diagramas/decisao-do-gestor.md) e [modelo de dados](docs/diagramas/modelo-de-dados.md).
 

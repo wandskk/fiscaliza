@@ -1093,7 +1093,7 @@ Deploy da demonstração (opcional):
 | Worker | Lambda na conta AWS (empacotado do `apps/worker`; o `handler.ts` já existe, o deploy não está no repositório) |
 | Banco | Postgres gerenciado com plano gratuito |
 
-Se o deploy completo der trabalho demais, um vídeo de 2 minutos rodando local cumpre o papel.
+Se o deploy completo der trabalho demais, um vídeo de até 3 minutos rodando local cumpre o papel.
 
 ---
 
