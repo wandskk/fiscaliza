@@ -8,6 +8,7 @@ import { ConstructionSiteForm } from '@/features/construction-sites/components/C
 import { InspectorsSelect } from '@/features/construction-sites/components/InspectorsSelect';
 import { useConstructionSite } from '@/features/construction-sites/hooks/use-construction-site';
 import { useInspectors } from '@/features/construction-sites/hooks/use-inspectors';
+import { SiteInspectionsSection } from '@/features/inspections/components/SiteInspectionsSection';
 
 export function ConstructionSiteDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -42,6 +43,7 @@ export function ConstructionSiteDetailPage() {
 
   const { data } = site;
   const canManage = isManager && !data.closed;
+  const canCreateInspection = !data.closed && !!me && data.inspectorIds.includes(me.id);
   const selectedInspectors = inspectors.data?.filter((user) => data.inspectorIds.includes(user.id));
 
   return (
@@ -114,6 +116,7 @@ export function ConstructionSiteDetailPage() {
           />
         )}
       </Card>
+      <SiteInspectionsSection siteId={data.id} canCreate={canCreateInspection} />
       {canManage && (
         <>
           <ConstructionSiteForm open={editOpen} onOpenChange={setEditOpen} site={data} />

@@ -16,6 +16,23 @@ const detail = {
   createdAt: '2026-01-01T00:00:00.000Z',
 };
 
+const inspectionsPage = {
+  items: [
+    {
+      id: '3f0d3c1e-6d7e-4f55-9a4b-0a1b2c3d4e5f',
+      status: 'SUBMITTED',
+      compliance: 'COMPLIANT',
+      inspectorId: 'user-1',
+      createdAt: '2026-10-20T12:00:00.000Z',
+      updatedAt: '2026-10-21T12:00:00.000Z',
+      photoCount: 2,
+    },
+  ],
+  total: 1,
+  page: 1,
+  limit: 10,
+};
+
 describe('ConstructionSiteDetailPage', () => {
   const fetchMock = vi.fn<typeof fetch>();
 
@@ -33,6 +50,9 @@ describe('ConstructionSiteDetailPage', () => {
             role: token === 'Bearer local-manager' ? 'MANAGER' : 'INSPECTOR',
           }),
         );
+      }
+      if (path.includes('/inspections')) {
+        return Promise.resolve(Response.json(inspectionsPage));
       }
       if (path.includes('/users?')) {
         return Promise.resolve(
@@ -104,5 +124,62 @@ describe('ConstructionSiteDetailPage', () => {
     failed = false;
     await user.click(retry);
     expect(await screen.findByRole('heading', { name: 'Ponte Central' })).toBeInTheDocument();
+  });
+
+  it('lists the inspections and offers a new one only to the assigned inspector', async () => {
+    sessionStorage.setItem('fiscaliza-local-token', 'local-inspector');
+    fetchMock.mockImplementation((url) => {
+      const path = String(url);
+      if (path.endsWith('/me')) {
+        return Promise.resolve(
+          Response.json({
+            id: 'inspector-1',
+            email: 'ana@example.com',
+            name: 'Ana',
+            role: 'INSPECTOR',
+          }),
+        );
+      }
+      if (path.includes('/inspections')) return Promise.resolve(Response.json(inspectionsPage));
+      return Promise.resolve(Response.json(detail));
+    });
+    renderWithProviders(<AppRoutes />, { route: `/construction-sites/${id}` });
+
+    expect(await screen.findByRole('link', { name: /Ver vistoria/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Nova vistoria' })).toHaveAttribute(
+      'href',
+      `/inspections/new?site=${id}`,
+    );
+  });
+
+  it('hides the new inspection button from a manager and from an unassigned inspector', async () => {
+    sessionStorage.setItem('fiscaliza-local-token', 'local-manager');
+    renderWithProviders(<AppRoutes />, { route: `/construction-sites/${id}` });
+
+    expect(await screen.findByRole('link', { name: /Ver vistoria/ })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Nova vistoria' })).not.toBeInTheDocument();
+  });
+
+  it('hides the new inspection button on a closed site', async () => {
+    sessionStorage.setItem('fiscaliza-local-token', 'local-inspector');
+    fetchMock.mockImplementation((url) => {
+      const path = String(url);
+      if (path.endsWith('/me')) {
+        return Promise.resolve(
+          Response.json({
+            id: 'inspector-1',
+            email: 'ana@example.com',
+            name: 'Ana',
+            role: 'INSPECTOR',
+          }),
+        );
+      }
+      if (path.includes('/inspections')) return Promise.resolve(Response.json(inspectionsPage));
+      return Promise.resolve(Response.json({ ...detail, closed: true }));
+    });
+    renderWithProviders(<AppRoutes />, { route: `/construction-sites/${id}` });
+
+    expect(await screen.findByRole('link', { name: /Ver vistoria/ })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Nova vistoria' })).not.toBeInTheDocument();
   });
 });
