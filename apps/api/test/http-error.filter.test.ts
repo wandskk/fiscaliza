@@ -38,6 +38,11 @@ class ProbeController {
     throw new NotFoundError(ErrorCode.CONSTRUCTION_SITE_NOT_FOUND);
   }
 
+  @Get('not-owner')
+  notOwner(): never {
+    throw new ForbiddenError(ErrorCode.RN_01);
+  }
+
   @Get('conflict')
   conflict(): never {
     throw new ConflictError(ErrorCode.DUPLICATE_CONTRACT);
@@ -114,6 +119,13 @@ describe('HttpErrorFilter', () => {
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe('CONSTRUCTION_SITE_NOT_FOUND');
+  });
+
+  it('maps a ForbiddenError with a business rule code (RN-01) to 403', async () => {
+    const response = await errorFor('get', 'not-owner');
+
+    expect(response.status).toBe(403);
+    expect(response.body).toMatchObject({ code: 'RN-01', message: ERROR_MESSAGES['RN-01'] });
   });
 
   it('maps ConflictError to 409', async () => {

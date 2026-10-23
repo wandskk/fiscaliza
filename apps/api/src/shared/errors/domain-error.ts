@@ -20,8 +20,9 @@ export class NotFoundError extends DomainError {
 
 export class ConflictError extends DomainError {}
 
+// RN-01 (inspection of another inspector) is a ForbiddenError with its own code
 export class ForbiddenError extends DomainError {
-  constructor(details: ErrorDetail[] = []) {
-    super(ErrorCode.FORBIDDEN, details);
+  constructor(code: ErrorCode = ErrorCode.FORBIDDEN, details: ErrorDetail[] = []) {
+    super(code, details);
   }
 }

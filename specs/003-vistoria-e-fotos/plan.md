@@ -55,7 +55,7 @@ Decisões:
 - **Limite de 10 fotos conferido nas duas etapas**: ao assinar (para não gerar URL inútil) e ao confirmar (duas abas assinando ao mesmo tempo).
 - **URL de leitura pré-assinada** (5 min) gerada no detalhe; o bucket continua privado (seção 24).
 - **`UnidadeDeTrabalho`** criada aqui (ainda sem outbox) porque `salvar` escreve vistoria, fotos e histórico juntos; a spec 004 só acrescenta a outbox na mesma transação.
-- Erros de autorização do domínio (RN-01) mapeados para 403 no filtro: `DomainError` ganha um campo `tipo` (`regra` → 422, `permissao` → 403, `naoEncontrado` → 404), ajuste pequeno no filtro da T03.
+- Erros de autorização do domínio (RN-01) mapeados para 403 no filtro. Em vez de um campo `tipo`, o status vem da subclasse, padrão que a spec 002 já usa: `NotFoundError` → 404, `ForbiddenError` → 403, `ConflictError` → 409, qualquer outro `DomainError` → 422. `NotFoundError` e `ForbiddenError` aceitam um código próprio, então o erro de RN-01 é um `ForbiddenError` com código `RN-01`.
 
 Contratos no `shared`: `vistoria.schema.ts` (`CriarVistoriaSchema`, `EditarVistoriaSchema`, `VistoriaDetalheSchema`, `FiltroVistoriasSchema`), `upload.schema.ts` (`SolicitarUploadSchema` com tipos e 10 MB, `ConfirmarFotoSchema`), constantes `MAX_FOTOS = 10`, `MIN_OBSERVACAO = 30`, `TAMANHO_MAX_FOTO`.
 
