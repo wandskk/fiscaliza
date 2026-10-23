@@ -1,7 +1,9 @@
 # 003 Vistoria e fotos: plano
 
 ## Banco
-Migração `003_vistorias`: `Vistoria`, `Foto`, `HistoricoStatus` e enums `Situacao` e `StatusVistoria` (seção 11). Índices: `Vistoria(obraId, status)` (já no modelo), `Vistoria(fiscalId)`, `HistoricoStatus(vistoriaId, em)`, `Foto(vistoriaId)`. Acréscimo ao modelo: `HistoricoStatus.usuario` como relação com `Usuario`, para mostrar o nome na linha do tempo.
+Migração `003_vistorias`: `Vistoria`, `Foto`, `HistoricoStatus` e enums `Situacao` e `StatusVistoria` (seção 11). Índices: `Vistoria(obraId, status)` (já no modelo), `Vistoria(fiscalId)`, `HistoricoStatus(vistoriaId, em)`, `Foto(vistoriaId)`. Acréscimo ao modelo: `HistoricoStatus.usuario` como relação com `Usuario`, para mostrar o nome na linha do tempo, e `Vistoria.fiscal` como relação com `Usuario` (chave estrangeira do `fiscalId`).
+
+Seed: uma vistoria em cada status na obra do primeiro fiscal, com o histórico que leva até ele. As linhas de foto entram no seed da T08.1; os arquivos no bucket (uma imagem de exemplo por chave) entram na T09.1, junto com o SDK do S3.
 
 ## Endpoints
 

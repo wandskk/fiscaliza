@@ -23,7 +23,9 @@ model User {
   email String @unique
   role  Role
 
-  assignments SiteAssignment[]
+  assignments   SiteAssignment[]
+  inspections   Inspection[]
+  statusChanges InspectionStatusHistory[]
 
   @@map("users")
 }
@@ -36,6 +38,7 @@ model ConstructionSite {
   closed      Boolean          @default(false)
   createdAt   DateTime         @default(now())
   assignments SiteAssignment[]
+  inspections Inspection[]
 
   // Trigram indexes serve the "contains" search (ILIKE '%x%'), which a btree cannot
   @@index([name(ops: raw("gin_trgm_ops"))], type: Gin)
@@ -52,4 +55,64 @@ model SiteAssignment {
   @@id([constructionSiteId, inspectorId])
   @@index([inspectorId])
   @@map("site_assignments")
+}
+
+enum Compliance {
+  COMPLIANT
+  NON_COMPLIANT
+}
+
+enum InspectionStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  RETURNED
+}
+
+model Inspection {
+  id                 String                    @id @default(uuid())
+  constructionSiteId String
+  inspectorId        String
+  notes              String
+  compliance         Compliance
+  status             InspectionStatus          @default(DRAFT)
+  returnReason       String?
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+  constructionSite   ConstructionSite          @relation(fields: [constructionSiteId], references: [id])
+  inspector          User                      @relation(fields: [inspectorId], references: [id])
+  photos             Photo[]
+  history            InspectionStatusHistory[]
+
+  @@index([constructionSiteId, status])
+  @@index([inspectorId])
+  @@map("inspections")
+}
+
+model Photo {
+  id           String     @id @default(uuid())
+  inspectionId String
+  // S3 object key
+  key          String     @unique
+  contentType  String
+  size         Int
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  @@index([inspectionId])
+  @@map("photos")
+}
+
+model InspectionStatusHistory {
+  id           String            @id @default(uuid())
+  inspectionId String
+  from         InspectionStatus?
+  to           InspectionStatus
+  userId       String
+  at           DateTime          @default(now())
+  inspection   Inspection        @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+  // The timeline shows who changed the status by name
+  user         User              @relation(fields: [userId], references: [id])
+
+  @@index([inspectionId, at])
+  @@map("inspection_status_history")
 }

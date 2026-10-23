@@ -16,7 +16,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
-| T08.1 | Migração `003_vistorias` e seed com vistorias em cada status | T06.2 | | 0,5 | | [ ] |
+| T08.1 | Migração `003_vistorias` e seed com vistorias em cada status | T06.2 | | 0,5 | 0,4 | [x] |
 | T08.2 | `UnidadeDeTrabalho` em `shared/database` (transação propagada por `AsyncLocalStorage`) com teste de rollback | T03 | [P] | 0,75 | 0,3 | [x] |
 | T08.3 | `DomainError` com `tipo` e ajuste do filtro (403 para RN-01) | T03.4 | [P] | 0,25 | | [ ] |
 | T08.4 | Porta `VistoriaRepository`, repositório em memória; casos de uso criar (`RN-01`, `RN-10` via `ObraAcesso`), editar, detalhar, listar da obra, enviar | T07.4, T06.6 | | 2,0 | | [ ] |
