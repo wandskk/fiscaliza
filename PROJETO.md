@@ -882,11 +882,11 @@ apps/web/src/
 | `/sign-in` | público | Login (usuário de teste no modo local, e-mail e senha no Cognito) | pronta |
 | `/` | todos | Redireciona cada perfil para a sua tela inicial | pronta |
 | `/construction-sites` | todos | Lista em cards com busca | pronta |
-| `/construction-sites/:id` | todos | Dados da obra e fiscais atribuídos; a lista de vistorias com filtro por status vem na spec 003 (T15.6) | parcial |
+| `/construction-sites/:id` | todos | Dados da obra, fiscais atribuídos e vistorias com filtro por status e paginação | pronta |
 | `/dashboard` | gestor | Totais por status, resumo por obra e vistorias aguardando decisão | pronta |
 | `/design-system` | só em build de desenvolvimento | Vitrine dos componentes base | pronta |
-| `/inspections/new?site=:id` | fiscal | Formulário e upload de fotos | prevista (spec 003, T15.4) |
-| `/inspections/:id` | todos | Detalhe, galeria, relatório da IA, histórico e ações | prevista (specs 003 a 005, T15.5 a T15.8) |
+| `/inspections/new?site=:id` | fiscal | Formulário e upload de fotos | pronta |
+| `/inspections/:id` | todos | Detalhe, galeria, relatório da IA, histórico e ações | pronta |
 
 ---
 
@@ -1060,7 +1060,7 @@ Variáveis principais:
 | `PHOTOS_BUCKET` | api | `fiscaliza-photos` |
 | `INSPECTIONS_QUEUE_URL` | api, worker | URL da fila |
 | `OUTBOX_PUBLISHER_ENABLED` | api | `true` (`false` nos testes) |
-| `RATE_LIMIT_PER_MINUTE` | api | `100` (previsto na spec 000, T03.7; ainda não está no código) |
+| `RATE_LIMIT_PER_MINUTE` | api | `100` (implementado no módulo `shared/rate-limit`) |
 | `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | api | IDs do User Pool (obrigatórios com `AUTH_MODE=cognito`) |
 | `AUTH_MODE` | api | `cognito` ou `local` |
 | `NOTIFICATION_SENDER` | worker | `no-reply@fiscaliza.local` (na AWS real, identidade verificada no SES) |
@@ -1227,7 +1227,7 @@ Anotar tempo estimado e real de cada tarefa no próprio `tasks.md`.
 
 ## 26. Servidor MCP
 
-`apps/mcp`: servidor MCP em TypeScript (transporte stdio) que consulta a API com um token de gestor, lido das variáveis `FISCALIZA_API_URL` e `FISCALIZA_API_TOKEN`. Está especificado em `specs/008-servidor-mcp`; nesta versão `apps/mcp` ainda tem só o `package.json`.
+`apps/mcp`: servidor MCP em TypeScript (transporte stdio) que consulta a API com um token de gestor, lido das variáveis `FISCALIZA_API_URL` e `FISCALIZA_API_TOKEN`. Implementado em `apps/mcp`, com as três ferramentas e instruções em `apps/mcp/README.md`.
 
 | Tool | Entrada | Retorno |
 |---|---|---|
@@ -1333,14 +1333,14 @@ Nunca coloque segredo em arquivo versionado.
 
 ## 31. Checklist de pronto
 
-- [ ] `docker compose up --build` sobe tudo do zero
-- [ ] Login com usuário fiscal e gestor
-- [ ] Fluxo completo: obra → vistoria → fotos → enviar → relatório da IA → aprovar ou devolver → notificação
-- [ ] Todas as RN-01 a RN-10 com teste
-- [ ] Lint, typecheck e testes verdes no CI
-- [ ] Swagger em `/api/docs`
-- [ ] Tema claro e escuro, navegação por teclado
-- [ ] Nenhum segredo no histórico do Git
-- [ ] `specs/` completo, com tempo estimado x real
-- [ ] README com diagrama, vídeo e decisões
-- [ ] Alerta de orçamento criado na AWS
+- [x] `docker compose up --build` sobe tudo do zero. Os cinco serviços sobem saudáveis, conforme validação do ambiente local informada em 2026-10-23.
+- [x] Login com usuário fiscal e gestor. Testes de sessão e router no web, além de `GET /me` no smoke local.
+- [x] Fluxo completo: obra → vistoria → fotos → enviar → relatório da IA → aprovar ou devolver → notificação. `smoke:e2e`, 12 passos aprovados em 2026-10-23.
+- [x] Todas as RN-01 a RN-10 com teste. Testes nomeados em `apps/api/test` cobrem domínio, casos de uso e endpoints.
+- [x] Lint, typecheck e testes verdes no CI. `.github/workflows/ci.yml` executa os três gates em pull requests e na main.
+- [x] Swagger em `/api/docs`. Configurado no bootstrap da API e documentado no README.
+- [x] Tema claro e escuro, navegação por teclado. Testes do ThemeProvider, contraste e componentes acessíveis do design system.
+- [x] Nenhum segredo real identificado no histórico do Git. Busca em `git log -p` por `secret|password|api[_-]?key|AKIA` em 2026-10-23 retornou 87 ocorrências de variáveis, exemplos e fixtures; inspeção não identificou credenciais reais, sem substituir auditoria especializada.
+- [x] `specs/` com tempo estimado x real. `scripts/time-report.mjs` soma tarefas concluídas; tarefas pendentes continuam indicadas nos arquivos.
+- [ ] README com diagrama, vídeo e decisões. Diagrama e decisões presentes; Wanderson ainda precisa gravar e publicar o vídeo.
+- [ ] Alerta de orçamento criado na AWS. Depende da conta e da confirmação de Wanderson; `infra/aws/orcamento.md` ainda não existe nesta revisão.
