@@ -17,13 +17,13 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
-| T11.1 | `apps/worker`: package, tsconfig, ESLint (regra de camadas), Vitest, `config.ts` com Zod, logger pino, cliente Prisma gerado do schema da API, `.env.example`; scripts `dev`, `build`, `lint`, `typecheck`, `test` | T10.2 | | 1,0 | | [ ] |
-| T11.2 | `Report` (domínio), portas, `GenerateReportUseCase` com fakes em memória; testes `RN-08` (não muda status), idempotência por `eventId`, ignora vistoria não `SUBMITTED`, substitui relatório de envio anterior | T11.1 | | 1,0 | | [ ] |
-| T11.3 | `LlmProvider`, erros, `LlmWithFallback`, `StubProvider`, `buildReportPrompt` + `prompts/report.v1.md`; testes da cadeia (inválido tenta 1 vez, cota passa adiante, todos falham lança) e do prompt (delimitação, corte em 2.000) | T11.1 | [P] | 1,25 | | [ ] |
-| T11.4 | `GeminiProvider` e `FallbackProvider` por `fetch`, com testes de `fetch` simulado (sucesso, 429, timeout, JSON inválido) | T11.3 | | 1,0 | | [ ] |
-| T11.5 | `PrismaInspectionReader` e `PrismaReportRepository` (`upsert`); integração contra Postgres | T11.2 | [P] | 0,75 | | [ ] |
-| T11.6 | `dispatchEvent`, `handler` (Lambda com `batchItemFailures`), `localPoller`, Dockerfile e serviço `worker` no compose; CI roda os testes do worker; teste ponta a ponta: enviar pela API → outbox → SQS → poller → relatório no banco (provedor `stub`) | T10.4, T11.4, T11.5 | | 1,5 | | [ ] |
-| | **Subtotal T11** | | | **6,5** | | |
+| T11.1 | `apps/worker`: package, tsconfig, ESLint (regra de camadas), Vitest, `config.ts` com Zod, logger pino, cliente Prisma gerado do schema da API, `.env.example`; scripts `dev`, `build`, `lint`, `typecheck`, `test` | T10.2 | | 1,0 | 0,07 | [x] |
+| T11.2 | `Report` (domínio), portas, `GenerateReportUseCase` com fakes em memória; testes `RN-08` (não muda status), idempotência por `eventId`, ignora vistoria não `SUBMITTED`, substitui relatório de envio anterior | T11.1 | | 1,0 | 0,05 | [x] |
+| T11.3 | `LlmProvider`, erros, `LlmWithFallback`, `StubProvider`, `buildReportPrompt` + `prompts/report.v1.md`; testes da cadeia (inválido tenta 1 vez, cota passa adiante, todos falham lança) e do prompt (delimitação, corte em 2.000) | T11.1 | [P] | 1,25 | 0,06 | [x] |
+| T11.4 | `GeminiProvider` e `FallbackProvider` por `fetch`, com testes de `fetch` simulado (sucesso, 429, timeout, JSON inválido) | T11.3 | | 1,0 | 0,05 | [x] |
+| T11.5 | `PrismaInspectionReader` e `PrismaReportRepository` (`upsert`); integração contra Postgres | T11.2 | [P] | 0,75 | 0,04 | [x] |
+| T11.6 | `dispatchEvent`, `handler` (Lambda com `batchItemFailures`), `localPoller`, Dockerfile e serviço `worker` no compose; CI roda os testes do worker; teste ponta a ponta: enviar pela API → outbox → SQS → poller → relatório no banco (provedor `stub`) | T10.4, T11.4, T11.5 | | 1,5 | 0,08 | [x] |
+| | **Subtotal T11** | | | **6,5** | **0,35** | |
 
 ## Web (T15, parte do relatório)
 
