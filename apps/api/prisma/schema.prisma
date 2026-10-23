@@ -23,5 +23,33 @@ model User {
   email String @unique
   role  Role
 
+  assignments SiteAssignment[]
+
   @@map("users")
+}
+
+model ConstructionSite {
+  id          String           @id @default(uuid())
+  name        String
+  contract    String           @unique
+  address     String
+  closed      Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  assignments SiteAssignment[]
+
+  // Trigram indexes serve the "contains" search (ILIKE '%x%'), which a btree cannot
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@index([contract(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@map("construction_sites")
+}
+
+model SiteAssignment {
+  constructionSiteId String
+  inspectorId        String
+  constructionSite   ConstructionSite @relation(fields: [constructionSiteId], references: [id], onDelete: Cascade)
+  inspector          User             @relation(fields: [inspectorId], references: [id])
+
+  @@id([constructionSiteId, inspectorId])
+  @@index([inspectorId])
+  @@map("site_assignments")
 }

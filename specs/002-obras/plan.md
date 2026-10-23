@@ -1,7 +1,7 @@
 # 002 Obras: plano
 
 ## Banco
-Migração `002_obras`: modelos `Obra` e `ObraFiscal` da seção 11, relação `Usuario.obras`. Índices: `Obra.contrato` (único, já no modelo), `ObraFiscal(fiscalId)` para a listagem do fiscal, e índice `lower(nome)` para a busca (via SQL na migração, pois o Prisma não declara índice funcional).
+Migração `002_obras`: modelos `Obra` e `ObraFiscal` da seção 11, relação `Usuario.obras`. Índices: `Obra.contrato` (único, já no modelo), `ObraFiscal(fiscalId)` para a listagem do fiscal, e índices GIN com `pg_trgm` em `nome` e `contrato` para a busca. A busca é "contém" sem diferenciar maiúsculas (`ILIKE '%x%'`), que um índice btree em `lower(nome)` não atende; o trigram atende e o Prisma declara no schema (`type: Gin`), então não há drift. A extensão é criada na própria migração.
 
 ## Endpoints
 
@@ -56,6 +56,6 @@ features/obras/
 ## Riscos
 | Risco | Mitigação |
 |---|---|
-| Busca lenta sem índice | índice em `lower(nome)`; contrato já é único |
+| Busca lenta sem índice | índices trigram (GIN) em nome e contrato |
 | Endpoints novos fora do `PROJETO.md` | atualizar a seção 12.1 no mesmo commit da spec |
 | Fiscal removido da obra com vistoria em rascunho | fica para a 003: ele perde acesso e o rascunho fica parado (anotado como limitação) |
