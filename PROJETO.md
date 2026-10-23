@@ -1343,4 +1343,4 @@ Nunca coloque segredo em arquivo versionado.
 - [x] Nenhum segredo real identificado no histórico do Git. Busca em `git log -p` por `secret|password|api[_-]?key|AKIA` em 2026-10-23 retornou 87 ocorrências de variáveis, exemplos e fixtures; inspeção não identificou credenciais reais, sem substituir auditoria especializada.
 - [x] `specs/` com tempo estimado x real. `scripts/time-report.mjs` soma tarefas concluídas; tarefas pendentes continuam indicadas nos arquivos.
 - [ ] README com diagrama, vídeo e decisões. Diagrama e decisões presentes; Wanderson ainda precisa gravar e publicar o vídeo.
-- [ ] Alerta de orçamento criado na AWS. Depende da conta e da confirmação de Wanderson; `infra/aws/orcamento.md` ainda não existe nesta revisão.
+- [ ] Alerta de orçamento criado na AWS. Depende da conta e da confirmação de Wanderson; passo a passo em [`infra/aws/orcamento.md`](infra/aws/orcamento.md).
