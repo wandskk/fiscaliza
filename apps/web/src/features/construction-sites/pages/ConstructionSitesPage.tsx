@@ -1,3 +1,4 @@
+import { Role } from '@fiscaliza/shared';
 import { useEffect, useState } from 'react';
 import { Button, EmptyState, Input, Skeleton } from '@/design-system';
 import { useMe } from '@/features/auth/hooks/use-me';
@@ -14,7 +15,7 @@ export function ConstructionSitesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const { data: me } = useMe();
   const sites = useConstructionSites({ search, page, limit: PAGE_SIZE });
-  const canCreate = me?.role === 'MANAGER';
+  const canCreate = me?.role === Role.MANAGER;
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
