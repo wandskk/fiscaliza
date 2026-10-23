@@ -24,6 +24,7 @@ describe('PrismaInspectionRepository', () => {
   const first = new Date('2026-10-23T12:00:00.000Z');
   const later = new Date('2026-10-23T12:01:00.000Z');
   const clock = { now: () => new Date(first) };
+  const middleClock = { now: () => new Date('2026-10-23T12:00:30.000Z') };
   const laterClock = { now: () => new Date(later) };
   const make = () =>
     Inspection.create(
@@ -113,7 +114,8 @@ describe('PrismaInspectionRepository', () => {
       inspectorId,
       clock,
     );
-    inspection.submit(inspectorId, clock);
+    // Each change at its own instant: the history is ordered by time, ties fall back to the random id
+    inspection.submit(inspectorId, middleClock);
     inspection.returnToInspector(managerId, 'Fotos sem foco e sem a armação.', laterClock);
     await work.run(() => repository.save(inspection));
     const restored = await repository.findById(inspection.id);
