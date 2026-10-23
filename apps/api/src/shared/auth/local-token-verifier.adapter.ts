@@ -1,4 +1,5 @@
 import { Role } from '@fiscaliza/shared';
+import { CognitoGroup } from '../../modules/auth/domain/user.entity';
 import { LOCAL_USERS } from './local-users';
 import {
   InvalidTokenError,
@@ -8,8 +9,8 @@ import {
 } from './token-verifier.port';
 
 const GROUP_BY_ROLE: Record<Role, string> = {
-  [Role.INSPECTOR]: 'inspector',
-  [Role.MANAGER]: 'manager',
+  [Role.INSPECTOR]: CognitoGroup.INSPECTOR,
+  [Role.MANAGER]: CognitoGroup.MANAGER,
 };
 
 // The bearer value is the test user key itself, for both the access and the ID token
