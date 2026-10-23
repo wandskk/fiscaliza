@@ -1,4 +1,4 @@
-import { Role, type AuthenticatedUser } from '@fiscaliza/shared';
+import { Role, type MeResponse } from '@fiscaliza/shared';
 
 // Shared by the local verifier and the seed, so the token user always exists in the database
 export const LOCAL_USERS = {
@@ -20,4 +20,4 @@ export const LOCAL_USERS = {
     name: 'Gestor de Teste',
     role: Role.MANAGER,
   },
-} as const satisfies Record<string, AuthenticatedUser>;
+} as const satisfies Record<string, MeResponse>;

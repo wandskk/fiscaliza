@@ -1,4 +1,4 @@
-import { authenticatedUserSchema, Role } from '@fiscaliza/shared';
+import { meResponseSchema, Role } from '@fiscaliza/shared';
 import { describe, expect, it } from 'vitest';
 import { LOCAL_USERS } from '../src/shared/auth/local-users';
 
@@ -11,8 +11,8 @@ describe('LOCAL_USERS', () => {
     ]);
   });
 
-  it('follows the authenticated user contract, with unique ids and e-mails', () => {
-    const users = Object.values(LOCAL_USERS).map((user) => authenticatedUserSchema.parse(user));
+  it('follows the /me contract, with unique ids and e-mails', () => {
+    const users = Object.values(LOCAL_USERS).map((user) => meResponseSchema.parse(user));
 
     expect(new Set(users.map((user) => user.id)).size).toBe(3);
     expect(new Set(users.map((user) => user.email)).size).toBe(3);

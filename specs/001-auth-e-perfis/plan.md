@@ -26,11 +26,12 @@ apps/api/src/
 Decisões:
 - **Porta `VerificadorToken`** porque existe troca real (Cognito x local). O guard não sabe qual está ligado.
 - **JwtGuard global** com `@Publico()` nas exceções (`/health`, docs): esquecer o guard numa rota nova fica seguro por padrão.
-- **Usuário sincronizado só no `/me`** (seção 15). Os outros casos de uso recebem `UsuarioAutenticado { id, email, nome, perfil }` do token e não consultam a tabela. O front chama `/me` logo após o login, então o registro existe antes de qualquer obra ou vistoria. Para o modo local, o seed cria os três usuários de teste.
+- **Usuário sincronizado só no `/me`** (seção 15). Os outros casos de uso recebem `UsuarioAutenticado { id, perfil }`, que é o que o access token garante (`sub` e grupos), e não consultam a tabela. O front chama `/me` logo após o login, então o registro existe antes de qualquer obra ou vistoria. Para o modo local, o seed cria os três usuários de teste.
 - **Nome e e-mail**: o access token do Cognito não traz `name` nem `email`. Só no `/me`, o front envia também o ID token (header `x-id-token`), validado pelo mesmo verificador com `token_use=id` e o mesmo `sub`; dele saem `name` e `email`. Sem `name`, o nome é o e-mail.
-- Teste de contrato dos dois adapters com a mesma suíte (mesmas expectativas de `UsuarioAutenticado`).
+- A porta tem dois métodos: access token → `{ sub, grupos }` e ID token → `{ sub, email, nome? }`. O perfil sai de `perfilDoGrupo` no guard, para a regra ficar no domínio e não em cada adapter.
+- Teste de contrato dos dois adapters com a mesma suíte (mesmas expectativas para os dois métodos).
 
-Contrato no `shared`: `perfil.ts` (já existe), `UsuarioAutenticadoSchema`, `MeRespostaSchema`, códigos `NAO_AUTENTICADO` e `SEM_PERMISSAO`.
+Contrato no `shared`: `perfil.ts` (já existe), `UsuarioAutenticadoSchema` (`id`, `perfil`), `MeRespostaSchema` (`id`, `email`, `nome`, `perfil`), códigos `NAO_AUTENTICADO` e `SEM_PERMISSAO`.
 
 Variáveis novas no `.env.example`: `AUTH_MODE`, `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID`, `COGNITO_REGION`.
 
