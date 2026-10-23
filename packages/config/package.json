@@ -9,7 +9,9 @@
     "./tsconfig.base.json": "./tsconfig.base.json"
   },
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint . --ignore-pattern \"test/fixtures/**\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@eslint/js": "^9.39.5",
@@ -17,6 +19,10 @@
     "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-import": "^2.32.0",
     "typescript-eslint": "^8.72.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "vitest": "^4.1.12"
   },
   "peerDependencies": {
     "eslint": "^9.39.5",
