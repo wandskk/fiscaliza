@@ -41,6 +41,8 @@ services:
         required: false
     # Take precedence over the .env: inside the compose network the hosts are db and aws
     environment:
+      # The image is built for production; locally the compose runs it with the test users
+      NODE_ENV: development
       DATABASE_URL: postgresql://fiscaliza:dev@db:5432/fiscaliza
       AWS_ENDPOINT: http://aws:4566
       INSPECTIONS_QUEUE_URL: http://aws:4566/000000000000/fiscaliza-inspections

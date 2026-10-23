@@ -31,3 +31,50 @@ describe('loadConfig', () => {
     expect(() => loadConfig({ ...TEST_ENV, NODE_ENV: 'staging' })).toThrow(/NODE_ENV: /);
   });
 });
+
+describe('loadConfig (auth)', () => {
+  const cognito = {
+    ...TEST_ENV,
+    AUTH_MODE: 'cognito',
+    COGNITO_USER_POOL_ID: 'us-east-1_AbC123',
+    COGNITO_CLIENT_ID: 'client-123',
+  };
+
+  it('defaults to the local test users outside production', () => {
+    expect(loadConfig({ DATABASE_URL: TEST_ENV.DATABASE_URL }).auth).toEqual({ mode: 'local' });
+  });
+
+  it('refuses AUTH_MODE=local in production', () => {
+    expect(() => loadConfig({ ...TEST_ENV, NODE_ENV: 'production', AUTH_MODE: 'local' })).toThrow(
+      /AUTH_MODE: .*produção/,
+    );
+  });
+
+  it('asks for AUTH_MODE in production when it is not set', () => {
+    expect(() => loadConfig({ ...TEST_ENV, NODE_ENV: 'production' })).toThrow(
+      /AUTH_MODE: obrigatória/,
+    );
+  });
+
+  it('groups the User Pool and the client in auth when AUTH_MODE=cognito', () => {
+    expect(loadConfig({ ...cognito, NODE_ENV: 'production' }).auth).toEqual({
+      mode: 'cognito',
+      userPoolId: 'us-east-1_AbC123',
+      clientId: 'client-123',
+    });
+  });
+
+  it('names the missing Cognito variables', () => {
+    const env = { ...cognito, COGNITO_USER_POOL_ID: '', COGNITO_CLIENT_ID: undefined };
+
+    expect(() => loadConfig(env)).toThrow(
+      /COGNITO_USER_POOL_ID: obrigatória\nCOGNITO_CLIENT_ID: obrigatória/,
+    );
+  });
+
+  it('rejects a User Pool id without the region prefix', () => {
+    expect(() => loadConfig({ ...cognito, COGNITO_USER_POOL_ID: 'AbC123' })).toThrow(
+      /COGNITO_USER_POOL_ID: /,
+    );
+  });
+});

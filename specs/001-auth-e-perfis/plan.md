@@ -33,7 +33,7 @@ Decisões:
 
 Contrato no `shared`: `perfil.ts` (já existe), `UsuarioAutenticadoSchema` (`id`, `perfil`), `MeRespostaSchema` (`id`, `email`, `nome`, `perfil`), códigos `NAO_AUTENTICADO` e `SEM_PERMISSAO`.
 
-Variáveis novas no `.env.example`: `AUTH_MODE`, `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID`, `COGNITO_REGION`.
+Variáveis novas no `.env.example` da API: `AUTH_MODE` (padrão `local`, recusado com `NODE_ENV=production`), `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID`. A API não precisa de `COGNITO_REGION`: a região é o prefixo do id do User Pool. A variável fica para o web (Amplify).
 
 ## Web (depende da T13, design system)
 
