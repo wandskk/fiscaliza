@@ -14,6 +14,10 @@ export const ErrorCode = {
   UNAUTHORIZED: 'UNAUTHORIZED',
   FORBIDDEN: 'FORBIDDEN',
   INTERNAL_ERROR: 'INTERNAL_ERROR',
+  DUPLICATE_CONTRACT: 'DUPLICATE_CONTRACT',
+  CONSTRUCTION_SITE_CLOSED: 'CONSTRUCTION_SITE_CLOSED',
+  INVALID_INSPECTOR: 'INVALID_INSPECTOR',
+  CONSTRUCTION_SITE_NOT_FOUND: 'CONSTRUCTION_SITE_NOT_FOUND',
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
@@ -36,4 +40,8 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   UNAUTHORIZED: 'Sessão inválida ou expirada. Entre novamente.',
   FORBIDDEN: 'Você não tem permissão para esta ação.',
   INTERNAL_ERROR: 'Erro interno. Tente novamente em instantes.',
+  DUPLICATE_CONTRACT: 'Já existe uma obra com esse número de contrato.',
+  CONSTRUCTION_SITE_CLOSED: 'Obra encerrada não pode ser alterada nem reaberta.',
+  INVALID_INSPECTOR: 'Algum dos usuários escolhidos não existe ou não é fiscal.',
+  CONSTRUCTION_SITE_NOT_FOUND: 'Obra não encontrada.',
 };

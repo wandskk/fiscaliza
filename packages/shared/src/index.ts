@@ -4,5 +4,6 @@ export * from './enums/role.js';
 export * from './enums/severity.js';
 export * from './errors/error-codes.js';
 export * from './schemas/auth.schema.js';
+export * from './schemas/construction-site.schema.js';
 export * from './schemas/error-response.schema.js';
 export * from './schemas/pagination.schema.js';

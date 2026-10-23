@@ -10,3 +10,12 @@ export const paginationSchema = z.object({
 });
 
 export type Pagination = z.infer<typeof paginationSchema>;
+
+export function paginatedSchema<T extends z.ZodType>(item: T) {
+  return z.object({
+    items: z.array(item),
+    total: z.number().int().min(0),
+    page: z.number().int().min(1),
+    limit: z.number().int().min(1),
+  });
+}

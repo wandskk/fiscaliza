@@ -6,7 +6,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
-| T06.1 | `shared/schemas/obra.schema.ts` e códigos de erro de obra, com testes dos limites | T04 | | 0,5 | | [ ] |
+| T06.1 | `shared/schemas/obra.schema.ts` e códigos de erro de obra, com testes dos limites | T04 | | 0,5 | 0,3 | [x] |
 | T06.2 | Migração `002_obras` (modelos, índice de busca) e seed com 3 obras, uma encerrada | T05.2 | [P] | 0,5 | | [ ] |
 | T06.3 | Entidade `Obra` e erros; testes de editar, encerrar e `RN-10: aceitaVistoria` | T06.1 | | 0,75 | | [ ] |
 | T06.4 | Porta `ObraRepository`, repositório em memória e casos de uso criar, editar, buscar, listar, definir fiscais (testes com memória, incluindo visibilidade do fiscal) | T06.3 | | 2,0 | | [ ] |
