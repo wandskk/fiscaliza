@@ -23,6 +23,13 @@ describe('error codes', () => {
     expect(ErrorCode.FORBIDDEN).toBe('FORBIDDEN');
   });
 
+  it('declares TOO_MANY_REQUESTS for 429', () => {
+    expect(ErrorCode.TOO_MANY_REQUESTS).toBe('TOO_MANY_REQUESTS');
+    expect(ERROR_MESSAGES.TOO_MANY_REQUESTS).toBe(
+      'Muitas requisições. Aguarde um instante e tente de novo.',
+    );
+  });
+
   it('has a Portuguese message for every code', () => {
     for (const code of Object.values(ErrorCode)) {
       expect(ERROR_MESSAGES[code].length).toBeGreaterThan(0);

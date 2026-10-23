@@ -138,3 +138,21 @@ describe('loadConfig (photo storage)', () => {
     );
   });
 });
+
+describe('loadConfig (rate limit)', () => {
+  it('defaults RATE_LIMIT_PER_MINUTE to 100 and reads an override', () => {
+    const env: Record<string, string> = { ...TEST_ENV };
+    delete env.RATE_LIMIT_PER_MINUTE;
+    expect(loadConfig(env).RATE_LIMIT_PER_MINUTE).toBe(100);
+    expect(loadConfig({ ...env, RATE_LIMIT_PER_MINUTE: '5' }).RATE_LIMIT_PER_MINUTE).toBe(5);
+  });
+
+  it('rejects a zero or non-integer limit', () => {
+    expect(() => loadConfig({ ...TEST_ENV, RATE_LIMIT_PER_MINUTE: '0' })).toThrow(
+      /RATE_LIMIT_PER_MINUTE: /,
+    );
+    expect(() => loadConfig({ ...TEST_ENV, RATE_LIMIT_PER_MINUTE: '1.5' })).toThrow(
+      /RATE_LIMIT_PER_MINUTE: /,
+    );
+  });
+});

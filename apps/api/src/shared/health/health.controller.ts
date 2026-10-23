@@ -5,12 +5,15 @@ import {
   PrismaHealthIndicator,
   type HealthCheckResult,
 } from '@nestjs/terminus';
+import { SkipThrottle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { Public } from '../auth/decorators';
 import { PrismaService } from '../database/prisma.service';
 
 const DATABASE_TIMEOUT_MS = 1000;
 
+// The compose healthcheck calls it every 10 s from the same IP
+@SkipThrottle()
 @Public()
 @Controller('health')
 export class HealthController {

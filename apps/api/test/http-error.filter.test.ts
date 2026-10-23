@@ -177,10 +177,15 @@ describe('HttpErrorFilter', () => {
     expect(response.body.details[0].field).toBe('name');
   });
 
-  it('keeps the status of a Nest HttpException', async () => {
+  it('maps a 429 HttpException to TOO_MANY_REQUESTS', async () => {
     const response = await errorFor('get', 'http');
 
     expect(response.status).toBe(429);
+    expect(response.body).toMatchObject({
+      code: 'TOO_MANY_REQUESTS',
+      message: ERROR_MESSAGES.TOO_MANY_REQUESTS,
+      details: [],
+    });
   });
 
   it('maps an UnauthorizedException to 401 UNAUTHORIZED', async () => {
