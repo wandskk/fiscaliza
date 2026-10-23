@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@/app/theme/theme-provider';
+import { Providers } from '@/app/providers';
 import { lazy, Suspense } from 'react';
 
 const DesignSystemPage = import.meta.env.DEV
@@ -9,7 +9,7 @@ export function App() {
   const path = typeof window !== 'undefined' ? window.location.pathname : '/';
 
   return (
-    <ThemeProvider>
+    <Providers>
       <div className="min-h-screen bg-bg text-text">
         {import.meta.env.DEV && DesignSystemPage && path === '/design-system' ? (
           <Suspense fallback={<div className="p-8 text-muted">Carregando vitrine...</div>}>
@@ -30,6 +30,6 @@ export function App() {
           </div>
         )}
       </div>
-    </ThemeProvider>
+    </Providers>
   );
 }

@@ -12,14 +12,21 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@fiscaliza/shared": "workspace:*",
     "@fontsource/instrument-sans": "^5.2.6",
     "@fontsource/jetbrains-mono": "^5.2.4",
+    "@hookform/resolvers": "^6.0.0",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-toast": "^1.2.14",
+    "@tanstack/react-query": "^5.104.5",
+    "aws-amplify": "^6.22.2",
     "clsx": "^2.1.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "tailwind-merge": "^3.3.1"
+    "react-hook-form": "^7.90.0",
+    "react-router-dom": "^7.18.4",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@fiscaliza/config": "workspace:*",
