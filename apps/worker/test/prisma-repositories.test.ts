@@ -7,6 +7,7 @@ import {
   type PrismaClient,
 } from '../src/infrastructure/database/prisma-client.js';
 import { PrismaInspectionReader } from '../src/infrastructure/database/prisma-inspection.reader.js';
+import { PrismaNotificationRepository } from '../src/infrastructure/database/prisma-notification.repository.js';
 import { PrismaReportRepository } from '../src/infrastructure/database/prisma-report.repository.js';
 import { DbFixtures } from './support/db-fixtures.js';
 import { AI_REPORT } from './support/fake-llm.js';
@@ -18,6 +19,7 @@ describe('Prisma repositories of the worker', () => {
   let fixtures: DbFixtures;
   let reader: PrismaInspectionReader;
   let reports: PrismaReportRepository;
+  let notifications: PrismaNotificationRepository;
   const clock = { now: () => new Date('2026-10-23T12:00:00.000Z') };
 
   const reportOf = (inspectionId: string, eventId: string, model = 'stub') =>
@@ -28,6 +30,7 @@ describe('Prisma repositories of the worker', () => {
     fixtures = new DbFixtures(prisma);
     reader = new PrismaInspectionReader(prisma);
     reports = new PrismaReportRepository(prisma);
+    notifications = new PrismaNotificationRepository(prisma);
   });
 
   afterAll(async () => {
@@ -60,6 +63,22 @@ describe('Prisma repositories of the worker', () => {
 
     it('returns null for an inspection that does not exist', async () => {
       expect(await reader.findById(randomUUID())).toBeNull();
+    });
+
+    it('reads who is notified and the site for the notification', async () => {
+      const { inspectionId, siteName } = await fixtures.createInspection();
+
+      expect(await reader.findForNotification(inspectionId)).toEqual({
+        id: inspectionId,
+        inspectorId: fixtures.userId,
+        inspectorName: fixtures.userName,
+        inspectorEmail: fixtures.userEmail,
+        constructionSiteName: siteName,
+      });
+    });
+
+    it('returns null for the notification of an inspection that does not exist', async () => {
+      expect(await reader.findForNotification(randomUUID())).toBeNull();
     });
   });
 
@@ -106,6 +125,47 @@ describe('Prisma repositories of the worker', () => {
 
       const inspection = await prisma.inspection.findUnique({ where: { id: inspectionId } });
       expect(inspection?.status).toBe(InspectionStatus.SUBMITTED);
+    });
+  });
+
+  describe('PrismaNotificationRepository', () => {
+    it('saves the notification and finds it by the event', async () => {
+      const { inspectionId } = await fixtures.createInspection();
+      const eventId = randomUUID();
+      expect(await notifications.existsForEvent(eventId)).toBe(false);
+
+      await notifications.save({
+        eventId,
+        userId: fixtures.userId,
+        inspectionId,
+        channel: 'EMAIL',
+        subject: 'Vistoria aprovada',
+        sentAt: clock.now(),
+      });
+
+      expect(await notifications.existsForEvent(eventId)).toBe(true);
+      expect(await prisma.notification.findUnique({ where: { eventId } })).toMatchObject({
+        userId: fixtures.userId,
+        inspectionId,
+        channel: 'EMAIL',
+        subject: 'Vistoria aprovada',
+        sentAt: clock.now(),
+      });
+    });
+
+    it('refuses a second notification for the same event', async () => {
+      const { inspectionId } = await fixtures.createInspection();
+      const notification = {
+        eventId: randomUUID(),
+        userId: fixtures.userId,
+        inspectionId,
+        channel: 'EMAIL' as const,
+        subject: 'Vistoria devolvida',
+        sentAt: clock.now(),
+      };
+      await notifications.save(notification);
+
+      await expect(notifications.save(notification)).rejects.toThrow();
     });
   });
 });

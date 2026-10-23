@@ -20,6 +20,8 @@ const envSchema = z.object({
   DATABASE_URL: z.url(),
   AWS_REGION: z.string().min(1).default('us-east-1'),
   AWS_ENDPOINT: z.url().optional(),
+  // From address of the e-mails; on the real SES it must be a verified identity
+  NOTIFICATION_SENDER: z.email().default('no-reply@fiscaliza.local'),
   // Only the local poller reads it; on Lambda the queue hands the messages to the handler
   INSPECTIONS_QUEUE_URL: z.url().optional(),
   // The stub is safe as a default because production refuses it below

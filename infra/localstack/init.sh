@@ -1,10 +1,11 @@
 #!/bin/bash
-# Runs from /etc/localstack/init/ready.d, so S3 and SQS are already up.
+# Runs from /etc/localstack/init/ready.d, so S3, SQS and SES are already up.
 set -euo pipefail
 
 REGION=us-east-1
 BUCKET=fiscaliza-photos
 QUEUE=fiscaliza-inspections
+SENDER=no-reply@fiscaliza.local
 DLQ=fiscaliza-inspections-dlq
 WEB_ORIGIN=http://localhost:5173
 
@@ -30,4 +31,7 @@ awslocal sqs create-queue --queue-name "$QUEUE" --attributes "{
   \"RedrivePolicy\": \"{\\\"deadLetterTargetArn\\\":\\\"$DLQ_ARN\\\",\\\"maxReceiveCount\\\":\\\"3\\\"}\"
 }"
 
-echo "LocalStack ready: bucket $BUCKET, queue $QUEUE with DLQ $DLQ (maxReceiveCount 3)"
+# SES only sends from a verified identity: this is NOTIFICATION_SENDER of the worker
+awslocal ses verify-email-identity --email-address "$SENDER"
+
+echo "LocalStack ready: bucket $BUCKET, queue $QUEUE with DLQ $DLQ (maxReceiveCount 3), SES sender $SENDER"

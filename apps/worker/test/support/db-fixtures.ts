@@ -11,7 +11,9 @@ export interface InspectionFixture {
 // Creates one inspector, one site and the inspections of a test, with ids of this run. The
 // API owns these tables; the worker only reads them, so the tests insert the rows by hand
 export class DbFixtures {
-  private readonly userId = randomUUID();
+  readonly userId = randomUUID();
+  readonly userName = 'Fiscal de teste';
+  readonly userEmail = `${this.userId}@test.local`;
   private readonly siteId = randomUUID();
   readonly siteName = `Obra de teste ${this.siteId.slice(0, 8)}`;
   private ready = false;
@@ -45,8 +47,10 @@ export class DbFixtures {
     return { inspectionId, siteName: this.siteName, notes };
   }
 
-  // Reports, photos and history go with the inspection (onDelete: Cascade)
+  // Reports, photos and history go with the inspection (onDelete: Cascade). Notifications go
+  // first: their user is RESTRICT, so the user can only be deleted after them
   async cleanup(): Promise<void> {
+    await this.prisma.notification.deleteMany({ where: { userId: this.userId } });
     await this.prisma.inspection.deleteMany({ where: { constructionSiteId: this.siteId } });
     await this.prisma.constructionSite.deleteMany({ where: { id: this.siteId } });
     await this.prisma.user.deleteMany({ where: { id: this.userId } });
@@ -57,8 +61,8 @@ export class DbFixtures {
     await this.prisma.user.create({
       data: {
         id: this.userId,
-        name: 'Fiscal de teste',
-        email: `${this.userId}@test.local`,
+        name: this.userName,
+        email: this.userEmail,
         role: Role.INSPECTOR,
       },
     });
