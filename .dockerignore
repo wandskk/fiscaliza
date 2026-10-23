@@ -6,8 +6,11 @@
 **/.env.*
 !**/.env.example
 apps/api/src/shared/database/generated
+apps/worker/src/infrastructure/database/generated
 .git
 .github
 specs
 infra
 *.md
+# The worker reads its prompt at runtime
+!apps/worker/prompts/*.md

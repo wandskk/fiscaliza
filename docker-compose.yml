@@ -66,5 +66,28 @@ services:
       timeout: 5s
       retries: 6
 
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    # Optional: the variables below are enough to run, the .env only adds others (e.g. the keys)
+    env_file:
+      - path: apps/worker/.env
+        required: false
+    # Take precedence over the .env: inside the compose network the hosts are db and aws
+    environment:
+      # The image is built for production, which refuses the stub; locally the compose runs it as development
+      NODE_ENV: development
+      DATABASE_URL: postgresql://fiscaliza:dev@db:5432/fiscaliza
+      AWS_ENDPOINT: http://aws:4566
+      INSPECTIONS_QUEUE_URL: http://aws:4566/000000000000/fiscaliza-inspections
+      # LLM_PROVIDERS is left out on purpose: it defaults to stub (offline, deterministic), and
+      # apps/worker/.env switches it, e.g. gemini,fallback with the keys
+    depends_on:
+      db:
+        condition: service_healthy
+      aws:
+        condition: service_healthy
+
 volumes:
   pgdata: {}
