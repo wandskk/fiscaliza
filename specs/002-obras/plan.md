@@ -38,7 +38,7 @@ Decisões:
 - **Contrato único** checado no caso de uso (mensagem clara) e garantido pelo índice único (corrida tratada no mapper do erro do Prisma `P2002`).
 - **`DefinirFiscais` substitui a lista** numa transação (apaga e insere), mais simples que diff para listas pequenas.
 - **Validação dos fiscais por porta própria** (`InspectorDirectory.filterInspectors(ids)`, implementada sobre a tabela `users`): o módulo de obras não lê a tabela de usuários direto nem depende do repositório do módulo de auth. Obra encerrada também não aceita troca de fiscais (vale a regra "encerrada não muda").
-- A spec 003 consome `ObraAcesso` (porta exportada pelo módulo) em vez de ler tabela de obras direto.
+- A spec 003 consome `ObraAcesso` (porta exportada pelo módulo) em vez de ler tabela de obras direto. A implementação passa pelo `ObraRepository` e pela entidade (`fiscalAtribuido` e `aceitaVistoria`), para a RN-10 ter uma fonte só, em vez de uma segunda regra escrita em SQL.
 
 Contratos no `shared`: `obra.schema.ts` com `CriarObraSchema`, `EditarObraSchema`, `DefinirFiscaisSchema`, `FiltroObrasSchema`, `ObraRespostaSchema`; códigos `CONTRATO_DUPLICADO`, `OBRA_ENCERRADA`, `FISCAL_INVALIDO`, `OBRA_NAO_ENCONTRADA`.
 
