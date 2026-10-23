@@ -97,6 +97,9 @@ Documentos (PROJETO.md, specs, planos, tarefas) ficam em português e usam os te
 | Migração `001_usuario` | `user` |
 | Web: `EntrarPage`, rota `/entrar`, `RotaProtegida`, `use-sessao` | `SignInPage`, `/sign-in`, `ProtectedRoute`, `use-session` |
 | Web: rotas `/obras`, `/obras/:id`, `/painel` | `/construction-sites`, `/construction-sites/:id`, `/dashboard` |
+| Web: rotas `/vistorias/nova?obra=:id`, `/vistorias/:id` | `/inspections/new?site=:id`, `/inspections/:id` |
+| Painel: módulo `painel`, rota `GET /painel`, `PainelSchema { totais, obras, aguardandoDecisao }`, `ObterPainelUseCase`, porta `ConsultaPainel` | `dashboard`, `GET /dashboard`, `dashboardSchema { totals, sites, awaitingDecision }`, `GetDashboardUseCase`, `DashboardQuery` |
+| Web painel: `use-painel`, `TotaisPorStatus`, `TabelaObras`, `AguardandoDecisaoLista`, `PainelPage` | `use-dashboard`, `StatusTotals`, `SitesSummaryTable`, `AwaitingDecisionList`, `DashboardPage` |
 | Web obras: `features/obras`, `obras.api.ts`, `use-obras`, `use-obra`, `use-salvar-obra`, `use-definir-fiscais`, `use-fiscais` | `features/construction-sites`, `construction-sites.api.ts`, `use-construction-sites`, `use-construction-site`, `use-save-construction-site`, `use-assign-inspectors`, `use-inspectors` |
 | Web obras: `ObraCard`, `ObraForm`, `FiscaisSelect`, `EncerrarObraDialog`, `ObrasPage`, `ObraDetalhePage` | `ConstructionSiteCard`, `ConstructionSiteForm`, `InspectorsSelect`, `CloseConstructionSiteDialog`, `ConstructionSitesPage`, `ConstructionSiteDetailPage` |
 | Módulos `vistorias`, `obras` | `inspections`, `construction-sites` |
