@@ -11,6 +11,12 @@ export class PhotoRejectedError extends DomainError {
 
 export class PhotoNotFoundError extends NotFoundError {}
 
+export class InspectionNotFoundError extends NotFoundError {
+  constructor() {
+    super(ErrorCode.INSPECTION_NOT_FOUND);
+  }
+}
+
 export class InspectionOwnerError extends ForbiddenError {
   constructor() {
     super(ErrorCode.RN_01);
@@ -32,5 +38,11 @@ export class IncompleteInspectionError extends DomainError {
 export class ApprovedInspectionError extends DomainError {
   constructor() {
     super(ErrorCode.RN_07);
+  }
+}
+
+export class ClosedSiteInspectionError extends DomainError {
+  constructor() {
+    super(ErrorCode.RN_10);
   }
 }

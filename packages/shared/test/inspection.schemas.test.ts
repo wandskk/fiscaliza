@@ -12,6 +12,8 @@ import {
   updateInspectionSchema,
   inspectionDetailSchema,
   inspectionFilterSchema,
+  inspectionSummarySchema,
+  paginatedSchema,
   uploadUrlRequestSchema,
   photoFileSchema,
   confirmPhotoSchema,
@@ -44,7 +46,14 @@ describe('inspection shared contracts', () => {
         status: InspectionStatus.DRAFT,
         returnReason: null,
         photos: [],
-        statusChanges: [],
+        history: [
+          {
+            from: null,
+            to: InspectionStatus.DRAFT,
+            user: { id: 'inspector', name: 'Ana' },
+            at: '2026-10-23T12:00:00.000Z',
+          },
+        ],
         report: null,
         createdAt: '2026-10-23T12:00:00.000Z',
         updatedAt: '2026-10-23T12:00:00.000Z',
@@ -74,13 +83,34 @@ describe('inspection shared contracts', () => {
       status: InspectionStatus.DRAFT,
       returnReason: null,
       photos: [],
-      statusChanges: [],
+      history: [],
       report: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     expect(inspectionDetailSchema.safeParse(detail).success).toBe(false);
+  });
+
+  it('RN-09: rejects old history shape and accepts a paginated inspection summary', () => {
+    const summary = {
+      id: SITE_ID,
+      status: InspectionStatus.DRAFT,
+      compliance: Compliance.COMPLIANT,
+      inspectorId: 'inspector',
+      createdAt: '2026-10-23T12:00:00.000Z',
+      updatedAt: '2026-10-23T12:00:00.000Z',
+      photoCount: 0,
+    };
+    expect(
+      paginatedSchema(inspectionSummarySchema).parse({
+        items: [summary],
+        total: 1,
+        page: 1,
+        limit: 20,
+      }).items,
+    ).toEqual([summary]);
+    expect(inspectionSummarySchema.safeParse({ ...summary, photoCount: -1 }).success).toBe(false);
   });
 
   it('RN-05: validates photo files but leaves upload requests to the domain', () => {
