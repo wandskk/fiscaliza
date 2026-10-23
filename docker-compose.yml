@@ -89,5 +89,20 @@ services:
       aws:
         condition: service_healthy
 
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      # VITE_* are build-time: the bundle inlines them, so changing one needs "docker compose build web"
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000/api/v1}
+        VITE_AUTH_MODE: ${VITE_AUTH_MODE:-local}
+        VITE_COGNITO_USER_POOL_ID: ${VITE_COGNITO_USER_POOL_ID:-}
+        VITE_COGNITO_CLIENT_ID: ${VITE_COGNITO_CLIENT_ID:-}
+    ports: ['5173:8080']
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   pgdata: {}
