@@ -88,6 +88,14 @@ Documentos (PROJETO.md, specs, planos, tarefas) ficam em português e usam os te
 | `ERRO_VALIDACAO`, `NAO_ENCONTRADO`, `SEM_PERMISSAO`, `ERRO_INTERNO` | `VALIDATION_ERROR`, `NOT_FOUND`, `FORBIDDEN`, `INTERNAL_ERROR` |
 | `NaoEncontradoError`, `SemPermissaoError` | `NotFoundError`, `ForbiddenError` |
 | `NAO_AUTENTICADO` (401) | `UNAUTHORIZED` |
+| `UsuarioAutenticado`, `UsuarioAutenticadoSchema`, `MeRespostaSchema` | `AuthenticatedUser`, `authenticatedUserSchema`, `meResponseSchema` |
+| Porta `VerificadorToken` (token `VERIFICADOR_TOKEN`), adapters local e Cognito | `TokenVerifier` (`TOKEN_VERIFIER`), `LocalTokenVerifier`, `CognitoTokenVerifier` |
+| `JwtGuard`, `PerfilGuard`, `@Perfis`, `@Usuario`, `@Publico` | `JwtGuard`, `RolesGuard`, `@Roles`, `@CurrentUser`, `@Public` |
+| `perfilDoGrupo`, `SincronizarUsuarioUseCase`, `UsuarioRepository` | `roleFromGroups`, `SyncUserUseCase`, `UserRepository` |
+| Grupos do Cognito `fiscal`, `gestor` | `inspector`, `manager` |
+| Tokens locais `local-fiscal`, `local-fiscal-2`, `local-gestor` | `local-inspector`, `local-inspector-2`, `local-manager` |
+| Migração `001_usuario` | `user` |
+| Web: `EntrarPage`, rota `/entrar`, `RotaProtegida`, `use-sessao` | `SignInPage`, `/sign-in`, `ProtectedRoute`, `use-session` |
 | `CONTRATO_DUPLICADO`, `OBRA_ENCERRADA`, `FISCAL_INVALIDO`, `OBRA_NAO_ENCONTRADA` | `DUPLICATE_CONTRACT`, `CONSTRUCTION_SITE_CLOSED`, `INVALID_INSPECTOR`, `CONSTRUCTION_SITE_NOT_FOUND` |
 | `FOTO_INVALIDA`, `VISTORIA_NAO_ENCONTRADA` | `INVALID_PHOTO`, `INSPECTION_NOT_FOUND` |
 | Provedor de LLM `reserva` (`reserva.provider.ts`) | `fallback` (`fallback.provider.ts`) |
