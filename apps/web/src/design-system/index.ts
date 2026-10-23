@@ -5,6 +5,7 @@ export * from './components/Button';
 export * from './components/Card';
 export * from './components/Dialog';
 export * from './components/EmptyState';
+export * from './components/FileDrop';
 export * from './components/Input';
 export * from './components/Select';
 export * from './components/Skeleton';
