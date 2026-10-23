@@ -3,6 +3,7 @@ import {
   InspectionStatus,
   MAX_PHOTOS,
   MIN_NOTES_LENGTH,
+  MIN_RETURN_REASON_LENGTH,
   photoFileSchema,
 } from '@fiscaliza/shared';
 import type { Clock } from '../../../shared/time/clock';
@@ -12,6 +13,7 @@ import {
   InspectionOwnerError,
   PhotoRejectedError,
   InvalidTransitionError,
+  MissingReturnReasonError,
   PhotoNotFoundError,
 } from './inspection.errors';
 import { canTransition } from './inspection-status';
@@ -49,7 +51,7 @@ export class Inspection {
       returnReason: null,
       photos: [],
       statusChanges: [
-        { from: null, to: InspectionStatus.DRAFT, userId: data.inspectorId, at: now },
+        { from: null, to: InspectionStatus.DRAFT, userId: data.inspectorId, at: now, reason: null },
       ],
       createdAt: now,
       updatedAt: now,
@@ -156,8 +158,42 @@ export class Inspection {
       to: InspectionStatus.SUBMITTED,
       userId,
       at: now,
+      reason: null,
     });
     this.props.status = InspectionStatus.SUBMITTED;
+    // The reason stays in the history; the field only says why it is currently returned
+    this.props.returnReason = null;
+    this.props.updatedAt = now;
+  }
+
+  approve(managerId: string, clock: Clock): void {
+    this.ensureDecidable();
+    this.changeStatus(InspectionStatus.APPROVED, managerId, null, clock);
+  }
+
+  returnToInspector(managerId: string, reason: string, clock: Clock): void {
+    this.ensureDecidable();
+    const trimmed = reason.trim();
+    if (trimmed.length < MIN_RETURN_REASON_LENGTH) throw new MissingReturnReasonError();
+    this.changeStatus(InspectionStatus.RETURNED, managerId, trimmed, clock);
+    this.props.returnReason = trimmed;
+  }
+
+  // RN-07 before RN-03, like ensureEditable; the decision never looks at the report (RN-08)
+  private ensureDecidable(): void {
+    if (this.props.status === InspectionStatus.APPROVED) throw new ApprovedInspectionError();
+    if (this.props.status !== InspectionStatus.SUBMITTED) throw new InvalidTransitionError();
+  }
+
+  private changeStatus(
+    to: InspectionStatus,
+    userId: string,
+    reason: string | null,
+    clock: Clock,
+  ): void {
+    const now = clock.now();
+    this.props.statusChanges.push({ from: this.props.status, to, userId, at: now, reason });
+    this.props.status = to;
     this.props.updatedAt = now;
   }
 

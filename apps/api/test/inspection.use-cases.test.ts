@@ -60,7 +60,7 @@ describe('inspection use cases', () => {
     const created = await ok.create.execute(data, inspector);
     expect(created.status).toBe(InspectionStatus.DRAFT);
     expect(created.statusChanges).toEqual([
-      { from: null, to: InspectionStatus.DRAFT, userId: inspector.id, at: now },
+      { from: null, to: InspectionStatus.DRAFT, userId: inspector.id, at: now, reason: null },
     ]);
     expect((await ok.repository.findById(created.id))?.toProps()).toEqual(created.toProps());
     await expect(fixture(false).create.execute(data, inspector)).rejects.toMatchObject({
@@ -93,7 +93,13 @@ describe('inspection use cases', () => {
     expect(updated.notes).toBe('changed');
     const detail = await f.get.execute(created.id, manager);
     expect(detail.history).toEqual([
-      { from: null, to: InspectionStatus.DRAFT, user: { id: inspector.id, name: 'Ana' }, at: now },
+      {
+        from: null,
+        to: InspectionStatus.DRAFT,
+        user: { id: inspector.id, name: 'Ana' },
+        at: now,
+        reason: null,
+      },
     ]);
   });
 

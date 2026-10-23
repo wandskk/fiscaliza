@@ -36,6 +36,12 @@ export class InvalidTransitionError extends DomainError {
   }
 }
 
+export class MissingReturnReasonError extends DomainError {
+  constructor() {
+    super(ErrorCode.RN_06);
+  }
+}
+
 export class IncompleteInspectionError extends DomainError {
   constructor() {
     super(ErrorCode.RN_04);

@@ -68,7 +68,13 @@ describe('PrismaInspectionRepository', () => {
     await work.run(() => repository.save(inspection));
     expect((await repository.findById(inspection.id))?.toProps()).toEqual(inspection.toProps());
     expect(await repository.history(inspection.id)).toEqual([
-      { from: null, to: InspectionStatus.DRAFT, user: { id: inspectorId, name: 'Ana' }, at: first },
+      {
+        from: null,
+        to: InspectionStatus.DRAFT,
+        user: { id: inspectorId, name: 'Ana' },
+        at: first,
+        reason: null,
+      },
     ]);
     await expect(repository.findById(randomUUID())).resolves.toBeNull();
   });

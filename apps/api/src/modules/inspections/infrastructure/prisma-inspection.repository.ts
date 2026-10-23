@@ -33,7 +33,7 @@ export class PrismaInspectionRepository implements InspectionRepository {
       include: { user: { select: { id: true, name: true } } },
       orderBy: [{ at: 'asc' }, { id: 'asc' }],
     });
-    return rows.map(({ from, to, user, at }) => ({ from, to, user, at }));
+    return rows.map(({ from, to, user, at }) => ({ from, to, user, at, reason: null }));
   }
 
   async listByConstructionSite(
