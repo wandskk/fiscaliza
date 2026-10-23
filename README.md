@@ -90,6 +90,24 @@ pnpm --filter @fiscaliza/api db:seed
 
 Antes do seed, copie `apps/api/.env.example` para `apps/api/.env`. Execute os comandos pelo host, com os serviços no ar. Não existe um script `db:seed` na raiz.
 
+### Preparar a demo
+
+O smoke test (`pnpm smoke:e2e`) grava obras e vistorias no banco de desenvolvimento.
+Antes de gravar um vídeo, com o compose de pé, restaure os dados de exemplo pelo host:
+
+```bash
+DATABASE_URL=postgresql://fiscaliza:dev@localhost:5432/fiscaliza pnpm --filter @fiscaliza/api db:reset
+```
+
+No PowerShell:
+
+```powershell
+$env:DATABASE_URL = 'postgresql://fiscaliza:dev@localhost:5432/fiscaliza'
+pnpm --filter @fiscaliza/api db:reset
+```
+
+Esse comando apaga tudo do banco de desenvolvimento apontado por `DATABASE_URL`, reaplica as migrações e executa o seed, incluindo as fotos no LocalStack. Confira a URL antes de executar. O Prisma 7 não executa o seed automaticamente no reset; por isso o script encadeia `db:seed`.
+
 ### Entrar no modo local
 
 Abra o web, escolha o usuário de teste na tela de entrada e clique em Entrar. Não há senha nesse modo.
