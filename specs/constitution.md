@@ -97,6 +97,14 @@ Documentos (PROJETO.md, specs, planos, tarefas) ficam em português e usam os te
 | Migração `001_usuario` | `user` |
 | Web: `EntrarPage`, rota `/entrar`, `RotaProtegida`, `use-sessao` | `SignInPage`, `/sign-in`, `ProtectedRoute`, `use-session` |
 | Módulos `vistorias`, `obras` | `inspections`, `construction-sites` |
+| Campos da obra `nome`, `contrato`, `endereco`, `encerrada`, `criadaEm`, quantidade de fiscais | `name`, `contract`, `address`, `closed`, `createdAt`, `inspectorCount` |
+| Resposta paginada `{ itens, total, pagina, limite }`, filtro `busca` | `{ items, total, page, limit }`, `search` |
+| `CriarObraSchema`, `EditarObraSchema`, `DefinirFiscaisSchema { fiscalIds }`, `FiltroObrasSchema`, `ObraRespostaSchema` | `createConstructionSiteSchema`, `updateConstructionSiteSchema`, `assignInspectorsSchema { inspectorIds }`, `constructionSiteFilterSchema`, `constructionSiteSchema` |
+| Entidade `Obra`: `criar`, `editar`, `encerrar`, `aceitaVistoria`, `definirFiscais` | `ConstructionSite`: `create`, `update`, `close`, `acceptsInspections`, `assignInspectors` |
+| `CriarObraUseCase`, `EditarObraUseCase`, `BuscarObraUseCase`, `ListarObrasUseCase`, `DefinirFiscaisUseCase`, `ListarFiscaisUseCase` | `CreateConstructionSiteUseCase`, `UpdateConstructionSiteUseCase`, `GetConstructionSiteUseCase`, `ListConstructionSitesUseCase`, `AssignInspectorsUseCase`, `ListInspectorsUseCase` |
+| `ObraEncerradaError`, `ContratoDuplicadoError`, `FiscalInvalidoError`, `ObraNaoEncontradaError` | `ConstructionSiteClosedError`, `DuplicateContractError`, `InvalidInspectorError`, `ConstructionSiteNotFoundError` |
+| `ObraRepository` (`buscarPorId`, `buscarVisivel`, `listar`, `salvar`, `existeContrato`), porta `ObraAcesso.fiscalAtribuido` | `ConstructionSiteRepository` (`findById`, `findVisible`, `list`, `save`, `contractExists`), `ConstructionSiteAccess.isInspectorAssigned` |
+| Rota `/usuarios?perfil=FISCAL`, tabelas `Obra`, `ObraFiscal` | `/users?role=INSPECTOR`, `construction_sites`, `site_assignments` |
 | Campos da vistoria `obraId`, `fiscalId`, `observacao`, `situacao`, `motivoDevolucao`, `criadaEm`, `atualizadaEm` | `constructionSiteId`, `inspectorId`, `notes`, `compliance`, `returnReason`, `createdAt`, `updatedAt` |
 | Campos da foto `chave`, `tipo`, `tamanho` | `key`, `contentType`, `size` |
 | Histórico `MudancaDeStatus { de, para, usuarioId, em }`, lista `mudancas` | `StatusChange { from, to, userId, at }`, `statusChanges` |
