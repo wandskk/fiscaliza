@@ -9,7 +9,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. `[~]` código escrito e ch
 | T01.3 | Teste da regra de dependência: arquivo de exemplo em `domain/` importando infraestrutura faz o lint falhar (fixture no próprio `packages/config`) | T01.2 | | 0,5 | 0,2 | [x] |
 | T01.4 | CI no GitHub Actions: pnpm com cache, lint, typecheck, test | T01.2 | [P] | 0,5 | 0,1 | [x] |
 | T02.1 | `docker-compose.yml` com `db` (healthcheck) e `aws` (LocalStack fixado) | T01.1 | | 0,5 | 0,1 | [~] |
-| T02.2 | `infra/localstack/init.sh`: bucket com CORS, fila e DLQ com redrive; conferir com `awslocal` | T02.1 | | 0,5 | | [ ] |
+| T02.2 | `infra/localstack/init.sh`: bucket com CORS, fila e DLQ com redrive; conferir com `awslocal` | T02.1 | | 0,5 | 0,1 | [~] |
 | T04.1 | `packages/shared`: enums `InspectionStatus`, `Role`, `Compliance`, `Severity` | T01.2 | [P] | 0,5 | | [ ] |
 | T04.2 | `shared/errors/error-codes.ts`: RN-01 a RN-10 e códigos técnicos, com mensagem em português; schemas de paginação e de erro | T04.1 | | 0,5 | | [ ] |
 | T04.3 | Build com `tsup`, `exports` e testes dos schemas (paginação padrão e limite máximo) | T04.2 | | 0,5 | | [ ] |
