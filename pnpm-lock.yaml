@@ -11,9 +11,15 @@ importers:
       '@fiscaliza/config':
         specifier: workspace:*
         version: link:packages/config
+      '@types/pg':
+        specifier: ^8.23.1
+        version: 8.23.1
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)
+      pg:
+        specifier: ^8.23.1
+        version: 8.23.1
       prettier:
         specifier: ^3.9.10
         version: 3.9.10
