@@ -10,6 +10,7 @@ import {
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { CreateInspectionUseCase } from '../src/modules/inspections/application/create-inspection.use-case';
+import { DecideInspectionUseCase } from '../src/modules/inspections/application/decide-inspection.use-case';
 import { GetInspectionUseCase } from '../src/modules/inspections/application/get-inspection.use-case';
 import { ListInspectionsUseCase } from '../src/modules/inspections/application/list-inspections.use-case';
 import { SubmitInspectionUseCase } from '../src/modules/inspections/application/submit-inspection.use-case';
@@ -51,6 +52,7 @@ function fixture(assigned = true, open = true) {
     get: new GetInspectionUseCase(repository, new InMemoryStorage(), reports),
     list: new ListInspectionsUseCase(repository),
     submit: new SubmitInspectionUseCase(repository, work, clock, outbox),
+    decide: new DecideInspectionUseCase(repository, work, clock, outbox),
   };
 }
 
@@ -60,7 +62,7 @@ describe('inspection use cases', () => {
     const created = await ok.create.execute(data, inspector);
     expect(created.status).toBe(InspectionStatus.DRAFT);
     expect(created.statusChanges).toEqual([
-      { from: null, to: InspectionStatus.DRAFT, userId: inspector.id, at: now },
+      { from: null, to: InspectionStatus.DRAFT, userId: inspector.id, at: now, reason: null },
     ]);
     expect((await ok.repository.findById(created.id))?.toProps()).toEqual(created.toProps());
     await expect(fixture(false).create.execute(data, inspector)).rejects.toMatchObject({
@@ -93,7 +95,13 @@ describe('inspection use cases', () => {
     expect(updated.notes).toBe('changed');
     const detail = await f.get.execute(created.id, manager);
     expect(detail.history).toEqual([
-      { from: null, to: InspectionStatus.DRAFT, user: { id: inspector.id, name: 'Ana' }, at: now },
+      {
+        from: null,
+        to: InspectionStatus.DRAFT,
+        user: { id: inspector.id, name: 'Ana' },
+        at: now,
+        reason: null,
+      },
     ]);
   });
 
@@ -194,5 +202,52 @@ describe('inspection use cases', () => {
     const managerPage = await f.list.execute(siteId, { page: 1, limit: 1 }, manager);
     expect(managerPage.total).toBe(2);
     expect(managerPage.items).toHaveLength(1);
+  });
+
+  it('RN-06, RN-08 and RN-09: decides without a report and writes InspectionDecided only on success', async () => {
+    const f = fixture();
+    const created = await f.create.execute(data, inspector);
+    const ready = Inspection.restore(created.toProps());
+    ready.addPhoto(
+      Photo.create({ id: randomUUID(), key: 'photo', contentType: 'image/png', size: 1 }),
+      inspector.id,
+      clock,
+    );
+    await f.repository.save(ready);
+    await f.submit.execute(created.id, inspector);
+    f.outbox.events.length = 0;
+
+    await expect(
+      f.decide.execute(randomUUID(), { decision: 'APPROVE' }, manager),
+    ).rejects.toMatchObject({
+      code: ErrorCode.INSPECTION_NOT_FOUND,
+    });
+    await expect(
+      f.decide.execute(created.id, { decision: 'RETURN', reason: 'curto' }, manager),
+    ).rejects.toMatchObject({ code: ErrorCode.RN_06 });
+    expect(f.outbox.events).toEqual([]);
+
+    const returned = await f.decide.execute(
+      created.id,
+      { decision: 'RETURN', reason: 'Fotos sem foco e sem a armação.' },
+      manager,
+    );
+    expect(returned.status).toBe(InspectionStatus.RETURNED);
+    expect(f.outbox.events.map(({ type, data: event }) => ({ type, data: event }))).toEqual([
+      {
+        type: EventType.INSPECTION_DECIDED,
+        data: {
+          inspectionId: created.id,
+          decision: 'RETURN',
+          reason: 'Fotos sem foco e sem a armação.',
+          decidedBy: manager.id,
+        },
+      },
+    ]);
+    const history = (await f.get.execute(created.id, manager)).history;
+    expect(history.at(-1)).toMatchObject({
+      to: InspectionStatus.RETURNED,
+      reason: 'Fotos sem foco e sem a armação.',
+    });
   });
 });

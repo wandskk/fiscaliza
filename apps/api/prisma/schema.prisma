@@ -26,6 +26,7 @@ model User {
   assignments   SiteAssignment[]
   inspections   Inspection[]
   statusChanges InspectionStatusHistory[]
+  notifications Notification[]
 
   @@map("users")
 }
@@ -84,6 +85,7 @@ model Inspection {
   photos             Photo[]
   history            InspectionStatusHistory[]
   report             Report?
+  notifications      Notification[]
 
   @@index([constructionSiteId, status])
   @@index([inspectorId])
@@ -110,6 +112,8 @@ model InspectionStatusHistory {
   to           InspectionStatus
   userId       String
   at           DateTime          @default(now())
+  // Why it was returned (RN-06); null in every other change
+  reason       String?
   inspection   Inspection        @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
   // The timeline shows who changed the status by name
   user         User              @relation(fields: [userId], references: [id])
@@ -157,4 +161,23 @@ model OutboxEvent {
   // The publisher reads the pending ones in creation order
   @@index([publishedAt, createdAt])
   @@map("outbox_events")
+}
+
+// Written by the worker (spec 005): one row per e-mail sent, unique by the event that caused
+// it, so a redelivered message finds it and sends nothing
+model Notification {
+  id           String     @id @default(uuid())
+  eventId      String     @unique
+  // The inspector who is told
+  userId       String
+  inspectionId String
+  // EMAIL for now
+  channel      String
+  subject      String
+  sentAt       DateTime
+  user         User       @relation(fields: [userId], references: [id])
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
 }

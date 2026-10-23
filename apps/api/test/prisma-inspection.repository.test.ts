@@ -68,7 +68,13 @@ describe('PrismaInspectionRepository', () => {
     await work.run(() => repository.save(inspection));
     expect((await repository.findById(inspection.id))?.toProps()).toEqual(inspection.toProps());
     expect(await repository.history(inspection.id)).toEqual([
-      { from: null, to: InspectionStatus.DRAFT, user: { id: inspectorId, name: 'Ana' }, at: first },
+      {
+        from: null,
+        to: InspectionStatus.DRAFT,
+        user: { id: inspectorId, name: 'Ana' },
+        at: first,
+        reason: null,
+      },
     ]);
     await expect(repository.findById(randomUUID())).resolves.toBeNull();
   });
@@ -93,6 +99,33 @@ describe('PrismaInspectionRepository', () => {
       await prisma.inspectionStatusHistory.count({ where: { inspectionId: inspection.id } }),
     ).toBe(2);
     expect(await repository.history(inspection.id)).toHaveLength(2);
+  });
+
+  it('RN-06 and RN-09: saves and reloads the return reason in the field and in the history', async () => {
+    const inspection = make();
+    inspection.addPhoto(
+      Photo.create({
+        id: randomUUID(),
+        key: `test/${randomUUID()}.jpg`,
+        contentType: 'image/jpeg',
+        size: 100,
+      }),
+      inspectorId,
+      clock,
+    );
+    inspection.submit(inspectorId, clock);
+    inspection.returnToInspector(managerId, 'Fotos sem foco e sem a armação.', laterClock);
+    await work.run(() => repository.save(inspection));
+    const restored = await repository.findById(inspection.id);
+    expect(restored?.returnReason).toBe('Fotos sem foco e sem a armação.');
+    expect(restored?.statusChanges).toEqual(inspection.statusChanges);
+    const history = await repository.history(inspection.id);
+    expect(history.map((change) => change.reason)).toEqual([
+      null,
+      null,
+      'Fotos sem foco e sem a armação.',
+    ]);
+    expect(history.at(-1)?.user).toEqual({ id: managerId, name: 'Gestor' });
   });
 
   it('replaces removed photos without rewriting history', async () => {

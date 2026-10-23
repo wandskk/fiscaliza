@@ -5,6 +5,9 @@ import { paginatedSchema, paginationSchema } from './pagination.schema.js';
 import { reportSchema } from './report.schema.js';
 
 export const MIN_NOTES_LENGTH = 30;
+// RN-06: checked by the domain (not by Zod) so the error carries the RN-06 code
+export const MIN_RETURN_REASON_LENGTH = 10;
+export const MAX_RETURN_REASON_LENGTH = 500;
 
 // A draft may have short notes: the 30 characters of RN-04 are checked on submit
 export const createInspectionSchema = z.object({
@@ -19,6 +22,19 @@ export const updateInspectionSchema = createInspectionSchema
   .refine((change) => Object.values(change).some((value) => value !== undefined), {
     message: 'Informe ao menos um campo para alterar.',
   });
+
+export const InspectionDecision = {
+  APPROVE: 'APPROVE',
+  RETURN: 'RETURN',
+} as const;
+
+export type InspectionDecision = (typeof InspectionDecision)[keyof typeof InspectionDecision];
+
+// The minimum of RN-06 is not here on purpose: a short reason must come back as RN-06, not VALIDATION_ERROR
+export const decisionSchema = z.object({
+  decision: z.enum(InspectionDecision),
+  reason: z.string().trim().max(MAX_RETURN_REASON_LENGTH).optional(),
+});
 
 export const inspectionDetailSchema = z.object({
   ...createInspectionSchema.shape,
@@ -42,6 +58,8 @@ export const inspectionDetailSchema = z.object({
       to: z.enum(InspectionStatus),
       user: z.object({ id: z.string(), name: z.string() }),
       at: z.iso.datetime(),
+      // Reason of the return; null in every other change
+      reason: z.string().nullable(),
     }),
   ),
   // Report of the current submission; null while it is being generated
@@ -67,6 +85,7 @@ export const inspectionSummarySchema = z.object({
 export const inspectionPageSchema = paginatedSchema(inspectionSummarySchema);
 
 export type CreateInspection = z.infer<typeof createInspectionSchema>;
+export type Decision = z.infer<typeof decisionSchema>;
 export type UpdateInspection = z.infer<typeof updateInspectionSchema>;
 export type InspectionDetail = z.infer<typeof inspectionDetailSchema>;
 export type InspectionFilter = z.infer<typeof inspectionFilterSchema>;

@@ -94,6 +94,7 @@ describe('/api/v1/inspections', () => {
         to: InspectionStatus.DRAFT,
         user: { id: inspectorId, name: LOCAL_USERS['local-inspector'].name },
         at: expect.any(String),
+        reason: null,
       },
     ]);
     expect(draft.photos).toEqual([]);

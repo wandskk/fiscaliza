@@ -18,6 +18,9 @@ import {
   photoFileSchema,
   confirmPhotoSchema,
   uploadUrlResponseSchema,
+  decisionSchema,
+  InspectionDecision,
+  MIN_RETURN_REASON_LENGTH,
 } from '../src/index.js';
 
 const SITE_ID = '10000000-0000-4000-8000-000000000001';
@@ -53,6 +56,7 @@ describe('inspection shared contracts', () => {
             to: InspectionStatus.DRAFT,
             user: { id: 'inspector', name: 'Ana' },
             at: '2026-10-23T12:00:00.000Z',
+            reason: null,
           },
         ],
         report: null,
@@ -145,5 +149,52 @@ describe('uploadUrlResponseSchema', () => {
     };
 
     expect(uploadUrlResponseSchema.parse(upload)).toEqual(upload);
+  });
+
+  it('RN-06: decision schema trims the reason, caps it at 500 and leaves the minimum to the domain', () => {
+    expect(MIN_RETURN_REASON_LENGTH).toBe(10);
+    expect(decisionSchema.parse({ decision: InspectionDecision.APPROVE })).toEqual({
+      decision: 'APPROVE',
+    });
+    expect(decisionSchema.parse({ decision: 'RETURN', reason: '  curto  ' }).reason).toBe('curto');
+    expect(decisionSchema.safeParse({ decision: 'RETURN', reason: 'x'.repeat(500) }).success).toBe(
+      true,
+    );
+    expect(decisionSchema.safeParse({ decision: 'RETURN', reason: 'x'.repeat(501) }).success).toBe(
+      false,
+    );
+    expect(decisionSchema.safeParse({ decision: 'MAYBE' }).success).toBe(false);
+    expect(decisionSchema.safeParse({}).success).toBe(false);
+  });
+
+  it('RN-09: history items carry a nullable reason', () => {
+    const detail = {
+      id: SITE_ID,
+      constructionSiteId: SITE_ID,
+      notes: '',
+      compliance: Compliance.COMPLIANT,
+      inspectorId: 'inspector',
+      status: InspectionStatus.RETURNED,
+      returnReason: 'Fotos sem foco.',
+      photos: [],
+      history: [
+        {
+          from: InspectionStatus.SUBMITTED,
+          to: InspectionStatus.RETURNED,
+          user: { id: 'manager', name: 'Bia' },
+          at: '2026-10-23T12:00:00.000Z',
+          reason: 'Fotos sem foco.',
+        },
+      ],
+      report: null,
+      createdAt: '2026-10-23T12:00:00.000Z',
+      updatedAt: '2026-10-23T12:00:00.000Z',
+    };
+    expect(inspectionDetailSchema.parse(detail).history[0]?.reason).toBe('Fotos sem foco.');
+    const withoutReason: Record<string, unknown> = { ...detail.history[0] };
+    delete withoutReason.reason;
+    expect(inspectionDetailSchema.safeParse({ ...detail, history: [withoutReason] }).success).toBe(
+      false,
+    );
   });
 });
