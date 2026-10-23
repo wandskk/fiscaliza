@@ -9,6 +9,7 @@ import { UpdateInspectionUseCase } from '../src/modules/inspections/application/
 import { Inspection } from '../src/modules/inspections/domain/inspection.entity';
 import { Photo } from '../src/modules/inspections/domain/photo.value-object';
 import { InMemoryInspectionRepository } from './support/in-memory-inspection.repository';
+import { InMemoryStorage } from './support/in-memory-storage';
 import type { ConstructionSiteAccess } from '../src/modules/construction-sites/application/ports/construction-site-access';
 import type { UnitOfWork } from '../src/shared/database/unit-of-work';
 import type { Clock } from '../src/modules/inspections/domain/clock';
@@ -33,7 +34,7 @@ function fixture(assigned = true, open = true) {
     repository,
     create: new CreateInspectionUseCase(repository, siteAccess, work, clock),
     update: new UpdateInspectionUseCase(repository, work, clock),
-    get: new GetInspectionUseCase(repository),
+    get: new GetInspectionUseCase(repository, new InMemoryStorage()),
     list: new ListInspectionsUseCase(repository),
     submit: new SubmitInspectionUseCase(repository, work, clock),
   };

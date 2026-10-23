@@ -1,14 +1,8 @@
 import type { InspectionDetail, InspectionSummary } from '@fiscaliza/shared';
-import type {
-  InspectionHistoryItem,
-  InspectionListItem,
-} from '../application/ports/inspection.repository';
-import type { Inspection } from '../domain/inspection.entity';
+import type { InspectionView } from '../application/get-inspection.use-case';
+import type { InspectionListItem } from '../application/ports/inspection.repository';
 
-export function toDetail(
-  inspection: Inspection,
-  history: InspectionHistoryItem[],
-): InspectionDetail {
+export function toDetail({ inspection, history, photoUrls }: InspectionView): InspectionDetail {
   const props = inspection.toProps();
   return {
     id: props.id,
@@ -18,7 +12,13 @@ export function toDetail(
     compliance: props.compliance,
     status: props.status,
     returnReason: props.returnReason,
-    photos: props.photos.map(({ id, key, contentType, size }) => ({ id, key, contentType, size })),
+    photos: props.photos.map(({ id, key, contentType, size }) => ({
+      id,
+      key,
+      contentType,
+      size,
+      url: photoUrls[id] ?? '',
+    })),
     history: history.map(({ from, to, user, at }) => ({ from, to, user, at: at.toISOString() })),
     report: null,
     createdAt: props.createdAt.toISOString(),
