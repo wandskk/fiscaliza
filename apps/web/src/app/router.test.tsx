@@ -163,7 +163,10 @@ describe('AppRoutes', () => {
     it('stays reachable without session in dev', async () => {
       renderApp('/design-system');
 
-      expect(await screen.findByText(/design system/i, { selector: 'h1' })).toBeInTheDocument();
+      // The showcase is a lazy chunk; under a loaded machine its import takes longer than 1 s
+      expect(
+        await screen.findByText(/design system/i, { selector: 'h1' }, { timeout: 5000 }),
+      ).toBeInTheDocument();
       expect(fetchMock).not.toHaveBeenCalled();
     });
   });
