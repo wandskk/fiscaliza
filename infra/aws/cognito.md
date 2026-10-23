@@ -101,8 +101,8 @@ Esperado: `200` com `{ "id": "<sub>", "name": "Gestor de Teste", "email": "gesto
 
 ### Registro
 
-| Data     | Quem | Resultado |
-| -------- | ---- | --------- |
+| Data       | Quem      | Resultado                                                                                                        |
+| ---------- | --------- | ---------------------------------------------------------------------------------------------------------------- |
 | 2026-10-23 | Wanderson | `/me` com o gestor: `200`, `role: MANAGER`, linha criada em `users`. Sem `x-id-token`: `401`. Pool em us-east-1. |
 
 ## 7. Remover
