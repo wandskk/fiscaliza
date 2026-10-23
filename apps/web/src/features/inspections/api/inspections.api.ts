@@ -4,6 +4,7 @@ import {
   uploadUrlResponseSchema,
   type ConfirmPhoto,
   type CreateInspection,
+  type Decision,
   type InspectionDetail,
   type InspectionFilter,
   type InspectionPageResponse,
@@ -47,6 +48,10 @@ export function submitInspection(id: string): Promise<InspectionDetail> {
     undefined,
     inspectionDetailSchema,
   );
+}
+
+export function decideInspection(id: string, body: Decision): Promise<InspectionDetail> {
+  return http.post(`/inspections/${encodeURIComponent(id)}/decision`, body, inspectionDetailSchema);
 }
 
 export function requestInspectionPhotoUpload(

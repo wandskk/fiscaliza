@@ -4,6 +4,7 @@ import { configureHttp } from '@/lib/http';
 import {
   confirmInspectionPhoto,
   createInspection,
+  decideInspection,
   getInspection,
   listSiteInspections,
   removeInspectionPhoto,
@@ -87,6 +88,25 @@ describe('inspections API', () => {
       new RegExp(`/inspections/${inspection.id}/submit$`),
     );
     expect(fetchMock.mock.calls[3]?.[1]).toMatchObject({ method: 'POST' });
+  });
+
+  it('posts the decision and validates the returned detail', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(inspection));
+
+    const result = await decideInspection(inspection.id, {
+      decision: 'RETURN',
+      reason: 'Faltam fotos da fachada.',
+    });
+
+    expect(result).toEqual(inspection);
+    expect(String(fetchMock.mock.calls[0]?.[0])).toMatch(
+      new RegExp(`/inspections/${inspection.id}/decision$`),
+    );
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({ method: 'POST' });
+    expect(JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body))).toEqual({
+      decision: 'RETURN',
+      reason: 'Faltam fotos da fachada.',
+    });
   });
 
   it('requests an upload, confirms it and removes the photo', async () => {

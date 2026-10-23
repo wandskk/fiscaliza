@@ -3,7 +3,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { dashboardKeys } from '@/features/dashboard/hooks/use-dashboard';
 import { configureHttp } from '@/lib/http';
+import { useDecideInspection } from './use-decide-inspection';
 import { inspectionKeys, useInspection } from './use-inspection';
 import { useRemovePhoto } from './use-remove-photo';
 import { useSaveInspection } from './use-save-inspection';
@@ -119,5 +121,23 @@ describe('inspection hooks', () => {
       queryKey: inspectionKeys.siteLists(inspection.constructionSiteId),
     });
     expect(invalidate).toHaveBeenCalledWith({ queryKey: inspectionKeys.siteListsRoot() });
+  });
+
+  it('RN-03: a decision refreshes the detail, the site lists and the dashboard', async () => {
+    const approved = { ...inspection, status: InspectionStatus.APPROVED };
+    fetchMock.mockResolvedValueOnce(jsonResponse(approved));
+    const invalidate = vi.spyOn(client, 'invalidateQueries');
+    const decide = renderHook(() => useDecideInspection(inspection.id), { wrapper });
+
+    await act(async () => {
+      await decide.result.current.mutateAsync({ decision: 'APPROVE' });
+    });
+
+    expect(client.getQueryData(inspectionKeys.detail(inspection.id))).toEqual(approved);
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: inspectionKeys.detail(inspection.id) });
+    expect(invalidate).toHaveBeenCalledWith({
+      queryKey: inspectionKeys.siteLists(inspection.constructionSiteId),
+    });
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: dashboardKeys.all });
   });
 });
