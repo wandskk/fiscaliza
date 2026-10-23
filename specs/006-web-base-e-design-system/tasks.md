@@ -10,7 +10,8 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 | T13.4 | Dialog e Toast (Radix), Skeleton, EmptyState, Table (ordenação, `aria-sort`, vazio, rolagem) com testes | T13.3 | | 2,0 | 0,25 | [x] |
 | T13.5 | FileDrop (arrastar, clicar, `accept`, lista com progresso e erro por props) com testes | T13.3 | [P] | 0,75 | 0,1 | [x] |
 | T13.6 | Página `/design-system` (só em dev) com todos os componentes e troca de tema | T13.4, T13.5 | | 0,5 | 0,15 | [x] |
-| | **Total** | | | **6,75** | **0,85** | |
+| T13.7 | Dockerfile do web (build do Vite servido por nginx, usuário não root, fallback de SPA para `index.html`), serviço `web` no compose na porta 5173 (seção 21), `VITE_*` como build args | T13.6 | | 0,5 | | [ ] |
+| | **Total** | | | **7,25** | **0,85** | |
 
 ## Pronto quando
 - Critérios de aceite da `spec.md` conferidos, incluindo a vitrine aberta no navegador nos dois temas.
