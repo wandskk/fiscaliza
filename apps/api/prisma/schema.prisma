@@ -10,3 +10,18 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  INSPECTOR
+  MANAGER
+}
+
+model User {
+  // Cognito sub
+  id    String @id
+  name  String
+  email String @unique
+  role  Role
+
+  @@map("users")
+}
