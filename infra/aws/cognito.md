@@ -82,6 +82,19 @@ COGNITO_CLIENT_ID=<valor de $CLIENT_ID>
 
 A API baixa as chaves públicas (JWKS) do User Pool no primeiro token e guarda em cache. Ela não precisa de credencial AWS para validar tokens.
 
+## 5b. Configurar o web
+
+No `apps/web/.env.cognito` (ignorado pelo git), lido só com `--mode cognito`, para o `pnpm dev` normal continuar no modo local:
+
+```
+VITE_API_URL=http://localhost:3000/api/v1
+VITE_AUTH_MODE=cognito
+VITE_COGNITO_USER_POOL_ID=<valor de $POOL_ID>
+VITE_COGNITO_CLIENT_ID=<valor de $CLIENT_ID>
+```
+
+Suba com `pnpm --filter @fiscaliza/web dev:cognito`. A API precisa estar com `AUTH_MODE=cognito`; os dois modos não se misturam (token local é recusado pela API em modo cognito e vice-versa).
+
 ## 6. Teste real do login
 
 Pega os tokens do gestor e chama o `/me` com o access token no `Authorization` e o ID token no `x-id-token`.
