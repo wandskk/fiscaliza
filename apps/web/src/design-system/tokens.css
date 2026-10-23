@@ -1,0 +1,66 @@
+@import 'tailwindcss';
+
+/* ─── Design tokens ─── */
+:root,
+[data-theme='light'] {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --border: #dce2ea;
+  --text: #18212f;
+  --text-muted: #5a6577;
+  --primary: #2152b8;
+  --primary-fg: #ffffff;
+  --success: #1e7a4c;
+  --warning: #9e5e00;
+  --danger: #b3261e;
+  --info: #5a6577;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --font-sans: 'Instrument Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+[data-theme='dark'] {
+  --bg: #0f1520;
+  --surface: #161e2c;
+  --border: #273246;
+  --text: #e4e9f1;
+  --text-muted: #97a3b6;
+  --primary: #7fa6f5;
+  --primary-fg: #0f1520;
+  --success: #6fd19e;
+  --warning: #f0b467;
+  --danger: #f08a8f;
+  --info: #97a3b6;
+}
+
+/* ─── Tailwind theme ─── */
+@theme {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --font-family-sans: var(--font-sans);
+  --font-family-mono: var(--font-mono);
+}
+
+/* ─── Base styles ─── */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

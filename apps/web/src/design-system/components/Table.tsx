@@ -1,0 +1,107 @@
+import { cn } from '@/design-system/cn';
+import { EmptyState } from './EmptyState';
+
+export interface TableColumn {
+  key: string;
+  label: string;
+  sortable?: boolean;
+}
+
+interface TableProps {
+  columns: TableColumn[];
+  data: ReadonlyArray<Readonly<Record<string, unknown>>>;
+  onSort?: (key: string) => void;
+  sortKey?: string;
+  sortDir?: 'asc' | 'desc';
+  emptyMessage?: string;
+  className?: string;
+}
+
+function SortIndicator({ active, dir }: { active: boolean; dir?: 'asc' | 'desc' }) {
+  if (!active)
+    return (
+      <span aria-hidden="true" className="ml-1 text-muted opacity-40">
+        ↕
+      </span>
+    );
+  return (
+    <span aria-hidden="true" className="ml-1">
+      {dir === 'asc' ? '↑' : '↓'}
+    </span>
+  );
+}
+
+export function Table({
+  columns,
+  data,
+  onSort,
+  sortKey,
+  sortDir,
+  emptyMessage = 'Nenhum item encontrado.',
+  className,
+}: TableProps) {
+  return (
+    <div className={cn('overflow-x-auto rounded-md border border-border bg-surface', className)}>
+      <table className="min-w-full text-sm text-text">
+        <thead>
+          <tr className="border-b border-border bg-bg">
+            {columns.map((col) => {
+              const isActive = sortKey === col.key;
+              const ariaSort = isActive
+                ? sortDir === 'asc'
+                  ? 'ascending'
+                  : 'descending'
+                : undefined;
+
+              return (
+                <th
+                  key={col.key}
+                  scope="col"
+                  aria-sort={ariaSort}
+                  className={cn(
+                    'px-4 py-3 text-left font-medium text-muted',
+                    col.sortable && 'cursor-pointer select-none hover:text-text',
+                  )}
+                  onClick={col.sortable && onSort ? () => onSort(col.key) : undefined}
+                  onKeyDown={
+                    col.sortable && onSort
+                      ? (e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onSort(col.key);
+                          }
+                        }
+                      : undefined
+                  }
+                  tabIndex={col.sortable ? 0 : undefined}
+                >
+                  {col.label}
+                  {col.sortable && <SortIndicator active={isActive} dir={sortDir} />}
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length}>
+                <EmptyState title="Sem resultados" description={emptyMessage} />
+              </td>
+            </tr>
+          ) : (
+            data.map((row, i) => (
+              <tr key={i} className="border-b border-border last:border-0 hover:bg-bg/50">
+                {columns.map((col) => (
+                  <td key={col.key} className="px-4 py-3">
+                    {String(row[col.key] ?? '')}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
