@@ -5,7 +5,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
 | T01.1 | Raiz do monorepo: `pnpm-workspace.yaml`, `package.json` com scripts `-r`, `.nvmrc`, `.editorconfig`, `.gitignore`, `.gitattributes`; pastas `apps/{api,web,worker,mcp}` e `packages/{shared,config}` com `package.json` mínimo | | | 0,5 | 0,7 | [x] |
-| T01.2 | `packages/config`: `tsconfig.base.json` (strict), ESLint flat config com `no-explicit-any` e `import/no-restricted-paths` para a regra de dependência, Prettier | T01.1 | | 1,0 | | [ ] |
+| T01.2 | `packages/config`: `tsconfig.base.json` (strict), ESLint flat config com `no-explicit-any` e `import/no-restricted-paths` para a regra de dependência, Prettier | T01.1 | | 1,0 | 0,2 | [x] |
 | T01.3 | Teste da regra de dependência: arquivo de exemplo em `domain/` importando infraestrutura faz o lint falhar (fixture no próprio `packages/config`) | T01.2 | | 0,5 | | [ ] |
 | T01.4 | CI no GitHub Actions: pnpm com cache, lint, typecheck, test | T01.2 | [P] | 0,5 | | [ ] |
 | T02.1 | `docker-compose.yml` com `db` (healthcheck) e `aws` (LocalStack fixado) | T01.1 | | 0,5 | | [ ] |
