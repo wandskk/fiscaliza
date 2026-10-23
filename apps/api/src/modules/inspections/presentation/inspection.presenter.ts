@@ -2,7 +2,12 @@ import type { InspectionDetail, InspectionSummary } from '@fiscaliza/shared';
 import type { InspectionView } from '../application/get-inspection.use-case';
 import type { InspectionListItem } from '../application/ports/inspection.repository';
 
-export function toDetail({ inspection, history, photoUrls }: InspectionView): InspectionDetail {
+export function toDetail({
+  inspection,
+  history,
+  photoUrls,
+  report,
+}: InspectionView): InspectionDetail {
   const props = inspection.toProps();
   return {
     id: props.id,
@@ -20,7 +25,7 @@ export function toDetail({ inspection, history, photoUrls }: InspectionView): In
       url: photoUrls[id] ?? '',
     })),
     history: history.map(({ from, to, user, at }) => ({ from, to, user, at: at.toISOString() })),
-    report: null,
+    report: report && { ...report, generatedAt: report.generatedAt.toISOString() },
     createdAt: props.createdAt.toISOString(),
     updatedAt: props.updatedAt.toISOString(),
   };

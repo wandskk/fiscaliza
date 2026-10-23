@@ -5,6 +5,7 @@ import {
   InspectionStatus,
   inspectionSubmittedSchema,
   Role,
+  Severity,
 } from '@fiscaliza/shared';
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
@@ -17,6 +18,7 @@ import { Inspection } from '../src/modules/inspections/domain/inspection.entity'
 import { Photo } from '../src/modules/inspections/domain/photo.value-object';
 import { InMemoryEventOutbox } from './support/in-memory-event-outbox';
 import { InMemoryInspectionRepository } from './support/in-memory-inspection.repository';
+import { InMemoryReportReader } from './support/in-memory-report-reader';
 import { InMemoryStorage } from './support/in-memory-storage';
 import type { ConstructionSiteAccess } from '../src/modules/construction-sites/application/ports/construction-site-access';
 import type { UnitOfWork } from '../src/shared/database/unit-of-work';
@@ -39,12 +41,14 @@ function fixture(assigned = true, open = true) {
   };
   const work: UnitOfWork = { run: async <T>(action: () => Promise<T>) => action() };
   const outbox = new InMemoryEventOutbox(clock);
+  const reports = new InMemoryReportReader();
   return {
     repository,
     outbox,
+    reports,
     create: new CreateInspectionUseCase(repository, siteAccess, work, clock),
     update: new UpdateInspectionUseCase(repository, work, clock),
-    get: new GetInspectionUseCase(repository, new InMemoryStorage()),
+    get: new GetInspectionUseCase(repository, new InMemoryStorage(), reports),
     list: new ListInspectionsUseCase(repository),
     submit: new SubmitInspectionUseCase(repository, work, clock, outbox),
   };
@@ -133,6 +137,35 @@ describe('inspection use cases', () => {
     expect(event.type).toBe(EventType.INSPECTION_SUBMITTED);
     expect(event.data).toEqual({ inspectionId: created.id });
     expect(event.occurredAt).toBe(now.toISOString());
+  });
+
+  it('shows the report only when it was generated after the last submission', async () => {
+    const f = fixture();
+    const created = await f.create.execute(data, inspector);
+    const report = {
+      summary: 'Armação do pilar fora do espaçamento previsto em projeto.',
+      nonConformities: [],
+      severity: Severity.LOW,
+      model: 'stub',
+      generatedAt: new Date(now.getTime() + 1000),
+    };
+    f.reports.reports.set(created.id, report);
+    // A draft was never submitted, so no report can belong to it
+    expect((await f.get.execute(created.id, manager)).report).toBeNull();
+
+    const withPhoto = Inspection.restore(created.toProps());
+    withPhoto.addPhoto(
+      Photo.create({ id: randomUUID(), key: 'photo', contentType: 'image/png', size: 1 }),
+      inspector.id,
+      clock,
+    );
+    await f.repository.save(withPhoto);
+    await f.submit.execute(created.id, inspector);
+    expect((await f.get.execute(created.id, manager)).report).toEqual(report);
+
+    // Generated at the very moment of the submission: still the earlier round's
+    f.reports.reports.set(created.id, { ...report, generatedAt: new Date(now) });
+    expect((await f.get.execute(created.id, manager)).report).toBeNull();
   });
 
   it('RN-07: an approved inspection cannot be edited', async () => {
