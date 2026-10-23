@@ -773,7 +773,7 @@ Visual de prancheta técnica: claro, neutro, com azul de planta baixa como cor p
 | `--primary` | `#2152B8` | `#7FA6F5` | Ações principais, links |
 | `--primary-fg` | `#FFFFFF` | `#0F1520` | Texto sobre o primário |
 | `--success` | `#1E7A4C` | `#6FD19E` | Aprovada, conforme |
-| `--warning` | `#B26A00` | `#F0B467` | Enviada, aguardando |
+| `--warning` | `#9E5E00` | `#F0B467` | Enviada, aguardando |
 | `--danger` | `#B3261E` | `#F08A8F` | Devolvida, não conforme, erro |
 | `--info` | `#5A6577` | `#97A3B6` | Rascunho |
 

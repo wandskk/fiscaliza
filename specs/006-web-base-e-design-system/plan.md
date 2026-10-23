@@ -27,6 +27,7 @@ Decisões:
 - **Tokens em CSS, Tailwind lê os tokens**: `@theme` aponta para as variáveis (`--color-surface: var(--surface)`), então a troca de tema não precisa de classes `dark:`.
 - **Fontes** Instrument Sans e JetBrains Mono pelo pacote `@fontsource` (sem CDN).
 - **Teste de contraste**: os valores das cores ficam num `tokens.ts` exportado e o `tokens.css` usa os mesmos valores. Um teste calcula a razão WCAG dos pares (texto e texto secundário sobre fundo e surface, `primary-fg` sobre `primary`, cada cor de status sobre surface) e exige AA (4,5:1); outro confere que o CSS contém cada valor do `tokens.ts`.
+- **Contraste**: o `--warning` claro da seção 17 era `#B26A00` (4,24:1 sobre branco, abaixo do AA). Passou para `#9E5E00` (5,18:1 sobre surface, 4,83:1 sobre bg), já corrigido no `PROJETO.md`.
 - **Componentes não conhecem negócio**: o `StatusBadge` de vistoria (spec 003) usa o `Badge` com o tom; aqui só o `Badge` genérico.
 - **Variáveis** no `.env.example` do web: `VITE_API_URL=http://localhost:3000/api/v1`, `VITE_AUTH_MODE=local` (usados a partir da T14).
 
