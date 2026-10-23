@@ -932,7 +932,7 @@ Variáveis principais:
 | `INSPECTIONS_QUEUE_URL` | api, worker | URL da fila |
 | `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | api, web | IDs do User Pool |
 | `AUTH_MODE` | api | `cognito` ou `local` |
-| `LLM_PROVIDERS` | worker | `gemini,reserva` |
+| `LLM_PROVIDERS` | worker | `gemini,fallback` |
 | `GEMINI_API_KEY` | worker | só no `.env` local |
 
 ---

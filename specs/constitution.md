@@ -87,6 +87,10 @@ Documentos (PROJETO.md, specs, planos, tarefas) ficam em português e usam os te
 | Erro `{ codigo, mensagem, detalhes: [{ campo, problema }], correlationId }` | `{ code, message, details: [{ field, problem }], correlationId }` |
 | `ERRO_VALIDACAO`, `NAO_ENCONTRADO`, `SEM_PERMISSAO`, `ERRO_INTERNO` | `VALIDATION_ERROR`, `NOT_FOUND`, `FORBIDDEN`, `INTERNAL_ERROR` |
 | `NaoEncontradoError`, `SemPermissaoError` | `NotFoundError`, `ForbiddenError` |
+| `NAO_AUTENTICADO` (401) | `UNAUTHORIZED` |
+| `CONTRATO_DUPLICADO`, `OBRA_ENCERRADA`, `FISCAL_INVALIDO`, `OBRA_NAO_ENCONTRADA` | `DUPLICATE_CONTRACT`, `CONSTRUCTION_SITE_CLOSED`, `INVALID_INSPECTOR`, `CONSTRUCTION_SITE_NOT_FOUND` |
+| `FOTO_INVALIDA`, `VISTORIA_NAO_ENCONTRADA` | `INVALID_PHOTO`, `INSPECTION_NOT_FOUND` |
+| Provedor de LLM `reserva` (`reserva.provider.ts`) | `fallback` (`fallback.provider.ts`) |
 | Paginação `{ pagina, limite }` | `{ page, limit }` |
 | Bucket `fiscaliza-fotos`, fila `fiscaliza-vistorias` | `fiscaliza-photos`, `fiscaliza-inspections` |
 | Variáveis `BUCKET_FOTOS`, `FILA_VISTORIAS_URL` | `PHOTOS_BUCKET`, `INSPECTIONS_QUEUE_URL` |
