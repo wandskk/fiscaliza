@@ -23,13 +23,13 @@
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "pino": "^10.4.0",
-    "prisma": "^7.10.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@fiscaliza/config": "workspace:*",
     "@types/aws-lambda": "^8.10.161",
     "@types/node": "^22.20.5",
+    "prisma": "^7.10.1",
     "tsx": "^4.23.15",
     "vite": "^8.3.5",
     "vitest": "^4.1.12"
