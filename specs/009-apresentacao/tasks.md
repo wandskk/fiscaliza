@@ -10,7 +10,8 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 | T18.4 | Checklist da seção 31 conferido no `PROJETO.md` (e as ressalvas de "previsto" deixadas pela T18.6 nas seções 16.4, 21 e 26 atualizadas); teste ponta a ponta pelo compose (obra → vistoria → fotos → enviar → relatório → devolver → e-mail → reenviar → aprovar) | T18.3 | | 0,75 | | [ ] |
 | T18.5 | Vídeo de até 2 minutos (Wanderson) e link no README | T18.4 | | 1,0 | | [ ] |
 | T18.6 | `PROJETO.md` alinhado ao código: seção 11 (schema real), 12.1 (rotas em inglês, `/dashboard`), 13 (eventos, lote do poller x Lambda), 14 (nomes do glossário), 21 e 22 (`fiscaliza_test`, nginx, SES v1, worker no compose), 26 (tools em inglês); nota no topo de que nomes de código seguem o glossário da constitution | T18.2 | [P] | 0,75 | 0,12 | [x] |
-| | **Total** | | | **5,25** | | |
+| T18.7 | Acabamento: (a) ordenação da `Table` por `<button>` no cabeçalho; (b) `ThemeToggle` com ícones SVG em vez de emoji; (c) `Dialog` sem classes de animação inertes; (d) `@theme` sem linhas mortas de raio e fonte; (e) build das imagens Docker no CI; (f) `apps/worker/README.md`; (g) `infra/aws/orcamento.md` com o passo a passo do alerta de orçamento (checklist 31) | T13, T17 | [P] | 1,5 | | [ ] |
+| | **Total** | | | **6,75** | | |
 
 ## Pronto quando
 - Critérios de aceite da `spec.md` conferidos.
