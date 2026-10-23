@@ -4,7 +4,7 @@ import {
   errorResponseSchema,
   type ErrorDetail,
 } from '@fiscaliza/shared';
-import type { z } from 'zod';
+import { z } from 'zod';
 import { env } from '@/lib/env';
 
 export class ApiError extends Error {
@@ -122,7 +122,8 @@ export async function request<T>(path: string, options: RequestOptions<T>): Prom
     if (response.status === 401) handlers.onUnauthorized();
     throw error;
   }
-  return schema.parse(await response.json());
+  const payload = response.status === 204 ? undefined : await response.json();
+  return schema.parse(payload);
 }
 
 export const http = {
@@ -138,4 +139,5 @@ export const http = {
     request(path, { method: 'PUT', body, schema }),
   patch: <T>(path: string, body: unknown, schema: z.ZodType<T>) =>
     request(path, { method: 'PATCH', body, schema }),
+  delete: (path: string) => request(path, { method: 'DELETE', schema: z.undefined() }),
 };

@@ -92,6 +92,13 @@ describe('http client', () => {
     expect(init?.body).toBe('{"a":1}');
   });
 
+  it('supports DELETE responses without a body', async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 204 }));
+
+    await expect(http.delete('/things/1')).resolves.toBeUndefined();
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('DELETE');
+  });
+
   it('turns the standard error body into a typed ApiError', async () => {
     fetchMock.mockResolvedValue(
       jsonResponse(
