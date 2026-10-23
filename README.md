@@ -121,6 +121,13 @@ pnpm test
 
 O preparo dos testes cria o banco `fiscaliza_test` e aplica as migrações automaticamente. Os testes usam esse banco separado do `fiscaliza` de desenvolvimento. Veja o [ADR do banco de teste](docs/adr/0007-banco-de-teste-isolado.md).
 
+### Smoke test do compose
+
+Com o compose já rodando em modo local e o worker usando `stub`, execute `pnpm smoke:e2e`.
+O script cobre obra, atribuição, vistoria, upload real ao S3, relatório, devolução, reenvio, aprovação, e-mails, painel e bloqueio RN-07.
+Ele cria dados próprios e os preserva para inspeção. Não sobe nem para containers.
+As variáveis opcionais são `API_URL` (padrão `http://localhost:3000/api/v1`), `LOCALSTACK_URL` (padrão `http://localhost:4566`) e `REPORT_TIMEOUT_MS` (padrão `90000`).
+
 ## Decisões
 
 - [Monolito modular e worker separado](docs/adr/0001-monolito-modular-e-worker.md): regras na API e processamento lento em outro processo.
