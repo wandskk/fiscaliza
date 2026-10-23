@@ -44,5 +44,17 @@ jobs:
       - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck
+      # Started here, not in services: the init script that creates the bucket comes from the checkout
+      - name: Start LocalStack
+        run: |
+          docker run -d --name aws -p 4566:4566 -e SERVICES=s3,sqs -e AWS_DEFAULT_REGION=us-east-1 \
+            -v "$PWD/infra/localstack:/etc/localstack/init/ready.d" localstack/localstack:3.8
+          for i in $(seq 1 60); do
+            curl -sf localhost:4566/_localstack/init/ready | grep -q '"completed": *true' && exit 0
+            sleep 2
+          done
+          docker logs aws
+          exit 1
+
       - run: pnpm --filter @fiscaliza/api db:deploy
       - run: pnpm test

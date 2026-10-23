@@ -78,3 +78,36 @@ describe('loadConfig (auth)', () => {
     );
   });
 });
+
+describe('loadConfig (photo storage)', () => {
+  it('defaults to the production region and photos bucket', () => {
+    const config = loadConfig({ DATABASE_URL: TEST_ENV.DATABASE_URL });
+    expect(config.AWS_REGION).toBe('us-east-1');
+    expect(config.PHOTOS_BUCKET).toBe('fiscaliza-photos');
+    expect(config.AWS_ENDPOINT).toBeUndefined();
+    expect(config.AWS_PUBLIC_ENDPOINT).toBeUndefined();
+  });
+
+  it('accepts separate server and browser endpoints', () => {
+    const config = loadConfig({
+      ...TEST_ENV,
+      AWS_REGION: 'sa-east-1',
+      AWS_ENDPOINT: 'http://aws:4566',
+      AWS_PUBLIC_ENDPOINT: 'http://localhost:4566',
+      PHOTOS_BUCKET: 'photos',
+    });
+    expect(config).toMatchObject({
+      AWS_REGION: 'sa-east-1',
+      AWS_ENDPOINT: 'http://aws:4566',
+      AWS_PUBLIC_ENDPOINT: 'http://localhost:4566',
+      PHOTOS_BUCKET: 'photos',
+    });
+  });
+
+  it('rejects invalid endpoint URLs', () => {
+    expect(() => loadConfig({ ...TEST_ENV, AWS_ENDPOINT: 'not-a-url' })).toThrow(/AWS_ENDPOINT/);
+    expect(() => loadConfig({ ...TEST_ENV, AWS_PUBLIC_ENDPOINT: 'not-a-url' })).toThrow(
+      /AWS_PUBLIC_ENDPOINT/,
+    );
+  });
+});

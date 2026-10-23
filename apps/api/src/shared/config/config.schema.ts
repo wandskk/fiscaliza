@@ -10,6 +10,10 @@ const envSchema = z.object({
   CORS_ORIGIN: z.url().default('http://localhost:5173'),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   DATABASE_URL: z.url(),
+  AWS_REGION: z.string().min(1).default('us-east-1'),
+  AWS_ENDPOINT: z.url().optional(),
+  AWS_PUBLIC_ENDPOINT: z.url().optional(),
+  PHOTOS_BUCKET: z.string().min(1).default('fiscaliza-photos'),
   // Local is safe as a default because production refuses it below
   AUTH_MODE: z.enum(['cognito', 'local']).default('local'),
   // The region is the prefix of the id (us-east-1_xxx), so it needs no variable of its own

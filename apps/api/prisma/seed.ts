@@ -1,5 +1,8 @@
 import { PrismaPg } from '@prisma/adapter-pg';
+import { S3StorageAdapter } from '../src/modules/inspections/infrastructure/s3-storage.adapter';
 import { LOCAL_USERS } from '../src/shared/auth/local-users';
+import { loadConfig } from '../src/shared/config/config.schema';
+import { ConfigService } from '../src/shared/config/config.service';
 import { PrismaClient } from '../src/shared/database/generated/client';
 
 const inspector = LOCAL_USERS['local-inspector'].id;
@@ -62,11 +65,37 @@ function historyOf(status: Status) {
   return steps.map((step, i) => ({ ...step, at: new Date(Date.UTC(2026, 9, 20, 12 + i)) }));
 }
 
-// Photo rows only: the objects in the bucket come with the upload work (T09)
+// Smallest valid JPEG (1x1 gray pixel): enough for the gallery to show something
+const SAMPLE_JPEG = Buffer.from(
+  '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=',
+  'base64',
+);
+
 function photosOf(n: number, status: Status) {
   if (status === 'DRAFT') return [];
   const key = `inspections/${inspectionId(n)}/seed-1.jpg`;
-  return [{ key, contentType: 'image/jpeg', size: 245_000 }];
+  return [{ key, contentType: 'image/jpeg', size: SAMPLE_JPEG.length }];
+}
+
+// Through a signed URL, like the browser does; skipped without AWS_ENDPOINT (no LocalStack)
+async function uploadSamplePhotos(): Promise<void> {
+  const config = new ConfigService(loadConfig(process.env));
+  if (!config.get('AWS_ENDPOINT')) {
+    console.warn('AWS_ENDPOINT vazio: fotos de exemplo não enviadas ao bucket.');
+    return;
+  }
+  const storage = new S3StorageAdapter(config);
+  for (const { n, status } of INSPECTIONS) {
+    for (const photo of photosOf(n, status)) {
+      const { url } = await storage.createUploadUrl(photo);
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': photo.contentType },
+        body: SAMPLE_JPEG,
+      });
+      if (!response.ok) throw new Error(`Falha ao enviar ${photo.key}: ${response.status}`);
+    }
+  }
 }
 
 async function seedInspections(prisma: PrismaClient): Promise<void> {
@@ -113,6 +142,7 @@ async function seed(): Promise<void> {
       });
     }
     await seedInspections(prisma);
+    await uploadSamplePhotos();
   } finally {
     await prisma.$disconnect();
   }
