@@ -9,6 +9,7 @@ import { homeForRole } from '@/features/auth/utils/role-navigation';
 import { ConstructionSitesPage } from '@/features/construction-sites/pages/ConstructionSitesPage';
 import { ConstructionSiteDetailPage } from '@/features/construction-sites/pages/ConstructionSiteDetailPage';
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
+import { InspectionDetailPage } from '@/features/inspections/pages/InspectionDetailPage';
 import { NewInspectionPage } from '@/features/inspections/pages/NewInspectionPage';
 
 // The showcase only exists in dev builds
@@ -44,6 +45,7 @@ export function AppRoutes() {
           <Route element={<ProtectedRoute allowedRoles={[Role.INSPECTOR]} />}>
             <Route path="/inspections/new" element={<NewInspectionPage />} />
           </Route>
+          <Route path="/inspections/:id" element={<InspectionDetailPage />} />
           <Route element={<ProtectedRoute allowedRoles={[Role.MANAGER]} />}>
             <Route path="/dashboard" element={<DashboardPage />} />
           </Route>
