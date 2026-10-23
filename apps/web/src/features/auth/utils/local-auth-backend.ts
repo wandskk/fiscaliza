@@ -43,7 +43,8 @@ export function createLocalAuthBackend(): AuthBackend {
       return Promise.resolve();
     },
     getToken: () => Promise.resolve(memoryToken ?? readToken()),
-    getIdToken: () => Promise.resolve(null),
+    // The API's local verifier takes the same test user name as the ID token on GET /me
+    getIdToken: () => Promise.resolve(memoryToken ?? readToken()),
     signOut: () => {
       memoryToken = null;
       try {
