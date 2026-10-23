@@ -113,6 +113,7 @@ Documentos (PROJETO.md, specs, planos, tarefas) ficam em português e usam os te
 | `SolicitarUploadSchema` (formato do pedido), regra RN-05 do arquivo, `ConfirmarFotoSchema` | `uploadUrlRequestSchema`, `photoFileSchema`, `confirmPhotoSchema` |
 | Entidade `Vistoria`: `criar`, `editar`, `adicionarFoto`, `removerFoto`, `enviar`, `garantirDono`, `garantirEditavel` | `Inspection`: `create`, `update`, `addPhoto`, `removePhoto`, `submit`, `ensureOwner`, `ensureEditable` |
 | `podeTransicionar`, value object `Foto`, porta `Relogio` | `canTransition`, `Photo`, `Clock` |
+| `UnidadeDeTrabalho.executar` (transação), `VistoriaRepository`, porta `Armazenamento` | `UnitOfWork.run`, `InspectionRepository`, `Storage` |
 | `VistoriaIncompletaError`, `TransicaoInvalidaError` | `IncompleteInspectionError`, `InvalidTransitionError` |
 | `CONTRATO_DUPLICADO`, `OBRA_ENCERRADA`, `FISCAL_INVALIDO`, `OBRA_NAO_ENCONTRADA` | `DUPLICATE_CONTRACT`, `CONSTRUCTION_SITE_CLOSED`, `INVALID_INSPECTOR`, `CONSTRUCTION_SITE_NOT_FOUND` |
 | `FOTO_INVALIDA`, `VISTORIA_NAO_ENCONTRADA` | `INVALID_PHOTO`, `INSPECTION_NOT_FOUND` |
