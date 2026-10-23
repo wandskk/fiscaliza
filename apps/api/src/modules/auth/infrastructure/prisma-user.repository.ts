@@ -1,3 +1,4 @@
+import type { Role } from '@fiscaliza/shared';
 import { Injectable } from '@nestjs/common';
 import type { UserRepository } from '../application/ports/user.repository';
 import { User } from '../domain/user.entity';
@@ -15,5 +16,10 @@ export class PrismaUserRepository implements UserRepository {
   async save(user: User): Promise<void> {
     const { id, ...data } = user.toProps();
     await this.prisma.user.upsert({ where: { id }, create: { id, ...data }, update: data });
+  }
+
+  async listByRole(role: Role): Promise<User[]> {
+    const rows = await this.prisma.user.findMany({ where: { role }, orderBy: { name: 'asc' } });
+    return rows.map((row) => User.restore(row));
   }
 }

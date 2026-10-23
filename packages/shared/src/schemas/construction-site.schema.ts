@@ -44,8 +44,13 @@ export const constructionSiteSchema = z.object({
   createdAt: z.iso.datetime(),
 });
 
+export const constructionSiteDetailSchema = constructionSiteSchema.extend({
+  inspectorIds: z.array(z.string()),
+});
+
 export type CreateConstructionSite = z.infer<typeof createConstructionSiteSchema>;
 export type UpdateConstructionSite = z.infer<typeof updateConstructionSiteSchema>;
 export type AssignInspectors = z.infer<typeof assignInspectorsSchema>;
 export type ConstructionSiteFilter = z.infer<typeof constructionSiteFilterSchema>;
 export type ConstructionSiteResponse = z.infer<typeof constructionSiteSchema>;
+export type ConstructionSiteDetail = z.infer<typeof constructionSiteDetailSchema>;

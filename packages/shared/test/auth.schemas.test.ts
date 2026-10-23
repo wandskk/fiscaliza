@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { authenticatedUserSchema, meResponseSchema } from '../src/index.js';
+import {
+  authenticatedUserSchema,
+  meResponseSchema,
+  userFilterSchema,
+  userSummarySchema,
+} from '../src/index.js';
 
 const inspector = { id: '3c1f9a2e-sub-do-cognito', role: 'INSPECTOR' };
 
@@ -24,5 +29,18 @@ describe('meResponseSchema', () => {
   it('rejects an invalid e-mail and an empty name', () => {
     expect(meResponseSchema.safeParse({ ...me, email: 'fiscal' }).success).toBe(false);
     expect(meResponseSchema.safeParse({ ...me, name: '' }).success).toBe(false);
+  });
+});
+
+describe('userFilterSchema and userSummarySchema', () => {
+  it('lists users only by the inspector role', () => {
+    expect(userFilterSchema.parse({ role: 'INSPECTOR' })).toEqual({ role: 'INSPECTOR' });
+    expect(userFilterSchema.safeParse({ role: 'MANAGER' }).success).toBe(false);
+    expect(userFilterSchema.safeParse({}).success).toBe(false);
+  });
+
+  it('describes a user for the inspector picker', () => {
+    const user = { id: 'sub-1', name: 'Maria', email: 'maria@prefeitura.gov.br' };
+    expect(userSummarySchema.parse(user)).toEqual(user);
   });
 });

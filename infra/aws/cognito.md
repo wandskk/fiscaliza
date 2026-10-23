@@ -68,6 +68,8 @@ create_user fiscal2@seu-dominio.com "Fiscal de Teste 2" inspector
 create_user gestor@seu-dominio.com "Gestor de Teste" manager
 ```
 
+Cada usuário só aparece na API (por exemplo, no seletor de fiscais da obra) depois de entrar uma vez, porque o cadastro no banco é criado no primeiro `GET /me`.
+
 ## 5. Configurar a API
 
 No `apps/api/.env` (nunca no `.env.example`):

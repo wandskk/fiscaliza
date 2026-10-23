@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { ZodValidationPipe } from 'nestjs-zod';
-import { MeModule } from './modules/auth/me.module';
+import { UsersModule } from './modules/auth/users.module';
 import { ConstructionSitesModule } from './modules/construction-sites/construction-sites.module';
 import { AuthModule } from './shared/auth/auth.module';
 import { ConfigModule } from './shared/config/config.module';
@@ -17,7 +17,7 @@ import { LoggingModule } from './shared/logging/logging.module';
     DatabaseModule,
     AuthModule,
     HealthModule,
-    MeModule,
+    UsersModule,
     ConstructionSitesModule,
   ],
   providers: [

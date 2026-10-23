@@ -59,4 +59,5 @@ features/obras/
 |---|---|
 | Busca lenta sem índice | índices trigram (GIN) em nome e contrato |
 | Endpoints novos fora do `PROJETO.md` | atualizar a seção 12.1 no mesmo commit da spec |
+| Fiscal criado no Cognito que nunca entrou não aparece no seletor (`GET /users` lê a tabela, preenchida pelo `/me`) | documentado em `infra/aws/cognito.md`: cada fiscal entra uma vez antes de ser atribuído; no modo local o seed cria os três |
 | Fiscal removido da obra com vistoria em rascunho | fica para a 003: ele perde acesso e o rascunho fica parado (anotado como limitação) |

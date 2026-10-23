@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   assignInspectorsSchema,
+  constructionSiteDetailSchema,
   constructionSiteFilterSchema,
   constructionSiteSchema,
   createConstructionSiteSchema,
@@ -100,5 +101,20 @@ describe('construction site error codes', () => {
       'CONSTRUCTION_SITE_NOT_FOUND',
     ]);
     for (const code of codes) expect(ERROR_MESSAGES[code]).toBeTruthy();
+  });
+});
+
+describe('constructionSiteDetailSchema', () => {
+  it('adds the inspector ids to the site', () => {
+    const detail = {
+      ...site,
+      id: '0b7c4a1e-6a51-4c1f-9a0e-2d9f3b8c7e10',
+      closed: false,
+      inspectorCount: 1,
+      createdAt: '2026-10-23T12:00:00.000Z',
+      inspectorIds: ['00000000-0000-4000-8000-000000000001'],
+    };
+
+    expect(constructionSiteDetailSchema.parse(detail)).toEqual(detail);
   });
 });

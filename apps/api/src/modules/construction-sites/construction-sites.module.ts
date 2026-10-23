@@ -10,9 +10,11 @@ import { RepositoryConstructionSiteAccess } from './application/repository-const
 import { UpdateConstructionSiteUseCase } from './application/update-construction-site.use-case';
 import { PrismaConstructionSiteRepository } from './infrastructure/prisma-construction-site.repository';
 import { PrismaInspectorDirectory } from './infrastructure/prisma-inspector-directory';
+import { ConstructionSitesController } from './presentation/construction-sites.controller';
 
 // Exports only the access port: other modules never touch the sites repository
 @Module({
+  controllers: [ConstructionSitesController],
   providers: [
     CreateConstructionSiteUseCase,
     UpdateConstructionSiteUseCase,
