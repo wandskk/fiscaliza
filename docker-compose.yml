@@ -31,5 +31,37 @@ services:
       timeout: 5s
       retries: 20
 
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    # Optional: the variables below are enough to run, the .env only adds others
+    env_file:
+      - path: apps/api/.env
+        required: false
+    # Take precedence over the .env: inside the compose network the hosts are db and aws
+    environment:
+      DATABASE_URL: postgresql://fiscaliza:dev@db:5432/fiscaliza
+      AWS_ENDPOINT: http://aws:4566
+      INSPECTIONS_QUEUE_URL: http://aws:4566/000000000000/fiscaliza-inspections
+    ports: ['3000:3000']
+    depends_on:
+      db:
+        condition: service_healthy
+      aws:
+        condition: service_healthy
+    healthcheck:
+      # The slim image has no curl; Node's fetch does the same job
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3000/api/v1/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
 volumes:
   pgdata: {}
