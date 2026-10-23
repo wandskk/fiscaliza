@@ -33,6 +33,16 @@ export function createCognitoAuthBackend(config: CognitoConfig): AuthBackend {
     }
   };
 
+  const getIdToken = async (): Promise<string | null> => {
+    const { fetchAuthSession } = await auth();
+    try {
+      const session = await fetchAuthSession();
+      return session.tokens?.idToken?.toString() ?? null;
+    } catch {
+      return null;
+    }
+  };
+
   return {
     restore: async () => (await getToken()) !== null,
     signIn: async (credentials) => {
@@ -63,6 +73,7 @@ export function createCognitoAuthBackend(config: CognitoConfig): AuthBackend {
       }
     },
     getToken,
+    getIdToken,
     signOut: async () => {
       const { signOut } = await auth();
       await signOut();

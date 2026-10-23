@@ -43,6 +43,7 @@ export function createLocalAuthBackend(): AuthBackend {
       return Promise.resolve();
     },
     getToken: () => Promise.resolve(memoryToken ?? readToken()),
+    getIdToken: () => Promise.resolve(null),
     signOut: () => {
       memoryToken = null;
       try {

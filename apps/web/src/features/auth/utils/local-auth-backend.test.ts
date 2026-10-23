@@ -15,6 +15,13 @@ describe('local auth backend', () => {
     expect(await backend.getToken()).toBeNull();
   });
 
+  it('has no ID token, the local mode only uses the Bearer test token', async () => {
+    const backend = createLocalAuthBackend();
+    await backend.signIn({ mode: 'local', localUser: 'local-manager' });
+
+    expect(await backend.getIdToken()).toBeNull();
+  });
+
   it('signs in with the chosen test user and keeps its token in sessionStorage', async () => {
     const backend = createLocalAuthBackend();
 

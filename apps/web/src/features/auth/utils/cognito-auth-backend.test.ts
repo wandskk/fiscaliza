@@ -83,6 +83,19 @@ describe('Cognito auth backend (Amplify mocked)', () => {
     expect(await backend.restore()).toBe(true);
   });
 
+  it('returns the ID token of the Amplify session, or null without one', async () => {
+    amplify.fetchAuthSession.mockResolvedValueOnce({
+      tokens: { idToken: { toString: () => 'id-token' } },
+    });
+    expect(await backend.getIdToken()).toBe('id-token');
+
+    amplify.fetchAuthSession.mockResolvedValueOnce({ tokens: undefined });
+    expect(await backend.getIdToken()).toBeNull();
+
+    amplify.fetchAuthSession.mockRejectedValueOnce(new Error('boom'));
+    expect(await backend.getIdToken()).toBeNull();
+  });
+
   it('has no session when Amplify returns no tokens or fails', async () => {
     amplify.fetchAuthSession.mockResolvedValueOnce({ tokens: undefined });
     expect(await backend.restore()).toBe(false);

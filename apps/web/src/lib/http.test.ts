@@ -45,6 +45,34 @@ describe('http client', () => {
     expect(second['x-correlation-id']).not.toBe(first['x-correlation-id']);
   });
 
+  it('sends x-id-token only when the call asks for it and the session has one', async () => {
+    configureHttp({
+      getToken: () => Promise.resolve('token-123'),
+      getIdToken: () => Promise.resolve('id-456'),
+      onUnauthorized,
+    });
+    fetchMock.mockImplementation(() => Promise.resolve(jsonResponse({ ok: true })));
+
+    await http.get('/me', okSchema, undefined, { withIdToken: true });
+    await http.get('/other', okSchema);
+
+    expect(headersOfCall(fetchMock, 0)['x-id-token']).toBe('id-456');
+    expect(headersOfCall(fetchMock, 1)['x-id-token']).toBeUndefined();
+  });
+
+  it('omits x-id-token when asked but the session has no ID token', async () => {
+    configureHttp({
+      getToken: () => Promise.resolve('token-123'),
+      getIdToken: () => Promise.resolve(null),
+      onUnauthorized,
+    });
+    fetchMock.mockResolvedValue(jsonResponse({ ok: true }));
+
+    await http.get('/me', okSchema, undefined, { withIdToken: true });
+
+    expect(headersOfCall(fetchMock, 0)['x-id-token']).toBeUndefined();
+  });
+
   it('omits Authorization when there is no token', async () => {
     configureHttp({ getToken: () => Promise.resolve(null), onUnauthorized });
     fetchMock.mockResolvedValue(jsonResponse({ ok: true }));

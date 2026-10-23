@@ -31,6 +31,8 @@ export class ApiError extends Error {
 
 export interface HttpHandlers {
   getToken: () => Promise<string | null>;
+  // Only /me needs it: name and e-mail come from the ID token, not from the access token
+  getIdToken?: () => Promise<string | null>;
   onUnauthorized: () => void;
 }
 
@@ -51,6 +53,7 @@ interface RequestOptions<T> {
   body?: unknown;
   schema: z.ZodType<T>;
   signal?: AbortSignal;
+  withIdToken?: boolean;
 }
 
 // Used when the body is not in the standard error format (proxy page, gateway error, etc.)
@@ -82,7 +85,7 @@ async function toApiError(response: Response, correlationId: string): Promise<Ap
 }
 
 export async function request<T>(path: string, options: RequestOptions<T>): Promise<T> {
-  const { method = 'GET', body, schema, signal } = options;
+  const { method = 'GET', body, schema, signal, withIdToken = false } = options;
   const correlationId = crypto.randomUUID();
   const headers: Record<string, string> = {
     'x-correlation-id': correlationId,
@@ -90,6 +93,10 @@ export async function request<T>(path: string, options: RequestOptions<T>): Prom
   };
   const token = await handlers.getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
+  if (withIdToken) {
+    const idToken = await handlers.getIdToken?.();
+    if (idToken) headers['x-id-token'] = idToken;
+  }
   if (body !== undefined) headers['Content-Type'] = 'application/json';
 
   let response: Response;
@@ -119,8 +126,12 @@ export async function request<T>(path: string, options: RequestOptions<T>): Prom
 }
 
 export const http = {
-  get: <T>(path: string, schema: z.ZodType<T>, signal?: AbortSignal) =>
-    request(path, { schema, signal }),
+  get: <T>(
+    path: string,
+    schema: z.ZodType<T>,
+    signal?: AbortSignal,
+    options: { withIdToken?: boolean } = {},
+  ) => request(path, { schema, signal, ...options }),
   post: <T>(path: string, body: unknown, schema: z.ZodType<T>) =>
     request(path, { method: 'POST', body, schema }),
   put: <T>(path: string, body: unknown, schema: z.ZodType<T>) =>

@@ -58,6 +58,7 @@ export function SessionProvider({ children, backend: injected }: SessionProvider
   useEffect(() => {
     configureHttp({
       getToken: () => backend.getToken(),
+      getIdToken: () => backend.getIdToken(),
       onUnauthorized: () => void signOut(),
     });
   }, [backend, signOut]);

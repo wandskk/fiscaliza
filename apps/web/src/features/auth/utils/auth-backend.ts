@@ -28,5 +28,7 @@ export interface AuthBackend {
   restore: () => Promise<boolean>;
   signIn: (credentials: Credentials) => Promise<void>;
   getToken: () => Promise<string | null>;
+  // Null in local mode, which has no ID token
+  getIdToken: () => Promise<string | null>;
   signOut: () => Promise<void>;
 }
