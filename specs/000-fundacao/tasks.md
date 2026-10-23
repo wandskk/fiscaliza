@@ -1,6 +1,6 @@
 # 000 Fundação: tarefas
 
-Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é preenchido ao concluir.
+Legenda: `[P]` pode rodar em paralelo com a anterior. `[~]` código escrito e checado sem Docker; falta conferir com `docker compose up`. Tempo em horas. "Real" é preenchido ao concluir.
 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
@@ -8,7 +8,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 | T01.2 | `packages/config`: `tsconfig.base.json` (strict), ESLint flat config com `no-explicit-any` e `import/no-restricted-paths` para a regra de dependência, Prettier | T01.1 | | 1,0 | 0,2 | [x] |
 | T01.3 | Teste da regra de dependência: arquivo de exemplo em `domain/` importando infraestrutura faz o lint falhar (fixture no próprio `packages/config`) | T01.2 | | 0,5 | 0,2 | [x] |
 | T01.4 | CI no GitHub Actions: pnpm com cache, lint, typecheck, test | T01.2 | [P] | 0,5 | 0,1 | [x] |
-| T02.1 | `docker-compose.yml` com `db` (healthcheck) e `aws` (LocalStack fixado) | T01.1 | | 0,5 | | [ ] |
+| T02.1 | `docker-compose.yml` com `db` (healthcheck) e `aws` (LocalStack fixado) | T01.1 | | 0,5 | 0,1 | [~] |
 | T02.2 | `infra/localstack/init.sh`: bucket com CORS, fila e DLQ com redrive; conferir com `awslocal` | T02.1 | | 0,5 | | [ ] |
 | T04.1 | `packages/shared`: enums `InspectionStatus`, `Role`, `Compliance`, `Severity` | T01.2 | [P] | 0,5 | | [ ] |
 | T04.2 | `shared/errors/error-codes.ts`: RN-01 a RN-10 e códigos técnicos, com mensagem em português; schemas de paginação e de erro | T04.1 | | 0,5 | | [ ] |
