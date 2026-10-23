@@ -15,7 +15,12 @@ export class SesNotifier implements Notifier {
 
   constructor({ sender, region, endpoint }: SesNotifierOptions) {
     this.sender = sender;
-    this.client = new SESClient({ region, endpoint });
+    // LocalStack takes any key; without one the container has no credentials to sign with
+    this.client = new SESClient({
+      region,
+      endpoint,
+      credentials: endpoint ? { accessKeyId: 'test', secretAccessKey: 'test' } : undefined,
+    });
   }
 
   async send({ to, subject, text }: Email): Promise<void> {
