@@ -1,12 +1,14 @@
 import {
   ChangeMessageVisibilityCommand,
+  CreateQueueCommand,
   DeleteMessageCommand,
+  DeleteQueueCommand,
   ReceiveMessageCommand,
   SQSClient,
 } from '@aws-sdk/client-sqs';
 import { EventType, inspectionSubmittedSchema, type EventEnvelope } from '@fiscaliza/shared';
 import { randomUUID } from 'node:crypto';
-import { afterAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { loadConfig } from '../src/shared/config/config.schema';
 import { ConfigService } from '../src/shared/config/config.service';
 import { PrismaService } from '../src/shared/database/prisma.service';
@@ -15,28 +17,40 @@ import { OutboxPublisher } from '../src/shared/outbox/outbox-publisher';
 import { SqsMessageQueue } from '../src/shared/outbox/sqs-message-queue';
 import { TEST_ENV } from './support/test-env';
 
-// Against the compose Postgres and the LocalStack queue (the same ones as the dev
-// environment), so it only looks at, and cleans up, the events and messages of this run
+// Against the compose Postgres, shared with the dev environment, so it only looks at and
+// cleans up the events of this run. The queue is its own: the dev worker consumes the real one
 describe('OutboxPublisher (Postgres and LocalStack)', () => {
-  const config = new ConfigService(loadConfig(TEST_ENV));
-  const prisma = new PrismaService(config);
-  const sqs = new SqsMessageQueue(config);
   const sqsClient = new SQSClient({
-    region: config.get('AWS_REGION'),
-    endpoint: config.get('AWS_ENDPOINT'),
+    region: TEST_ENV.AWS_REGION,
+    endpoint: TEST_ENV.AWS_ENDPOINT,
     credentials: { accessKeyId: 'test', secretAccessKey: 'test' },
   });
-  const queueUrl = config.get('INSPECTIONS_QUEUE_URL');
+  let queueUrl = '';
+  let config: ConfigService;
+  let prisma: PrismaService;
+  let sqs: SqsMessageQueue;
+  let publisher: OutboxPublisher;
   const clock = { now: () => new Date('2026-10-23T12:05:00.000Z') };
   const created: string[] = [];
   const blocked = new Set<string>();
 
-  // Fails for the events in `blocked` and delivers the others as the real queue would
-  const flaky: MessageQueue = {
-    publish: (envelope) =>
-      blocked.has(envelope.id) ? Promise.reject(new Error('queue is down')) : sqs.publish(envelope),
-  };
-  const publisher = new OutboxPublisher(prisma, flaky, clock, config);
+  beforeAll(async () => {
+    const { QueueUrl } = await sqsClient.send(
+      new CreateQueueCommand({ QueueName: `fiscaliza-outbox-test-${randomUUID()}` }),
+    );
+    queueUrl = QueueUrl ?? '';
+    config = new ConfigService(loadConfig({ ...TEST_ENV, INSPECTIONS_QUEUE_URL: queueUrl }));
+    prisma = new PrismaService(config);
+    sqs = new SqsMessageQueue(config);
+    // Fails for the events in `blocked` and delivers the others as the real queue would
+    const flaky: MessageQueue = {
+      publish: (envelope) =>
+        blocked.has(envelope.id)
+          ? Promise.reject(new Error('queue is down'))
+          : sqs.publish(envelope),
+    };
+    publisher = new OutboxPublisher(prisma, flaky, clock, config);
+  });
 
   const addEvent = async (attempts = 0): Promise<EventEnvelope> => {
     const envelope: EventEnvelope = {
@@ -97,6 +111,7 @@ describe('OutboxPublisher (Postgres and LocalStack)', () => {
   afterAll(async () => {
     await prisma.outboxEvent.deleteMany({ where: { id: { in: created } } });
     await prisma.$disconnect();
+    await sqsClient.send(new DeleteQueueCommand({ QueueUrl: queueUrl }));
     sqsClient.destroy();
   });
 
