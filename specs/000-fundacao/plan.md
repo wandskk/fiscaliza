@@ -27,6 +27,7 @@ fiscaliza/
 - **pino** via `nestjs-pino` para o logger JSON; o correlation id fica num `AsyncLocalStorage` para chegar aos logs fora do request (outbox, mais tarde).
 - **Prisma** com schema inicial vazio de modelos de negócio (só o `datasource` e o `generator`); cada spec acrescenta seus modelos com migração própria.
 - **Prisma 7** (não o 6): é a versão estável atual e não tem mais o motor em Rust, então a imagem Docker dispensa `binaryTargets`. Custos aceitos: `prisma.config.ts` (o CLI não lê mais o `.env` sozinho), adapter `@prisma/adapter-pg` e client gerado em `src/shared/database/generated` com `moduleFormat = "cjs"` para o Nest. O ESLint proíbe o domínio de importar essa pasta, como já proíbe `@prisma/*`.
+- **Migração no start do container**: a imagem da API roda `prisma migrate deploy` antes do `node dist/main.js`, para `docker compose up` deixar o banco pronto com as migrações das specs 001 a 003. Por isso `prisma` é dependência de produção (cerca de 200 MB a mais na imagem, que já vinham pelo peer do `@prisma/client`). Com várias réplicas na AWS, a migração passa a ser um passo do deploy.
 - **Condição `source` no `exports` do shared**: typecheck e testes da API leem o `src` do shared sem build; o build e o runtime usam o `dist`. Por isso o shared usa imports relativos com `.js` (exigência do NodeNext).
 - **LocalStack 3.x com versão fixada** na imagem, para o init não quebrar com atualização.
 

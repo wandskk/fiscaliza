@@ -28,4 +28,5 @@ WORKDIR /app
 COPY --from=build --chown=node:node /prod/api ./
 USER node
 EXPOSE 3000
-CMD ["node", "dist/main.js"]
+# Migrations first, so "docker compose up" leaves the schema ready; exec keeps node as PID 1 for SIGTERM
+CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && exec node dist/main.js"]

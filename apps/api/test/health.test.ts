@@ -15,17 +15,23 @@ describe('GET /api/v1/health', () => {
   });
 
   it('answers 200 with the database up', async () => {
-    ({ app } = await createTestApp());
+    let logs: Record<string, unknown>[];
+    ({ app, logs } = await createTestApp({ env: { LOG_LEVEL: 'info' } }));
     // Only the SELECT 1 is faked; Terminus still goes through the real client first
     vi.spyOn(app.get(PrismaService), '$queryRawUnsafe').mockResolvedValue([{ ok: 1 }]);
 
     const response = await request(app.getHttpServer()).get('/api/v1/health').expect(200);
 
     expect(response.body).toMatchObject({ status: 'ok', info: { database: { status: 'up' } } });
+    // The compose healthcheck calls it every 10 s; a healthy answer is not worth a log line
+    expect(logs.filter((log) => log.message === 'request completed')).toEqual([]);
   });
 
   it('answers 503 with the database down', async () => {
-    ({ app } = await createTestApp({ env: { DATABASE_URL: UNREACHABLE_DATABASE_URL } }));
+    let logs: Record<string, unknown>[];
+    ({ app, logs } = await createTestApp({
+      env: { DATABASE_URL: UNREACHABLE_DATABASE_URL, LOG_LEVEL: 'info' },
+    }));
 
     const response = await request(app.getHttpServer()).get('/api/v1/health').expect(503);
 
