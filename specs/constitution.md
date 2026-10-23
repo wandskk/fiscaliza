@@ -84,7 +84,7 @@ Documentos (PROJETO.md, specs, planos, tarefas) ficam em português e usam os te
 | `Situacao { CONFORME, NAO_CONFORME }` | `Compliance { COMPLIANT, NON_COMPLIANT }` |
 | `Gravidade { BAIXA, MEDIA, ALTA }` | `Severity { LOW, MEDIUM, HIGH }` |
 | Evento `VistoriaEnviada` | `InspectionSubmitted` |
-| Erro `{ codigo, mensagem, detalhes, correlationId }` | `{ code, message, details, correlationId }` |
+| Erro `{ codigo, mensagem, detalhes: [{ campo, problema }], correlationId }` | `{ code, message, details: [{ field, problem }], correlationId }` |
 | `ERRO_VALIDACAO`, `NAO_ENCONTRADO`, `SEM_PERMISSAO`, `ERRO_INTERNO` | `VALIDATION_ERROR`, `NOT_FOUND`, `FORBIDDEN`, `INTERNAL_ERROR` |
 | `NaoEncontradoError`, `SemPermissaoError` | `NotFoundError`, `ForbiddenError` |
 | Paginação `{ pagina, limite }` | `{ page, limit }` |

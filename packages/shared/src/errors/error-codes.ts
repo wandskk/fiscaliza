@@ -1,0 +1,37 @@
+export const ErrorCode = {
+  RN_01: 'RN-01',
+  RN_02: 'RN-02',
+  RN_03: 'RN-03',
+  RN_04: 'RN-04',
+  RN_05: 'RN-05',
+  RN_06: 'RN-06',
+  RN_07: 'RN-07',
+  RN_08: 'RN-08',
+  RN_09: 'RN-09',
+  RN_10: 'RN-10',
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  NOT_FOUND: 'NOT_FOUND',
+  FORBIDDEN: 'FORBIDDEN',
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+} as const;
+
+export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
+
+// Shown to the end user, so the text stays in Brazilian Portuguese
+export const ERROR_MESSAGES: Record<ErrorCode, string> = {
+  'RN-01': 'A vistoria precisa pertencer a uma obra e a um fiscal atribuído a essa obra.',
+  'RN-02': 'Status de vistoria inválido.',
+  'RN-03': 'Essa mudança de status não é permitida.',
+  'RN-04':
+    'A vistoria precisa de observação com 30 caracteres e pelo menos 1 foto para ser enviada.',
+  'RN-05': 'Cada vistoria aceita até 10 fotos JPEG, PNG ou WebP de até 10 MB cada.',
+  'RN-06': 'Para devolver a vistoria, informe um motivo com pelo menos 10 caracteres.',
+  'RN-07': 'Vistoria aprovada não pode ser alterada.',
+  'RN-08': 'A decisão sobre a vistoria precisa ser registrada por um gestor.',
+  'RN-09': 'Toda mudança de status precisa ficar registrada no histórico.',
+  'RN-10': 'Obra encerrada não recebe vistoria nova.',
+  VALIDATION_ERROR: 'Os dados enviados são inválidos.',
+  NOT_FOUND: 'Registro não encontrado.',
+  FORBIDDEN: 'Você não tem permissão para esta ação.',
+  INTERNAL_ERROR: 'Erro interno. Tente novamente em instantes.',
+};
