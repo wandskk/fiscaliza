@@ -21,9 +21,9 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
-| T14.1 | `lib/http.ts` (token, correlation id, erro tipado) e `use-sessao` com Amplify e modo local | T13, T05 | | 1,25 | | [ ] |
-| T14.2 | `EntrarPage` + `LoginForm` (React Hook Form + Zod), erro de credencial | T14.1 | | 1,0 | | [ ] |
-| T14.3 | Router com `RotaProtegida` por perfil, AppShell, Sidebar por perfil, Topbar com tema e sair; testes do redirecionamento | T14.2 | | 1,5 | | [ ] |
+| T14.1 | `lib/http.ts` (token, correlation id, erro tipado) e `use-sessao` com Amplify e modo local | T13, T05 | | 1,25 | 0,07 | [x] |
+| T14.2 | `EntrarPage` + `LoginForm` (React Hook Form + Zod), erro de credencial | T14.1 | | 1,0 | 0,05 | [x] |
+| T14.3 | Router com `RotaProtegida` por perfil, AppShell, Sidebar por perfil, Topbar com tema e sair; testes do redirecionamento | T14.2 | | 1,5 | 0,15 | [x] |
 | | **Subtotal web** | | | **3,75** | | |
 | | **Total** | | | **9,75** | | |
 

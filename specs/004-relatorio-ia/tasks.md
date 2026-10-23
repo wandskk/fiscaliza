@@ -6,12 +6,12 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
-| T10.1 | `shared`: envelope de evento, `EventType`, `inspectionSubmittedSchema`, `aiReportSchema`, `reportSchema`, `report` no detalhe, `MAX_NOTES_FOR_PROMPT`; testes dos schemas | T07.1 | | 0,5 | | [ ] |
-| T10.2 | Migração `report_and_outbox` (`outbox_events`, `reports`, enum `Severity`) | T08.1 | [P] | 0,5 | | [ ] |
-| T10.3 | Porta `EventOutbox`, `PrismaEventOutbox`, outbox em memória; `SubmitInspectionUseCase` grava `InspectionSubmitted` na transação; testes do caso de uso, do envelope (correlationId) e de rollback contra Postgres | T10.1, T10.2 | | 1,0 | | [ ] |
-| T10.4 | Porta `MessageQueue`, `SqsMessageQueue`, `OutboxPublisher` (2 s, lote 20, `SKIP LOCKED`, `attempts` até 10), env `INSPECTIONS_QUEUE_URL` e `OUTBOX_PUBLISHER_ENABLED`; integração contra LocalStack (publica, marca, falha soma tentativa) | T10.3 | | 1,5 | | [ ] |
-| T10.5 | `ReportReader` + `PrismaReportReader`; relatório do envio atual no `GET /inspections/:id`; e2e com relatório inserido direto no banco (antes e depois de um reenvio) | T10.2 | [P] | 0,75 | | [ ] |
-| | **Subtotal T10** | | | **4,25** | | |
+| T10.1 | `shared`: envelope de evento, `EventType`, `inspectionSubmittedSchema`, `aiReportSchema`, `reportSchema`, `report` no detalhe, `MAX_NOTES_FOR_PROMPT`; testes dos schemas | T07.1 | | 0,5 | 0,05 | [x] |
+| T10.2 | Migração `report_and_outbox` (`outbox_events`, `reports`, enum `Severity`) | T08.1 | [P] | 0,5 | 0,05 | [x] |
+| T10.3 | Porta `EventOutbox`, `PrismaEventOutbox`, outbox em memória; `SubmitInspectionUseCase` grava `InspectionSubmitted` na transação; testes do caso de uso, do envelope (correlationId) e de rollback contra Postgres | T10.1, T10.2 | | 1,0 | 0,08 | [x] |
+| T10.4 | Porta `MessageQueue`, `SqsMessageQueue`, `OutboxPublisher` (2 s, lote 20, `SKIP LOCKED`, `attempts` até 10), env `INSPECTIONS_QUEUE_URL` e `OUTBOX_PUBLISHER_ENABLED`; integração contra LocalStack (publica, marca, falha soma tentativa) | T10.3 | | 1,5 | 0,08 | [x] |
+| T10.5 | `ReportReader` + `PrismaReportReader`; relatório do envio atual no `GET /inspections/:id`; e2e com relatório inserido direto no banco (antes e depois de um reenvio) | T10.2 | [P] | 0,75 | 0,05 | [x] |
+| | **Subtotal T10** | | | **4,25** | **0,31** | |
 
 ## Worker e IA (T11)
 
