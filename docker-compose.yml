@@ -17,7 +17,7 @@ services:
     # Pinned: init scripts depend on the LocalStack CLI behaviour of this version
     image: localstack/localstack:3.8
     environment:
-      SERVICES: s3,sqs
+      SERVICES: s3,sqs,ses
       AWS_DEFAULT_REGION: us-east-1
     ports: ['4566:4566']
     volumes: ['./infra/localstack:/etc/localstack/init/ready.d']

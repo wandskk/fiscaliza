@@ -5,7 +5,7 @@ import {
   SendMessageCommand,
   SQSClient,
 } from '@aws-sdk/client-sqs';
-import { InspectionStatus } from '@fiscaliza/shared';
+import { InspectionDecision, InspectionStatus } from '@fiscaliza/shared';
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { loadConfig } from '../src/config.js';
@@ -17,7 +17,7 @@ import {
 import { createLogger } from '../src/infrastructure/logger.js';
 import { pollOnce } from '../src/local-poller.js';
 import { DbFixtures } from './support/db-fixtures.js';
-import { submittedEvent } from './support/events.js';
+import { decidedEvent, submittedEvent } from './support/events.js';
 import { TEST_ENV } from './support/test-env.js';
 
 // The whole worker path with the stub provider: queue message -> poller -> use case -> report in
@@ -131,5 +131,47 @@ describe('local poller, end to end', () => {
     expect(result).toEqual({ received: 1, deleted: 0, failed: 1 });
     // Not visible until the visibility timeout; it is not gone, and it was not deleted
     expect(await queueCounts()).toEqual({ waiting: 0, inFlight: 1 });
+  });
+
+  // What LocalStack SES has sent to this run's inspector
+  const sentToInspector = async () => {
+    const response = await fetch(`${TEST_ENV.AWS_ENDPOINT}/_aws/ses`);
+    const { messages } = (await response.json()) as {
+      messages: { Destination: { ToAddresses: string[] }; Body: { text_part: string } }[];
+    };
+    return messages.filter((m) => m.Destination.ToAddresses.includes(fixtures.userEmail));
+  };
+
+  it('turns an InspectionDecided message into an e-mail sent through SES and a notification', async () => {
+    const { inspectionId } = await fixtures.createInspection(InspectionStatus.RETURNED);
+    const event = decidedEvent(inspectionId, InspectionDecision.RETURN, 'Faltam fotos.');
+    await send(event);
+
+    const result = await poll();
+
+    expect(result).toEqual({ received: 1, deleted: 1, failed: 0 });
+    expect(await prisma.notification.findUnique({ where: { eventId: event.id } })).toMatchObject({
+      userId: fixtures.userId,
+      inspectionId,
+      channel: 'EMAIL',
+      subject: 'Vistoria devolvida',
+    });
+    const sent = await sentToInspector();
+    expect(sent.some((m) => m.Body.text_part.includes('Faltam fotos.'))).toBe(true);
+  });
+
+  it('does not notify twice when the InspectionDecided event is redelivered', async () => {
+    const { inspectionId } = await fixtures.createInspection(InspectionStatus.APPROVED);
+    const event = decidedEvent(inspectionId, InspectionDecision.APPROVE);
+    await send(event);
+    await poll();
+    const before = (await sentToInspector()).length;
+
+    await send(event);
+    const result = await poll();
+
+    expect(result).toEqual({ received: 1, deleted: 1, failed: 0 });
+    expect((await sentToInspector()).length).toBe(before);
+    expect(await prisma.notification.count({ where: { eventId: event.id } })).toBe(1);
   });
 });

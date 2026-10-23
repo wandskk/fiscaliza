@@ -13,6 +13,7 @@ describe('loadConfig', () => {
     expect(config.LLM_PROVIDERS).toEqual(['stub']);
     expect(config.GEMINI_MODEL).toBe('gemini-2.5-flash');
     expect(config.AWS_REGION).toBe('us-east-1');
+    expect(config.NOTIFICATION_SENDER).toBe('no-reply@fiscaliza.local');
   });
 
   it('reads the provider chain in order, ignoring spaces and empty values', () => {

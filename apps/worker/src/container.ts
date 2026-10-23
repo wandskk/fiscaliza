@@ -2,17 +2,20 @@ import { readFileSync } from 'node:fs';
 import type { Logger } from 'pino';
 import { buildReportPrompt } from './application/build-report-prompt.js';
 import { GenerateReportUseCase } from './application/generate-report.use-case.js';
+import { NotifyInspectorUseCase } from './application/notify-inspector.use-case.js';
 import type { LlmProvider } from './application/ports/llm.provider.js';
 import type { LlmProviderName, WorkerConfig } from './config.js';
 import { dispatchEvent, type DispatchOutcome } from './dispatch-event.js';
 import { createPrismaClient } from './infrastructure/database/prisma-client.js';
 import { PrismaInspectionReader } from './infrastructure/database/prisma-inspection.reader.js';
+import { PrismaNotificationRepository } from './infrastructure/database/prisma-notification.repository.js';
 import { PrismaReportRepository } from './infrastructure/database/prisma-report.repository.js';
 import { FallbackProvider } from './infrastructure/llm/fallback.provider.js';
 import { GeminiProvider } from './infrastructure/llm/gemini.provider.js';
 import { LlmWithFallback } from './infrastructure/llm/llm-with-fallback.js';
 import { StubProvider } from './infrastructure/llm/stub.provider.js';
 import { createLogger } from './infrastructure/logger.js';
+import { SesNotifier } from './infrastructure/notify/ses-notifier.js';
 
 // Next to src/ and dist/, so the path is the same running from either
 const PROMPT_URL = new URL('../prompts/report.v1.md', import.meta.url);
@@ -24,7 +27,7 @@ export interface Container {
   close: () => Promise<void>;
 }
 
-// No DI framework: the worker has one use case, so the wiring is plain code
+// No DI framework: the worker has two use cases, so the wiring is plain code
 export function buildContainer(config: WorkerConfig, logger?: Logger): Container {
   const log = logger ?? createLogger(config.LOG_LEVEL);
   const prisma = createPrismaClient(config.DATABASE_URL);
@@ -38,10 +41,25 @@ export function buildContainer(config: WorkerConfig, logger?: Logger): Container
     clock: { now: () => new Date() },
   });
 
+  const notifier = new SesNotifier({
+    sender: config.NOTIFICATION_SENDER,
+    region: config.AWS_REGION,
+    endpoint: config.AWS_ENDPOINT,
+  });
+  const notifyInspector = new NotifyInspectorUseCase({
+    notifications: new PrismaNotificationRepository(prisma),
+    inspections: new PrismaInspectionReader(prisma),
+    notifier,
+    clock: { now: () => new Date() },
+  });
+
   return {
     logger: log,
-    dispatch: (body) => dispatchEvent(body, { generateReport, logger: log }),
-    close: () => prisma.$disconnect(),
+    dispatch: (body) => dispatchEvent(body, { generateReport, notifyInspector, logger: log }),
+    close: async () => {
+      notifier.destroy();
+      await prisma.$disconnect();
+    },
   };
 }
 
