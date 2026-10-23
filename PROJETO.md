@@ -543,9 +543,11 @@ Prefixo `/api/v1`. Todos exigem JWT do Cognito.
 |---|---|---|---|
 | GET | `/me` | todos | Usuário logado e perfil |
 | GET | `/obras` | todos | Lista (fiscal vê só as atribuídas) |
+| GET | `/obras/:id` | todos | Detalhe com os ids dos fiscais (fiscal só vê as atribuídas; as outras dão 404) |
 | POST | `/obras` | gestor | Cria obra |
 | PATCH | `/obras/:id` | gestor | Edita ou encerra |
 | PUT | `/obras/:id/fiscais` | gestor | Define os fiscais da obra |
+| GET | `/usuarios?perfil=FISCAL` | gestor | Fiscais para o seletor da obra |
 | GET | `/obras/:id/vistorias` | todos | Vistorias da obra, paginadas |
 | POST | `/vistorias` | fiscal | Cria rascunho |
 | GET | `/vistorias/:id` | todos | Detalhe com fotos, relatório e histórico |
