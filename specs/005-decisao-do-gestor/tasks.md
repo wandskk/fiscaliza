@@ -16,7 +16,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 
 | # | Tarefa | Depende | P | Estimado | Real | Feita |
 |---|---|---|:-:|--:|--:|:-:|
-| T15.8 | `can-decide`, `use-decide-inspection`, `DecisionPanel` com diálogo de devolução, motivo na `HistoryTimeline`; testes | T15.5, T12.1 | | 1,0 | | [ ] |
+| T15.8 | `can-decide`, `use-decide-inspection`, `DecisionPanel` com diálogo de devolução, motivo na `HistoryTimeline`; testes | T15.5, T12.1 | | 1,0 | 0,06 | [x] |
 | | **Total** | | | **5,0** | | |
 
 ## Pronto quando
