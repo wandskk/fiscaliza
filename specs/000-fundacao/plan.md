@@ -26,6 +26,8 @@ fiscaliza/
 - **Schemas do `shared` transformados em DTO por `nestjs-zod`** (seção 18). O pipe global de validação fica na T03; os DTOs de cada rota vêm nas specs seguintes.
 - **pino** via `nestjs-pino` para o logger JSON; o correlation id fica num `AsyncLocalStorage` para chegar aos logs fora do request (outbox, mais tarde).
 - **Prisma** com schema inicial vazio de modelos de negócio (só o `datasource` e o `generator`); cada spec acrescenta seus modelos com migração própria.
+- **Prisma 7** (não o 6): é a versão estável atual e não tem mais o motor em Rust, então a imagem Docker dispensa `binaryTargets`. Custos aceitos: `prisma.config.ts` (o CLI não lê mais o `.env` sozinho), adapter `@prisma/adapter-pg` e client gerado em `src/shared/database/generated` com `moduleFormat = "cjs"` para o Nest. O ESLint proíbe o domínio de importar essa pasta, como já proíbe `@prisma/*`.
+- **Condição `source` no `exports` do shared**: typecheck e testes da API leem o `src` do shared sem build; o build e o runtime usam o `dist`. Por isso o shared usa imports relativos com `.js` (exigência do NodeNext).
 - **LocalStack 3.x com versão fixada** na imagem, para o init não quebrar com atualização.
 
 ## API base (T03)

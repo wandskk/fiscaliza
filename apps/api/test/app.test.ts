@@ -6,6 +6,7 @@ import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
 import { loadConfig } from '../src/shared/config/config.schema';
 import { ConfigService } from '../src/shared/config/config.service';
+import { PrismaService } from '../src/shared/database/prisma.service';
 import { TEST_ENV } from './support/test-env';
 
 describe('App', () => {
@@ -23,6 +24,11 @@ describe('App', () => {
 
   afterAll(async () => {
     await app.close();
+  });
+
+  it('boots without a reachable database, since Prisma connects on the first query', () => {
+    // PrismaClient returns a proxy, so check the lifecycle hook instead of instanceof
+    expect(app.get(PrismaService).onModuleDestroy).toBeTypeOf('function');
   });
 
   it('serves the Swagger document at /api/docs', async () => {

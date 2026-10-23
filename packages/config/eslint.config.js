@@ -19,7 +19,8 @@ const dependencyRuleZones = FORBIDDEN_LAYER_IMPORTS.flatMap(({ layer, cannotImpo
 );
 
 export default defineConfig(
-  { ignores: ['**/dist/**', '**/coverage/**', '**/node_modules/**'] },
+  // generated/ holds the Prisma client, written by "prisma generate"
+  { ignores: ['**/dist/**', '**/coverage/**', '**/node_modules/**', '**/generated/**'] },
   js.configs.recommended,
   tseslint.configs.recommended,
   {
@@ -40,7 +41,7 @@ export default defineConfig(
         {
           patterns: [
             {
-              group: ['@nestjs/*', '@prisma/*', '@aws-sdk/*'],
+              group: ['@nestjs/*', '@prisma/*', '@aws-sdk/*', '**/database/generated/**'],
               message: 'The domain knows no framework, database or AWS (PROJETO.md 9.1).',
             },
           ],

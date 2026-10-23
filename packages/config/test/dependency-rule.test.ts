@@ -22,8 +22,9 @@ describe('dependency rule (PROJETO.md 9.1)', () => {
     ]);
   });
 
-  it('fails when the domain imports @nestjs, @prisma or @aws-sdk', async () => {
+  it('fails when the domain imports @nestjs, @prisma, @aws-sdk or the generated Prisma client', async () => {
     expect(await ruleIdsReportedFor('imports-frameworks.ts')).toEqual([
+      'no-restricted-imports',
       'no-restricted-imports',
       'no-restricted-imports',
       'no-restricted-imports',

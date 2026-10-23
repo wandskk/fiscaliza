@@ -1,0 +1,12 @@
+// Each spec adds its own models with its own migration
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/shared/database/generated"
+  // The API compiles to CommonJS, like the Nest default
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}

@@ -1,3 +1,15 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+
+# Prisma downloads the schema engine used by migrations on install
+onlyBuiltDependencies:
+  - '@prisma/engines'
+  - prisma
+
+# Prebuilt binaries already ship in optional dependencies; @scarf/scarf is telemetry
+ignoredBuiltDependencies:
+  - '@scarf/scarf'
+  - '@swc/core'
+  - esbuild
+  - unrs-resolver
