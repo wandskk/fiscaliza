@@ -96,6 +96,16 @@ Documentos (PROJETO.md, specs, planos, tarefas) ficam em português e usam os te
 | Tokens locais `local-fiscal`, `local-fiscal-2`, `local-gestor` | `local-inspector`, `local-inspector-2`, `local-manager` |
 | Migração `001_usuario` | `user` |
 | Web: `EntrarPage`, rota `/entrar`, `RotaProtegida`, `use-sessao` | `SignInPage`, `/sign-in`, `ProtectedRoute`, `use-session` |
+| Módulos `vistorias`, `obras` | `inspections`, `construction-sites` |
+| Campos da vistoria `obraId`, `fiscalId`, `observacao`, `situacao`, `motivoDevolucao`, `criadaEm`, `atualizadaEm` | `constructionSiteId`, `inspectorId`, `notes`, `compliance`, `returnReason`, `createdAt`, `updatedAt` |
+| Campos da foto `chave`, `tipo`, `tamanho` | `key`, `contentType`, `size` |
+| Histórico `MudancaDeStatus { de, para, usuarioId, em }`, lista `mudancas` | `StatusChange { from, to, userId, at }`, `statusChanges` |
+| Constantes `MAX_FOTOS`, `MIN_OBSERVACAO`, `TAMANHO_MAX_FOTO`, tipos aceitos | `MAX_PHOTOS`, `MIN_NOTES_LENGTH`, `MAX_PHOTO_SIZE`, `ACCEPTED_PHOTO_TYPES` |
+| `CriarVistoriaSchema`, `EditarVistoriaSchema`, `VistoriaDetalheSchema`, `FiltroVistoriasSchema` | `createInspectionSchema`, `updateInspectionSchema`, `inspectionDetailSchema`, `inspectionFilterSchema` |
+| `SolicitarUploadSchema` (formato do pedido), regra RN-05 do arquivo, `ConfirmarFotoSchema` | `uploadUrlRequestSchema`, `photoFileSchema`, `confirmPhotoSchema` |
+| Entidade `Vistoria`: `criar`, `editar`, `adicionarFoto`, `removerFoto`, `enviar`, `garantirDono`, `garantirEditavel` | `Inspection`: `create`, `update`, `addPhoto`, `removePhoto`, `submit`, `ensureOwner`, `ensureEditable` |
+| `podeTransicionar`, value object `Foto`, porta `Relogio` | `canTransition`, `Photo`, `Clock` |
+| `VistoriaIncompletaError`, `TransicaoInvalidaError` | `IncompleteInspectionError`, `InvalidTransitionError` |
 | `CONTRATO_DUPLICADO`, `OBRA_ENCERRADA`, `FISCAL_INVALIDO`, `OBRA_NAO_ENCONTRADA` | `DUPLICATE_CONTRACT`, `CONSTRUCTION_SITE_CLOSED`, `INVALID_INSPECTOR`, `CONSTRUCTION_SITE_NOT_FOUND` |
 | `FOTO_INVALIDA`, `VISTORIA_NAO_ENCONTRADA` | `INVALID_PHOTO`, `INSPECTION_NOT_FOUND` |
 | Provedor de LLM `reserva` (`reserva.provider.ts`) | `fallback` (`fallback.provider.ts`) |
