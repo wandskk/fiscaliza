@@ -12,6 +12,7 @@ import { HttpErrorFilter } from './shared/errors/http-error.filter';
 import { HealthModule } from './shared/health/health.module';
 import { LoggingModule } from './shared/logging/logging.module';
 import { OutboxModule } from './shared/outbox/outbox.module';
+import { RateLimitModule } from './shared/rate-limit/rate-limit.module';
 import { TimeModule } from './shared/time/time.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { TimeModule } from './shared/time/time.module';
     DatabaseModule,
     TimeModule,
     OutboxModule,
+    RateLimitModule,
     AuthModule,
     HealthModule,
     UsersModule,

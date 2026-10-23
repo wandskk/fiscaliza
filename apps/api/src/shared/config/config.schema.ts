@@ -9,6 +9,8 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3000),
   CORS_ORIGIN: z.url().default('http://localhost:5173'),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
+  // Requests per minute per IP; the health check is outside the limit
+  RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(100),
   DATABASE_URL: z.url(),
   AWS_REGION: z.string().min(1).default('us-east-1'),
   AWS_ENDPOINT: z.url().optional(),

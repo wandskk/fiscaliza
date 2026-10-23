@@ -55,11 +55,11 @@ function toDetails(error: ZodError): ErrorDetail[] {
   return error.issues.map((issue) => ({ field: issue.path.join('.'), problem: issue.message }));
 }
 
-// 429 has no code of its own in the contract, so it falls into VALIDATION_ERROR
 function codeForStatus(status: number): ErrorCode {
   if (status >= 500) return ErrorCode.INTERNAL_ERROR;
   if (status === 401) return ErrorCode.UNAUTHORIZED;
   if (status === 403) return ErrorCode.FORBIDDEN;
   if (status === 404) return ErrorCode.NOT_FOUND;
+  if (status === 429) return ErrorCode.TOO_MANY_REQUESTS;
   return ErrorCode.VALIDATION_ERROR;
 }
