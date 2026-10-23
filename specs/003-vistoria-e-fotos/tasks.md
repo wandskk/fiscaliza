@@ -21,7 +21,7 @@ Legenda: `[P]` pode rodar em paralelo com a anterior. Tempo em horas. "Real" é 
 | T08.3 | `DomainError` com `tipo` e ajuste do filtro (403 para RN-01) | T03.4 | [P] | 0,25 | 0,1 | [x] |
 | T08.4 | Porta `VistoriaRepository`, repositório em memória; casos de uso criar (`RN-01`, `RN-10` via `ObraAcesso`), editar, detalhar, listar da obra, enviar | T07.4, T06.6 | | 2,0 | 0,06 | [x] |
 | T08.5 | `PrismaVistoriaRepository` + mapper (vistoria, fotos e histórico no mesmo `salvar`); integração contra Postgres | T08.1, T08.2, T08.4 | | 1,5 | 0,03 | [x] |
-| T08.6 | Controllers, DTOs e Swagger; e2e: criar → editar → enviar, permissões (403/404), RN-04 e RN-07 pela API | T08.3, T08.5 | | 1,5 | | [ ] |
+| T08.6 | Controllers, DTOs e Swagger; e2e: criar → editar → enviar, permissões (403/404), RN-04 e RN-07 pela API | T08.3, T08.5 | | 1,5 | 0,04 | [x] |
 | | **Subtotal T08** | | | **6,5** | | |
 
 ## Upload de fotos (T09)
