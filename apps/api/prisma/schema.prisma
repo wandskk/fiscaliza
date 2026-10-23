@@ -7,6 +7,16 @@ generator client {
   moduleFormat = "cjs"
 }
 
+// Client of the worker (spec 004), generated from this same schema so the two never drift.
+// The API generates only "client" (prisma generate --generator client)
+generator worker {
+  provider            = "prisma-client"
+  output              = "../../worker/src/infrastructure/database/generated"
+  // The worker is ESM, run by Node after tsc
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
 datasource db {
   provider = "postgresql"
 }

@@ -7,8 +7,9 @@ build/
 coverage/
 *.tsbuildinfo
 
-# client do Prisma, gerado no install por "prisma generate"
+# clients do Prisma (API e worker), gerados no install por "prisma generate"
 apps/api/src/shared/database/generated/
+apps/worker/src/infrastructure/database/generated/
 
 # segredos: só o .env.example é versionado
 .env

@@ -18,7 +18,7 @@ RUN pnpm install --frozen-lockfile --ignore-scripts --filter "@fiscaliza/api..."
 COPY packages/config packages/config
 COPY packages/shared packages/shared
 COPY apps/api apps/api
-RUN pnpm --filter @fiscaliza/api exec prisma generate \
+RUN pnpm --filter @fiscaliza/api exec prisma generate --generator client \
   && pnpm --filter "@fiscaliza/api..." build \
   && pnpm --filter @fiscaliza/api deploy --legacy --prod --ignore-scripts /prod/api
 
