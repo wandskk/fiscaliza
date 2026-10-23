@@ -3,6 +3,7 @@ import {
   aiReportSchema,
   eventEnvelopeSchema,
   EventType,
+  inspectionDecidedSchema,
   inspectionDetailSchema,
   inspectionSubmittedSchema,
   MAX_NOTES_FOR_PROMPT,
@@ -28,6 +29,29 @@ const aiReport = {
 };
 
 describe('event envelope', () => {
+  it('RN-08: accepts an InspectionDecided envelope with who decided and the reason or null', () => {
+    const decided = {
+      ...envelope,
+      type: EventType.INSPECTION_DECIDED,
+      data: {
+        inspectionId: ID,
+        decision: 'RETURN',
+        reason: 'Fotos sem foco.',
+        decidedBy: 'manager',
+      },
+    };
+    expect(inspectionDecidedSchema.parse(decided).data.decidedBy).toBe('manager');
+    expect(
+      inspectionDecidedSchema.safeParse({ ...decided, data: { ...decided.data, reason: null } })
+        .success,
+    ).toBe(true);
+    expect(
+      inspectionDecidedSchema.safeParse({ ...decided, data: { ...decided.data, decision: 'X' } })
+        .success,
+    ).toBe(false);
+    expect(inspectionDecidedSchema.safeParse(envelope).success).toBe(false);
+  });
+
   it('accepts an InspectionSubmitted envelope and keeps the data typed', () => {
     expect(inspectionSubmittedSchema.parse(envelope).data.inspectionId).toBe(ID);
     expect(eventEnvelopeSchema.parse(envelope)).toEqual(envelope);
