@@ -9,6 +9,7 @@ import { homeForRole } from '@/features/auth/utils/role-navigation';
 import { ConstructionSitesPage } from '@/features/construction-sites/pages/ConstructionSitesPage';
 import { ConstructionSiteDetailPage } from '@/features/construction-sites/pages/ConstructionSiteDetailPage';
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
+import { NewInspectionPage } from '@/features/inspections/pages/NewInspectionPage';
 
 // The showcase only exists in dev builds
 const DesignSystemPage = import.meta.env.DEV
@@ -40,6 +41,9 @@ export function AppRoutes() {
           <Route index element={<RoleHomeRedirect />} />
           <Route path="/construction-sites" element={<ConstructionSitesPage />} />
           <Route path="/construction-sites/:id" element={<ConstructionSiteDetailPage />} />
+          <Route element={<ProtectedRoute allowedRoles={[Role.INSPECTOR]} />}>
+            <Route path="/inspections/new" element={<NewInspectionPage />} />
+          </Route>
           <Route element={<ProtectedRoute allowedRoles={[Role.MANAGER]} />}>
             <Route path="/dashboard" element={<DashboardPage />} />
           </Route>
