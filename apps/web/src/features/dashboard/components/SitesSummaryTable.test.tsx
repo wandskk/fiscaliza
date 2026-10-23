@@ -65,22 +65,22 @@ describe('SitesSummaryTable', () => {
     const user = userEvent.setup();
     renderTable();
 
-    await user.click(screen.getByRole('columnheader', { name: /Obra/ }));
+    await user.click(screen.getByRole('button', { name: /Obra/ }));
     expect(names()[0]).toContain('Ponte Norte');
 
-    await user.click(screen.getByRole('columnheader', { name: /Aguardando decisão/ }));
+    await user.click(screen.getByRole('button', { name: /Aguardando decisão/ }));
     expect(names()[0]).toContain('Escola Central');
     expect(screen.getByRole('columnheader', { name: /Aguardando decisão/ })).toHaveAttribute(
       'aria-sort',
       'descending',
     );
 
-    await user.click(screen.getByRole('columnheader', { name: /Devolvidas/ }));
+    await user.click(screen.getByRole('button', { name: /Devolvidas/ }));
     expect(names()[0]).toContain('Ponte Norte');
 
-    await user.click(screen.getByRole('columnheader', { name: /Aprovadas/ }));
+    await user.click(screen.getByRole('button', { name: /Aprovadas/ }));
     expect(names()[0]).toContain('Escola Central');
-    await user.click(screen.getByRole('columnheader', { name: /Aprovadas/ }));
+    await user.click(screen.getByRole('button', { name: /Aprovadas/ }));
     expect(names()[0]).toContain('Hospital Sul');
   });
 

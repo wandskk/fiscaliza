@@ -37,7 +37,20 @@ describe('Table', () => {
     const user = userEvent.setup();
     const onSort = vi.fn();
     render(<Table columns={columns} data={data} onSort={onSort} />);
-    await user.click(screen.getByText('ID'));
+    await user.click(screen.getByRole('button', { name: /ID/ }));
+    expect(onSort).toHaveBeenCalledWith('id');
+  });
+
+  it('renders a button only inside sortable headers and sorts with the keyboard', async () => {
+    const user = userEvent.setup();
+    const onSort = vi.fn();
+    render(<Table columns={columns} data={data} onSort={onSort} />);
+    expect(screen.getAllByRole('button')).toHaveLength(2);
+    expect(screen.getByRole('columnheader', { name: 'Status' })).not.toContainElement(
+      screen.queryByRole('button', { name: /Status/ }),
+    );
+    await user.tab();
+    await user.keyboard('{Enter}');
     expect(onSort).toHaveBeenCalledWith('id');
   });
 
