@@ -91,9 +91,14 @@ export function DecisionPanel({
               value={reason}
               maxLength={MAX_RETURN_REASON_LENGTH}
               onChange={(event) => setReason(event.target.value)}
-              hint={`${trimmedLength}/${MIN_RETURN_REASON_LENGTH}`}
+              hint={`${trimmedLength} caracteres (mínimo ${MIN_RETURN_REASON_LENGTH})`}
               error={reasonError}
             />
+            {reasonTooShort && (
+              <p className="mt-1 text-xs text-muted">
+                Faltam {MIN_RETURN_REASON_LENGTH - trimmedLength} caracteres
+              </p>
+            )}
           </div>
           {dialogError && (
             <p role="alert" className="mt-4 text-sm text-danger">

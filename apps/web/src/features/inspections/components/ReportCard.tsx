@@ -42,6 +42,12 @@ export function ReportCard({ report, status }: ReportCardProps) {
           Sugestão da IA
         </span>
       </div>
+      {status === InspectionStatus.RETURNED && (
+        <p className="mb-3 rounded-sm border border-warning bg-warning/10 p-3 text-sm text-text">
+          Relatório da versão devolvida. Um novo relatório será gerado quando a vistoria for
+          reenviada.
+        </p>
+      )}
       <p>{report.summary}</p>
       <div className="mt-3 flex items-center gap-2">
         <span className="text-sm text-muted">Gravidade geral</span>

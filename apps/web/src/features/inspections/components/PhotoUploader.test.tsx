@@ -59,6 +59,11 @@ describe('PhotoUploader', () => {
 
   it('shows the confirmed photos and the counter', () => {
     renderUploader();
+    expect(
+      screen.getByText(
+        'Cada foto é salva na vistoria assim que termina de enviar. Use Remover para tirar uma foto.',
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByAltText('Foto 1 da vistoria')).toBeInTheDocument();
     expect(screen.getByAltText('Foto 2 da vistoria')).toBeInTheDocument();
     expect(screen.getByText('2 de 10 fotos')).toBeInTheDocument();

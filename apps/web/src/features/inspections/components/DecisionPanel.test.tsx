@@ -46,16 +46,19 @@ describe('DecisionPanel', () => {
     const confirm = screen.getByRole('button', { name: 'Confirmar devolução' });
     const field = screen.getByLabelText('Motivo da devolução');
 
-    expect(screen.getByText('0/10')).toBeInTheDocument();
+    expect(screen.getByText('0 caracteres (mínimo 10)')).toBeInTheDocument();
+    expect(screen.getByText('Faltam 10 caracteres')).toBeInTheDocument();
     expect(confirm).toBeDisabled();
 
     await user.type(field, '  curto 9  ');
-    expect(screen.getByText('7/10')).toBeInTheDocument();
+    expect(screen.getByText('7 caracteres (mínimo 10)')).toBeInTheDocument();
+    expect(screen.getByText('Faltam 3 caracteres')).toBeInTheDocument();
     expect(confirm).toBeDisabled();
 
     await user.clear(field);
     await user.type(field, '  Faltam fotos.  ');
-    expect(screen.getByText('13/10')).toBeInTheDocument();
+    expect(screen.getByText('13 caracteres (mínimo 10)')).toBeInTheDocument();
+    expect(screen.queryByText(/Faltam \d+ caracteres/)).not.toBeInTheDocument();
     expect(confirm).toBeEnabled();
     await user.click(confirm);
     expect(onReturn).toHaveBeenCalledWith('Faltam fotos.');

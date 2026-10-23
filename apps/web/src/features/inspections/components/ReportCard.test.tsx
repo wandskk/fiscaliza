@@ -20,6 +20,16 @@ const report: Report = {
 };
 
 describe('ReportCard', () => {
+  it('labels the report of the returned version and keeps the AI seal', () => {
+    render(<ReportCard report={report} status={InspectionStatus.RETURNED} />);
+    expect(
+      screen.getByText(
+        'Relatório da versão devolvida. Um novo relatório será gerado quando a vistoria for reenviada.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Sugestão da IA')).toBeInTheDocument();
+    expect(screen.getByText(report.summary)).toBeInTheDocument();
+  });
   it('RN-08: shows the "Sugestão da IA" seal whenever a report is present', () => {
     render(<ReportCard report={report} status={InspectionStatus.APPROVED} />);
     expect(screen.getByText('Sugestão da IA')).toBeInTheDocument();
