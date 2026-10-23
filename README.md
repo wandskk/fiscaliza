@@ -96,17 +96,18 @@ O smoke test (`pnpm smoke:e2e`) grava obras e vistorias no banco de desenvolvime
 Antes de gravar um vídeo, com o compose de pé, restaure os dados de exemplo pelo host:
 
 ```bash
-DATABASE_URL=postgresql://fiscaliza:dev@localhost:5432/fiscaliza pnpm --filter @fiscaliza/api db:reset
+DATABASE_URL=postgresql://fiscaliza:dev@localhost:5432/fiscaliza AWS_ENDPOINT=http://localhost:4566 \n  pnpm --filter @fiscaliza/api db:reset
 ```
 
 No PowerShell:
 
 ```powershell
 $env:DATABASE_URL = 'postgresql://fiscaliza:dev@localhost:5432/fiscaliza'
+$env:AWS_ENDPOINT = 'http://localhost:4566'
 pnpm --filter @fiscaliza/api db:reset
 ```
 
-Esse comando apaga tudo do banco de desenvolvimento apontado por `DATABASE_URL`, reaplica as migrações e executa o seed, incluindo as fotos no LocalStack. Confira a URL antes de executar. O Prisma 7 não executa o seed automaticamente no reset; por isso o script encadeia `db:seed`.
+Esse comando apaga tudo do banco de desenvolvimento apontado por `DATABASE_URL`, reaplica as migrações e executa o seed, incluindo as fotos no LocalStack (por isso o `AWS_ENDPOINT`; sem ele o seed pula as fotos). Confira a URL antes de executar. O Prisma 7 não executa o seed automaticamente no reset; por isso o script encadeia `db:seed`.
 
 ### Entrar no modo local
 
