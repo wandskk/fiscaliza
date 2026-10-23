@@ -13,12 +13,14 @@ import { createZodDto } from 'nestjs-zod';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
+import { Public } from '../src/shared/auth/decorators';
 import { DomainError, ForbiddenError, NotFoundError } from '../src/shared/errors/domain-error';
 import { createTestApp } from './support/create-test-app';
 
 const probeSchema = z.object({ name: z.string().min(3) });
 class ProbeDto extends createZodDto(probeSchema) {}
 
+@Public()
 @Controller('probe')
 class ProbeController {
   @Get('not-found')

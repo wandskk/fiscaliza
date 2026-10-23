@@ -6,10 +6,12 @@ import {
   type HealthCheckResult,
 } from '@nestjs/terminus';
 import type { Response } from 'express';
+import { Public } from '../auth/decorators';
 import { PrismaService } from '../database/prisma.service';
 
 const DATABASE_TIMEOUT_MS = 1000;
 
+@Public()
 @Controller('health')
 export class HealthController {
   constructor(

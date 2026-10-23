@@ -11,6 +11,8 @@ import { TEST_ENV } from './test-env';
 interface TestAppOptions {
   env?: Record<string, string>;
   controllers?: Type[];
+  // Swaps a provider of the app, e.g. the token verifier for one with a test JWKS
+  overrides?: { provide: unknown; useValue: unknown }[];
 }
 
 export interface TestApp {
@@ -22,10 +24,14 @@ export interface TestApp {
 // file writes to the first app's logs: create one app per test file
 export async function createTestApp(options: TestAppOptions = {}): Promise<TestApp> {
   const logs: Record<string, unknown>[] = [];
-  const moduleRef = await Test.createTestingModule({
+  let builder = Test.createTestingModule({
     imports: [AppModule],
     controllers: options.controllers ?? [],
-  })
+  });
+  for (const { provide, useValue } of options.overrides ?? []) {
+    builder = builder.overrideProvider(provide).useValue(useValue);
+  }
+  const moduleRef = await builder
     .overrideProvider(ConfigService)
     .useValue(new ConfigService(loadConfig({ ...TEST_ENV, ...options.env })))
     .overrideProvider(LOG_STREAM)

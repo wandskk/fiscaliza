@@ -1,8 +1,10 @@
 import { Controller, Get, Logger, type INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { Public } from '../src/shared/auth/decorators';
 import { createTestApp } from './support/create-test-app';
 
+@Public()
 @Controller('probe')
 class ProbeController {
   private readonly logger = new Logger(ProbeController.name);
