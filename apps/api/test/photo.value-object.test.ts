@@ -1,7 +1,7 @@
 import { ErrorCode, MAX_PHOTO_SIZE } from '@fiscaliza/shared';
 import { describe, expect, it } from 'vitest';
 import { Photo } from '../src/modules/inspections/domain/photo.value-object';
-import { InvalidPhotoError } from '../src/modules/inspections/domain/inspection.errors';
+import { PhotoRejectedError } from '../src/modules/inspections/domain/inspection.errors';
 
 describe('Photo', () => {
   it('RN-05: accepts JPEG, PNG and WebP up to and including 10 MB', () => {
@@ -26,10 +26,10 @@ describe('Photo', () => {
     ]) {
       try {
         Photo.create({ id: 'photo', key: 'key', ...props });
-        throw new Error('Expected InvalidPhotoError');
+        throw new Error('Expected PhotoRejectedError');
       } catch (error) {
-        expect(error).toBeInstanceOf(InvalidPhotoError);
-        expect((error as InvalidPhotoError).code).toBe(ErrorCode.RN_05);
+        expect(error).toBeInstanceOf(PhotoRejectedError);
+        expect((error as PhotoRejectedError).code).toBe(ErrorCode.RN_05);
       }
     }
   });

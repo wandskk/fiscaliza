@@ -1,5 +1,5 @@
 import { photoFileSchema } from '@fiscaliza/shared';
-import { InvalidPhotoError } from './inspection.errors';
+import { PhotoRejectedError } from './inspection.errors';
 
 export interface PhotoProps {
   id: string;
@@ -12,7 +12,7 @@ export class Photo {
   private constructor(private readonly props: PhotoProps) {}
 
   static create(props: PhotoProps): Photo {
-    if (!photoFileSchema.safeParse(props).success) throw new InvalidPhotoError();
+    if (!photoFileSchema.safeParse(props).success) throw new PhotoRejectedError();
     return new Photo({ ...props });
   }
 

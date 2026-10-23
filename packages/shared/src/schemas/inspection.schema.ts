@@ -5,18 +5,23 @@ import { paginationSchema } from './pagination.schema.js';
 
 export const MIN_NOTES_LENGTH = 30;
 
+// A draft may have short notes: the 30 characters of RN-04 are checked on submit
 export const createInspectionSchema = z.object({
-  constructionSiteId: z.string().min(1),
-  notes: z.string(),
+  constructionSiteId: z.uuid(),
+  notes: z.string().trim().max(5000),
   compliance: z.enum(Compliance),
 });
 
 export const updateInspectionSchema = createInspectionSchema
   .pick({ notes: true, compliance: true })
-  .partial();
+  .partial()
+  .refine((change) => Object.values(change).some((value) => value !== undefined), {
+    message: 'Informe ao menos um campo para alterar.',
+  });
 
-export const inspectionDetailSchema = createInspectionSchema.extend({
-  id: z.string(),
+export const inspectionDetailSchema = z.object({
+  ...createInspectionSchema.shape,
+  id: z.uuid(),
   inspectorId: z.string(),
   status: z.enum(InspectionStatus),
   returnReason: z.string().nullable(),
@@ -33,12 +38,12 @@ export const inspectionDetailSchema = createInspectionSchema.extend({
       from: z.enum(InspectionStatus).nullable(),
       to: z.enum(InspectionStatus),
       userId: z.string(),
-      at: z.date(),
+      at: z.iso.datetime(),
     }),
   ),
   report: z.null(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 });
 
 export const inspectionFilterSchema = paginationSchema.extend({

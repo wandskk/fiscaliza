@@ -6,10 +6,12 @@ import {
   IncompleteInspectionError,
   InvalidTransitionError,
   InspectionOwnerError,
-  InvalidPhotoError,
+  PhotoNotFoundError,
+  PhotoRejectedError,
   ApprovedInspectionError,
 } from '../src/modules/inspections/domain/inspection.errors';
 import type { Clock } from '../src/modules/inspections/domain/clock';
+import { ForbiddenError } from '../src/shared/errors/domain-error';
 
 const at = new Date('2026-10-23T12:00:00.000Z');
 const clock: Clock = { now: () => new Date(at) };
@@ -41,6 +43,8 @@ describe('Inspection', () => {
   it('RN-01: only its inspector can change the inspection', () => {
     const inspection = make();
     expect(() => inspection.ensureOwner('other')).toThrow(InspectionOwnerError);
+    // 403, not 422: someone else's inspection is a permission problem
+    expect(() => inspection.ensureOwner('other')).toThrow(ForbiddenError);
     try {
       inspection.ensureOwner('other');
     } catch (error) {
@@ -64,10 +68,11 @@ describe('Inspection', () => {
       inspection.addPhoto(photo(`${index}`), 'inspector', clock);
     expect(inspection.photos).toHaveLength(MAX_PHOTOS);
     expect(() => inspection.addPhoto(photo('extra'), 'inspector', clock)).toThrow(
-      InvalidPhotoError,
+      PhotoRejectedError,
     );
     inspection.removePhoto('0', 'inspector', clock);
     expect(inspection.photos).toHaveLength(MAX_PHOTOS - 1);
+    expect(() => inspection.removePhoto('missing', 'inspector', clock)).toThrow(PhotoNotFoundError);
   });
 
   it('RN-03, RN-07 and RN-09: submits draft or returned, records each change, and blocks submitted or approved edits', () => {

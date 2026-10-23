@@ -4,8 +4,9 @@ import {
   ApprovedInspectionError,
   IncompleteInspectionError,
   InspectionOwnerError,
-  InvalidPhotoError,
+  PhotoRejectedError,
   InvalidTransitionError,
+  PhotoNotFoundError,
 } from './inspection.errors';
 import { canTransition } from './inspection-status';
 import { Photo, type PhotoProps } from './photo.value-object';
@@ -114,7 +115,7 @@ export class Inspection {
     this.ensureOwner(userId);
     this.ensureEditable();
     if (this.props.photos.some((existing) => existing.key === photo.key)) return;
-    if (this.props.photos.length >= MAX_PHOTOS) throw new InvalidPhotoError();
+    if (this.props.photos.length >= MAX_PHOTOS) throw new PhotoRejectedError();
     this.props.photos.push(photo.toProps());
     this.props.updatedAt = clock.now();
   }
@@ -123,7 +124,7 @@ export class Inspection {
     this.ensureOwner(userId);
     this.ensureEditable();
     const index = this.props.photos.findIndex((photo) => photo.id === photoId);
-    if (index < 0) throw new InvalidPhotoError();
+    if (index < 0) throw new PhotoNotFoundError();
     this.props.photos.splice(index, 1);
     this.props.updatedAt = clock.now();
   }
